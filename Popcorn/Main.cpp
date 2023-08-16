@@ -1,5 +1,4 @@
 ﻿// Popcorn.cpp : Определяет точку входа для приложения. 
-//
 
 #include "framework.h"
 #include "Main.h"
@@ -16,7 +15,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
+//------------------------------------------------------------------------------------------------------------
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -54,14 +53,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     return (int) msg.wParam;
 }
-
-
-
-//
+//------------------------------------------------------------------------------------------------------------
 //  ФУНКЦИЯ: MyRegisterClass()
 //
 //  ЦЕЛЬ: Регистрирует класс окна.
-//
+//------------------------------------------------------------------------------------------------------------
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
     WNDCLASSEXW wcex;
@@ -75,15 +71,14 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_POPCORN));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_POPCORN);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     return RegisterClassExW(&wcex);
 }
-
-//
+//------------------------------------------------------------------------------------------------------------
 //   ФУНКЦИЯ: InitInstance(HINSTANCE, int)
 //
 //   ЦЕЛЬ: Сохраняет маркер экземпляра и создает главное окно
@@ -92,26 +87,37 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 //        В этой функции маркер экземпляра сохраняется в глобальной переменной, а также
 //        создается и выводится главное окно программы.
-//
+//------------------------------------------------------------------------------------------------------------
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+   RECT window_rect; //Размеры экрана программы(Игры)
+   window_rect.left = 0;
+   window_rect.top = 0;
+   window_rect.right = 320 * 3;
+   window_rect.bottom = 200 * 3;
 
-   if (!hWnd)
-   {
+   AdjustWindowRect(&window_rect,WS_OVERLAPPEDWINDOW,TRUE);
+
+   HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, //Приминение параметров размера(крана) игры.
+      0, 0, window_rect.right - window_rect.left, window_rect.bottom - window_rect.top, nullptr, nullptr, hInstance, nullptr);
+
+   if (hWnd == 0)
       return FALSE;
-   }
+   
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
    return TRUE;
 }
+//------------------------------------------------------------------------------------------------------------
+void Draw_Frame(HDC hdc)//отрисовка экрана игры
+{
 
-//
+}
+//------------------------------------------------------------------------------------------------------------
 //  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
 //  ЦЕЛЬ: Обрабатывает сообщения в главном окне.
@@ -119,8 +125,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_COMMAND  - обработать меню приложения
 //  WM_PAINT    - Отрисовка главного окна
 //  WM_DESTROY  - отправить сообщение о выходе и вернуться
-//
-//
+//------------------------------------------------------------------------------------------------------------
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -142,14 +147,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: Добавьте сюда любой код прорисовки, использующий HDC...
+            Draw_Frame(hdc);
             EndPaint(hWnd, &ps);
         }
         break;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -158,7 +166,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return 0;
 }
-
+//------------------------------------------------------------------------------------------------------------
 // Обработчик сообщений для окна "О программе".
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -178,3 +186,4 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return (INT_PTR)FALSE;
 }
+//------------------------------------------------------------------------------------------------------------
