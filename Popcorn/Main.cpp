@@ -1,5 +1,4 @@
 ﻿// Popcorn.cpp : Определяет точку входа для приложения. 
-//Тест
 #include "framework.h"
 #include "Main.h"
 
