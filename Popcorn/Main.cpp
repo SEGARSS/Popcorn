@@ -8,13 +8,6 @@
 HINSTANCE hInst;                    // текущий экземпляр
 WCHAR szTitle[MAX_LOADSTRING];      // Текст строки заголовка
 WCHAR szWindowClass[MAX_LOADSTRING];// имя класса главного окна
-const int Global_Scale = 3;         // Ширина окна
-const int Brick_Width = 15;         // Ширина кирпича
-const int Brick_Heigth = 7;         // Высота кирпича
-const int Cell_Width = 16;          // Ширина ячейки
-const int Cell_Heigth = 8;          // Высота ячейки
-const int Level_X_Offset = 8;       // Смещение по оси X
-const int Level_Y_Offset = 6;       // Смещение по оси Y
 
 // Отправить объявления функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -77,7 +70,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_POPCORN));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
+    wcex.hbrBackground = CreateSolidBrush(RGB(15, 63, 31));
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_POPCORN);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -98,6 +91,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
 
+   Init();
    RECT window_rect; //Размеры экрана программы(Игры)
    window_rect.left = 0;
    window_rect.top = 0;
@@ -117,36 +111,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    UpdateWindow(hWnd);
 
    return TRUE;
-}
-//------------------------------------------------------------------------------------------------------------
-void Draw_Brick(HDC hdc, int x, int y, bool is_blue)//Вывод кирпича
-{
-   HPEN pen;
-   HBRUSH brush;
-   if (is_blue)
-   {
-      pen = CreatePen(PS_SOLID, 0, RGB(87, 250, 249));
-      brush = CreateSolidBrush(RGB(87, 250, 249));
-   }
-   else
-   {
-      pen = CreatePen(PS_SOLID, 0, RGB(255, 85, 255));
-      brush = CreateSolidBrush(RGB(255, 85, 255));
-   }
-   SelectObject(hdc, pen);
-   SelectObject(hdc, brush);
-   Rectangle(hdc, x * Global_Scale, y * Global_Scale, (x + Brick_Width) * Global_Scale, (y + Brick_Heigth) * Global_Scale);
-}
-//------------------------------------------------------------------------------------------------------------
-void Draw_Frame(HDC hdc)//отрисовка экрана игры
-{
-   for (int i = 0; i < 14; i++)
-   {
-      for (int j = 0; j < 12; j++)
-      {
-         Draw_Brick(hdc, Level_X_Offset + j * Cell_Width, Level_Y_Offset + i * Cell_Heigth, true);
-      }
-   }
 }
 //------------------------------------------------------------------------------------------------------------
 //  ФУНКЦИЯ: WndProc(HWND, UINT, WPARAM, LPARAM)
