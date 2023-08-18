@@ -1,6 +1,6 @@
-#include "Engin.h"
+п»ї#include "Engin.h"
 
-// Глобальные переменные:
+// Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ:/
 enum Brick_Type
 {
    EBT_None,
@@ -11,13 +11,13 @@ enum Brick_Type
 HPEN Brick_Red_Pen, Brick_Blue_Pen;
 HBRUSH Brick_Red_Brush, Brick_Blue_Brush;
 
-const int Global_Scale = 3;         // Ширина окна
-const int Brick_Width = 15;         // Ширина кирпича
-const int Brick_Heigth = 7;         // Высота кирпича
-const int Cell_Width = 16;          // Ширина ячейки
-const int Cell_Heigth = 8;          // Высота ячейки
-const int Level_X_Offset = 8;       // Смещение по оси X
-const int Level_Y_Offset = 6;       // Смещение по оси Y
+const int Global_Scale = 3;         // РЁРёСЂРёРЅР° РѕРєРЅР°
+const int Brick_Width = 15;         // РЁРёСЂРёРЅР° РєРёСЂРїРёС‡Р°
+const int Brick_Heigth = 7;         // Р’С‹СЃРѕС‚Р° РєРёСЂРїРёС‡Р°
+const int Cell_Width = 16;          // РЁРёСЂРёРЅР° СЏС‡РµР№РєРё
+const int Cell_Heigth = 8;          // Р’С‹СЃРѕС‚Р° СЏС‡РµР№РєРё
+const int Level_X_Offset = 8;       // РЎРјРµС‰РµРЅРёРµ РїРѕ РѕСЃРё X
+const int Level_Y_Offset = 6;       // РЎРјРµС‰РµРЅРёРµ РїРѕ РѕСЃРё Y
 
 char Level_01[14][12] =
 {
@@ -38,7 +38,7 @@ char Level_01[14][12] =
 };
 
 //------------------------------------------------------------------------------------------------------------
-void Init()//Настройка игры при старте
+void Init()//РќР°СЃС‚СЂРѕР№РєР° РёРіСЂС‹ РїСЂРё СЃС‚Р°СЂС‚Рµ
 {
    Brick_Red_Pen = CreatePen(PS_SOLID, 0, RGB(255, 85, 85));
    Brick_Red_Brush = CreateSolidBrush(RGB(255, 85, 85));
@@ -47,7 +47,7 @@ void Init()//Настройка игры при старте
    Brick_Blue_Brush = CreateSolidBrush(RGB(87, 255, 255));
 }
 //------------------------------------------------------------------------------------------------------------
-void Draw_Brick(HDC hdc, int x, int y, Brick_Type brick_type)//Вывод кирпича
+void Draw_Brick(HDC hdc, int x, int y, Brick_Type brick_type)//Р’С‹РІРѕРґ РєРёСЂРїРёС‡Р°
 {
    HPEN pen;
    HBRUSH brush;
@@ -79,7 +79,7 @@ void Draw_Brick(HDC hdc, int x, int y, Brick_Type brick_type)//Вывод кирпича
    RoundRect(hdc, x * Global_Scale, y * Global_Scale, (x + Brick_Width) * Global_Scale, (y + Brick_Heigth) * Global_Scale, 2 * Global_Scale, Global_Scale * 2);
 }
 //------------------------------------------------------------------------------------------------------------
-void Draw_Level(HDC hdc)//Вывод всех кирпичей
+void Draw_Level(HDC hdc)//Р’С‹РІРѕРґ РІСЃРµС… РєРёСЂРїРёС‡РµР№
 {
    for (int i = 0; i < 14; i++)
    {
@@ -90,7 +90,7 @@ void Draw_Level(HDC hdc)//Вывод всех кирпичей
    }
 }
 //------------------------------------------------------------------------------------------------------------
-void Draw_Frame(HDC hdc)//отрисовка экрана игры
+void Draw_Frame(HDC hdc)//РѕС‚СЂРёСЃРѕРІРєР° СЌРєСЂР°РЅР° РёРіСЂС‹
 {
    Draw_Level(hdc);
 }
