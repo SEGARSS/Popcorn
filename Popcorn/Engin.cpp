@@ -10,7 +10,7 @@ enum ELetter_Type
    ELT_O
 };
 
-enum Brick_Type
+enum EBrick_Type
 {
    EBT_None,
    EBT_Red,
@@ -65,7 +65,7 @@ void Init()//Настройка игры при старте
    Create_Pen_Brush(0, 128, 192, Platform_Inner_Pen, Platform_Inner_Brush);
 }
 //------------------------------------------------------------------------------------------------------------
-void Draw_Brick(HDC hdc, int x, int y, Brick_Type brick_type)//Вывод кирпича
+void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)//Вывод кирпича
 {
    HPEN pen;
    HBRUSH brush;
@@ -118,7 +118,7 @@ void Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &fron
    }
 }
 //------------------------------------------------------------------------------------------------------------
-void Draw_Brick_Letter(HDC hdc, int x, int y, Brick_Type brick_type, ELetter_Type letter_type, int rotation_step)//Вывод падающией буквы
+void Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, ELetter_Type letter_type, int rotation_step)//Вывод падающией буквы
 {
    bool switch_color;
    double offset;
@@ -230,7 +230,7 @@ void Draw_Level(HDC hdc)//Вывод всех кирпичей
    {
       for (int j = 0; j < 12; j++)
       {
-         Draw_Brick(hdc, Level_X_Offset + j * Cell_Width, Level_Y_Offset + i * Cell_Heigth, (Brick_Type)Level_01[i][j]);
+         Draw_Brick(hdc, Level_X_Offset + j * Cell_Width, Level_Y_Offset + i * Cell_Heigth, (EBrick_Type)Level_01[i][j]);
       }
    }
 }
