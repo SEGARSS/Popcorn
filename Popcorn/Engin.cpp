@@ -84,7 +84,8 @@ void Draw_Brick(HDC hdc, int x, int y, Brick_Type brick_type)//Вывод кир
 
    SelectObject(hdc, pen);
    SelectObject(hdc, brush);
-   RoundRect(hdc, x * Global_Scale, y * Global_Scale, (x + Brick_Width) * Global_Scale, (y + Brick_Heigth) * Global_Scale, 2 * Global_Scale, Global_Scale * 2);
+   RoundRect(hdc, x * Global_Scale, y * Global_Scale, (x + Brick_Width) * Global_Scale, 
+                 (y + Brick_Heigth) * Global_Scale, 2 * Global_Scale, Global_Scale * 2);
 }
 //------------------------------------------------------------------------------------------------------------
 void Draw_Level(HDC hdc)//Вывод всех кирпичей
@@ -104,15 +105,18 @@ void Draw_Platform(HDC hdc, int x, int y) // Функция вывода упр�
    SelectObject(hdc, Platform_Cercle_Pen);
    SelectObject(hdc, Platform_Cercle_Brush);
    Ellipse(hdc, x * Global_Scale, y * Global_Scale, (x + Circle_Size) * Global_Scale, (y + Circle_Size) * Global_Scale);
-   Ellipse(hdc, (x + Inner_Width) * Global_Scale, y * Global_Scale, (x + Circle_Size + Inner_Width) * Global_Scale, (y + Circle_Size) * Global_Scale);
+   Ellipse(hdc, (x + Inner_Width) * Global_Scale, y * Global_Scale, (x + Circle_Size + Inner_Width) * Global_Scale, 
+                (y + Circle_Size) * Global_Scale);
    //2. Рисуем блик
    SelectObject(hdc, Highlight_Pen);
-   Arc(hdc, (x + 1) * Global_Scale, (y + 1) * Global_Scale, (x + Circle_Size - 1) * Global_Scale, (y + Circle_Size - 1) * Global_Scale,
-            (x + 1 + 1) * Global_Scale, (y + 1) * Global_Scale, (x + 1) * Global_Scale, (y + 1 +2) * Global_Scale);
+   Arc(hdc, (x + 1) * Global_Scale, (y + 1) * Global_Scale, (x + Circle_Size - 1) * Global_Scale, 
+            (y + Circle_Size - 1) * Global_Scale,(x + 1 + 1) * Global_Scale, (y + 1) * Global_Scale, 
+            (x + 1) * Global_Scale, (y + 1 +2) * Global_Scale);
    //3. Рисуем среднюю часть.
    SelectObject(hdc, Platform_Inner_Pen);
    SelectObject(hdc, Platform_Inner_Brush);
-   RoundRect(hdc, (x + 4) * Global_Scale, (y + 1) * Global_Scale, (x + 4 + Inner_Width - 1) * Global_Scale, (y + 1 + 5) * Global_Scale, 3 * Global_Scale, Global_Scale * 3);
+   RoundRect(hdc, (x + 4) * Global_Scale, (y + 1) * Global_Scale, (x + 4 + Inner_Width - 1) * Global_Scale, 
+                  (y + 1 + 5) * Global_Scale, 3 * Global_Scale, Global_Scale * 3);
 }
 //------------------------------------------------------------------------------------------------------------
 void Draw_Frame(HDC hdc)//отрисовка экрана игры
