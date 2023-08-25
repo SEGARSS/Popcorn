@@ -18,8 +18,8 @@ enum EBrick_Type
 };
 
 HWND Hwnd;
-HPEN BG_Pen, Letter_Pen, Highlight_Pen, Brick_Red_Pen, Brick_Blue_Pen, Platform_Cercle_Pen, Platform_Inner_Pen;
-HBRUSH BG_Brush, Brick_Red_Brush, Brick_Blue_Brush , Platform_Cercle_Brush, Platform_Inner_Brush;
+HPEN BG_Pen, Letter_Pen, Highlight_Pen, Brick_Red_Pen, Brick_Blue_Pen, Platform_Cercle_Pen, Platform_Inner_Pen, Ball_Pen;
+HBRUSH BG_Brush, Brick_Red_Brush, Brick_Blue_Brush , Platform_Cercle_Brush, Platform_Inner_Brush, Ball_Brush;
 
 const int Global_Scale = 3;         // Ширина окна
 const int Brick_Width = 15;         // Ширина кирпича
@@ -33,14 +33,23 @@ const int Level_Heigth = 12;        // Высота уровня в ячейка
 const int Circle_Size = 7;
 const int Platform_Y_Pos = 185;
 const int Platform_Height = 7;
+const int Ball_Size = 4;
+const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width - Ball_Size;
+const int Max_Y_Pos = 199 - Ball_Size;
 
 int Inner_Width = 21;
 int Platform_X_Pos = 0;
 int Platform_X_Step = Global_Scale * 2;
 int Platform_width = 28;
+int Ball_X_Pos = 20;
+int Ball_Y_Pos = 170;
+
+double Ball_Speed = 3.0, Ball_Direction = M_PI - M_PI_4;
 
 RECT Platform_Rect, Prev_Platform_Rect;
 RECT Level_Rect;
+RECT Ball_Rect;
+RECT Prev_Ball_Rect;
 
 char Level_01[Level_Width][Level_Heigth] =
 {
@@ -78,7 +87,6 @@ void Redraw_Platform()
 
    InvalidateRect(Hwnd, &Prev_Platform_Rect, FALSE);
    InvalidateRect(Hwnd, &Platform_Rect, FALSE);
-
 }
 //------------------------------------------------------------------------------------------------------------
 void Init_Engine(HWND hwnd)//Настройка игры при старте
@@ -93,6 +101,8 @@ void Init_Engine(HWND hwnd)//Настройка игры при старте
    Create_Pen_Brush(87, 255, 255, Brick_Blue_Pen, Brick_Blue_Brush);
    Create_Pen_Brush(151, 0, 0, Platform_Cercle_Pen, Platform_Cercle_Brush);
    Create_Pen_Brush(0, 128, 192, Platform_Inner_Pen, Platform_Inner_Brush);
+   Create_Pen_Brush(255, 255, 255, Ball_Pen, Ball_Brush);
+
 
    Level_Rect.left = Level_X_Offset * Global_Scale;
    Level_Rect.top = Level_Y_Offset * Global_Scale;
@@ -100,6 +110,9 @@ void Init_Engine(HWND hwnd)//Настройка игры при старте
    Level_Rect.bottom = Level_Rect.top + Cell_Heigth * Level_Heigth * Global_Scale;
 
    Redraw_Platform();
+
+   SetTimer(Hwnd, Timer_ID, 50, 0);
+ 
 }
 //------------------------------------------------------------------------------------------------------------
 void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)//Вывод кирпича
@@ -274,27 +287,43 @@ void Draw_Level(HDC hdc)//Вывод всех кирпичей
 //------------------------------------------------------------------------------------------------------------
 void Draw_Platform(HDC hdc, int x, int y) // Функция вывода управляемой платформой.
 {
+   //1. Рисуем платформу
    SelectObject(hdc, BG_Pen);
    SelectObject(hdc, BG_Brush);
 
    Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
 
-   //1. Рисуем боковые шарики
+   //2. Рисуем боковые шарики
    SelectObject(hdc, Platform_Cercle_Pen);
    SelectObject(hdc, Platform_Cercle_Brush);
    Ellipse(hdc, x * Global_Scale, y * Global_Scale, (x + Circle_Size) * Global_Scale, (y + Circle_Size) * Global_Scale);
    Ellipse(hdc, (x + Inner_Width) * Global_Scale, y * Global_Scale, (x + Circle_Size + Inner_Width) * Global_Scale, 
                 (y + Circle_Size) * Global_Scale);
-   //2. Рисуем блик
+   //3. Рисуем блик
    SelectObject(hdc, Highlight_Pen);
    Arc(hdc, (x + 1) * Global_Scale, (y + 1) * Global_Scale, (x + Circle_Size - 1) * Global_Scale, 
             (y + Circle_Size - 1) * Global_Scale,(x + 1 + 1) * Global_Scale, (y + 1) * Global_Scale, 
             (x + 1) * Global_Scale, (y + 1 +2) * Global_Scale);
-   //3. Рисуем среднюю часть.
+   //4. Рисуем среднюю часть.
    SelectObject(hdc, Platform_Inner_Pen);
    SelectObject(hdc, Platform_Inner_Brush);
    RoundRect(hdc, (x + 4) * Global_Scale, (y + 1) * Global_Scale, (x + 4 + Inner_Width - 1) * Global_Scale, 
                   (y + 1 + 5) * Global_Scale, 3 * Global_Scale, Global_Scale * 3);
+}
+//------------------------------------------------------------------------------------------------------------
+void Draw_BaLL(HDC hdc, RECT& paint_area)//отрисовка шарика
+{
+   //1. Очищаем фон.
+   SelectObject(hdc, BG_Pen);
+   SelectObject(hdc, BG_Brush);
+
+   Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
+
+   //2. Рисуем шарик.
+   SelectObject(hdc, Ball_Pen);
+   SelectObject(hdc, Ball_Brush);
+
+   Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
 }
 //------------------------------------------------------------------------------------------------------------
 void Draw_Frame(HDC hdc, RECT &paint_area)//отрисовка экрана игры
@@ -316,7 +345,12 @@ void Draw_Frame(HDC hdc, RECT &paint_area)//отрисовка экрана иг
       Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 100, EBT_Blue, ELT_O, i);
       Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Red, ELT_O, i);
    }*/
-         
+
+   if (IntersectRect(&intersectRect, &paint_area, &Ball_Rect))
+   {
+      Draw_BaLL(hdc, paint_area);
+   }
+   
 }
 //------------------------------------------------------------------------------------------------------------
 int On_Key_Down(EKey_Type key_type)
@@ -339,3 +373,55 @@ int On_Key_Down(EKey_Type key_type)
    return 0;
 }
 //------------------------------------------------------------------------------------------------------------
+void Move_Ball() // Смещение шарика
+{
+   int next_x_pos, next_y_pos;
+
+   Prev_Ball_Rect = Ball_Rect;
+
+   next_x_pos = Ball_X_Pos + (int)(Ball_Speed * cos(Ball_Direction));
+   next_y_pos = Ball_Y_Pos - (int)(Ball_Speed * sin(Ball_Direction));
+
+   // Корректируем позиции по отражению
+   if (next_x_pos < 0)
+   {
+      next_x_pos = -next_x_pos;
+      Ball_Direction = M_PI - Ball_Direction;
+   }
+
+   if (next_y_pos < Level_Y_Offset)
+   {
+      next_y_pos = Level_Y_Offset - (next_y_pos - Level_Y_Offset);
+      Ball_Direction = -Ball_Direction;
+   }
+
+   if (next_x_pos > Max_X_Pos)
+   {
+      next_x_pos = Max_X_Pos - (next_x_pos - Max_X_Pos);
+      Ball_Direction = M_PI - Ball_Direction;
+   }
+
+   if (next_y_pos > Max_Y_Pos)
+   {
+      next_y_pos = Max_Y_Pos - (next_y_pos - Max_Y_Pos);
+      Ball_Direction = M_PI + (M_PI - Ball_Direction);
+   }
+
+   //Смещаем шарик
+   Ball_X_Pos = next_x_pos;
+   Ball_Y_Pos = next_y_pos;
+
+   Ball_Rect.left = (Level_X_Offset + Ball_X_Pos) * Global_Scale;
+   Ball_Rect.top = (Level_Y_Offset + Ball_Y_Pos) * Global_Scale;
+   Ball_Rect.right = Ball_Rect.left + Ball_Size * Global_Scale;
+   Ball_Rect.bottom = Ball_Rect.top + Ball_Size * Global_Scale;
+
+   InvalidateRect(Hwnd, &Prev_Ball_Rect, FALSE);
+   InvalidateRect(Hwnd, &Ball_Rect, FALSE);
+}
+//------------------------------------------------------------------------------------------------------------
+int On_Timer() // Смещение по таймеру
+{
+   Move_Ball();
+   return 0;
+}
