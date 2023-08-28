@@ -453,17 +453,40 @@ int On_Key_Down(EKey_Type key_type)
    return 0;
 }
 //------------------------------------------------------------------------------------------------------------
+void Check_Level_Brick_Hit(int & next_y_pos) // Проверка попадания по кирпичу
+{
+   int brick_y_pos = Level_Y_Offset + Level_Heigth * Cell_Heigth;
+   // Корректируем позицию при отражении от кирпичей
+   for (int i = Level_Heigth - 1; i >= 0; i--)
+   {
+      for (int j = 0; j < Level_Width; j++)
+      {
+         if (Level_01[i][j] == 0)
+         {
+            continue;
+         }
+         if (next_y_pos < brick_y_pos)
+         {
+            next_y_pos = brick_y_pos - (next_y_pos - brick_y_pos);
+            Ball_Direction = -Ball_Direction;
+         }
+      }
+      brick_y_pos -= Cell_Heigth;
+   }
+}
+//------------------------------------------------------------------------------------------------------------
 void Move_Ball() // Смещение шарика
 {
    int next_x_pos, next_y_pos;
    int max_x_pos = Max_X_Pos - Ball_Size;
+   int platform_y_pos = Platform_Y_Pos - Ball_Size;
 
    Prev_Ball_Rect = Ball_Rect;
 
    next_x_pos = Ball_X_Pos + (int)(Ball_Speed * cos(Ball_Direction));
    next_y_pos = Ball_Y_Pos - (int)(Ball_Speed * sin(Ball_Direction));
 
-   // Корректируем позиции по отражению
+   // Корректируем позиции по отражению от рамки
    if (next_x_pos < Border_X_offset)
    {
       next_x_pos = Level_X_Offset - (next_x_pos - Level_X_Offset);
@@ -472,7 +495,7 @@ void Move_Ball() // Смещение шарика
 
    if (next_y_pos < Border_Y_offset)
    {
-      next_y_pos = Level_Y_Offset - (next_y_pos - Level_Y_Offset);
+      next_y_pos = Border_Y_offset - (next_y_pos - Border_Y_offset);
       Ball_Direction = -Ball_Direction;
    }
 
@@ -487,6 +510,19 @@ void Move_Ball() // Смещение шарика
       next_y_pos = Max_Y_Pos - (next_y_pos - Max_Y_Pos);
       Ball_Direction = M_PI + (M_PI - Ball_Direction);
    }
+
+   // Корректируем позицию при отражении от платформы
+   if (next_y_pos > platform_y_pos)
+   {
+      if (next_x_pos >= Platform_X_Pos && next_x_pos <= Platform_X_Pos + Platform_width)
+      {
+         next_y_pos = platform_y_pos - (next_y_pos - platform_y_pos);
+         Ball_Direction = M_PI + (M_PI - Ball_Direction);
+      }
+   }
+
+   // Проверка попадания по кирпичу
+   Check_Level_Brick_Hit(next_y_pos);
 
    //Смещаем шарик
    Ball_X_Pos = next_x_pos;
@@ -506,4 +542,3 @@ int On_Timer() // Смещение по таймеру
    Move_Ball();
    return 0;
 }
-//c 47 минуты 13 видео продолжить
