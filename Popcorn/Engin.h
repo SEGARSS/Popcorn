@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include<Windows.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -35,8 +35,8 @@ public:
    int On_Key_Down(EKey_Type key_type);
    int On_Timer();
 
-   static const int Level_Width = 12;         // Ширина уровня в ячейках
-   static const int Level_Heigth = 14;        // Высота уровня в ячейках
+   static const int Level_Width = 12;         // РЁРёСЂРёРЅР° СѓСЂРѕРІРЅСЏ РІ СЏС‡РµР№РєР°С…
+   static const int Level_Heigth = 14;        // Р’С‹СЃРѕС‚Р° СѓСЂРѕРІРЅСЏ РІ СЏС‡РµР№РєР°С…
 
 private:
 
@@ -53,7 +53,7 @@ private:
    void Check_Level_Brick_Hit(int& next_y_pos);
    void Move_Ball();
 
-   // Глобальные переменные:
+   // Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ РїРµСЂРµРјРµРЅРЅС‹Рµ:
 
    HWND Hwnd;
    HPEN BG_Pen, Letter_Pen, Highlight_Pen, Brick_Red_Pen, Brick_Blue_Pen, Platform_Cercle_Pen, Platform_Inner_Pen;
@@ -75,13 +75,13 @@ private:
    RECT Ball_Rect;
    RECT Prev_Ball_Rect;
 
-   static const int Global_Scale = 3;         // Ширина окна
-   static const int Brick_Width = 15;         // Ширина кирпича
-   static const int Brick_Heigth = 7;         // Высота кирпича
-   static const int Cell_Width = 16;          // Ширина ячейки
-   static const int Cell_Heigth = 8;          // Высота ячейки
-   static const int Level_X_Offset = 8;       // Смещение по оси X
-   static const int Level_Y_Offset = 6;       // Смещение по оси Y
+   static const int Global_Scale = 3;         // РЁРёСЂРёРЅР° РѕРєРЅР°
+   static const int Brick_Width = 15;         // РЁРёСЂРёРЅР° РєРёСЂРїРёС‡Р°
+   static const int Brick_Heigth = 7;         // Р’С‹СЃРѕС‚Р° РєРёСЂРїРёС‡Р°
+   static const int Cell_Width = 16;          // РЁРёСЂРёРЅР° СЏС‡РµР№РєРё
+   static const int Cell_Heigth = 8;          // Р’С‹СЃРѕС‚Р° СЏС‡РµР№РєРё
+   static const int Level_X_Offset = 8;       // РЎРјРµС‰РµРЅРёРµ РїРѕ РѕСЃРё X
+   static const int Level_Y_Offset = 6;       // РЎРјРµС‰РµРЅРёРµ РїРѕ РѕСЃРё Y
    static const int Circle_Size = 7;
    static const int Platform_Y_Pos = 185;
    static const int Platform_Height = 7;
