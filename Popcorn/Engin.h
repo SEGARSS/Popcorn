@@ -2,6 +2,10 @@
 #include<Windows.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
+
+
+
+
 //------------------------------------------------------------------------------------------------------------
 enum ELetter_Type
 {
@@ -22,19 +26,26 @@ enum EKey_Type
    EKT_Right,
    EKT_Space
 };
-
+//------------------------------------------------------------------------------------------------------------
 const int Timer_ID = WM_USER + 1;
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
 //ABall
 //------------------------------------------------------------------------------------------------------------
 class AsEngine;
 class ALevel;
+class AsPlatform;
 class ABall
 {
 public:
    ABall();
 
+   void Init();
    void Draw(HDC hdc, RECT &paint_area, AsEngine *engine);
-   void Move(AsEngine *engine, ALevel *level);
+   void Move(AsEngine *engine, ALevel *level, AsPlatform *platform);
 
    HPEN Ball_Pen;
    HBRUSH Ball_Brush;
@@ -64,14 +75,7 @@ class ALevel
 public:
    void Init();
    void Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction);
-   void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type);
-   void Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, HPEN &back_pen, HBRUSH &back_brush);
-   void Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, ELetter_Type letter_type, int rotation_step);
-   void Draw_Level(HDC hdc, RECT &paint_area);
-
-   HPEN Brick_Red_Pen, Brick_Blue_Pen, Letter_Pen;
-   HBRUSH Brick_Red_Brush, Brick_Blue_Brush;
-   RECT Level_Rect;
+   void Draw(HDC hdc, RECT &paint_area);
 
    static const int Level_Width = 12;         // Ширина уровня в ячейках
    static const int Level_Heigth = 14;        // Высота уровня в ячейках
@@ -79,10 +83,73 @@ public:
    static const int Level_Y_Offset = 6;       // Смещение по оси Y
    static const int Cell_Width = 16;          // Ширина ячейки
    static const int Cell_Heigth = 8;          // Высота ячейки
+private:
+   void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type);
+   void Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, HPEN &back_pen, HBRUSH &back_brush);
+   void Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, ELetter_Type letter_type, int rotation_step);
+
+   HPEN Brick_Red_Pen, Brick_Blue_Pen, Letter_Pen;
+   HBRUSH Brick_Red_Brush, Brick_Blue_Brush;
+   RECT Level_Rect;
+
    static const int Brick_Width = 15;         // Ширина кирпича
    static const int Brick_Heigth = 7;         // Высота кирпича
 
 
+};
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
+//AsPlatform
+//------------------------------------------------------------------------------------------------------------
+class AsPlatform
+{
+public:
+   AsPlatform();
+
+   void Init();
+   void Redraw_Platform(AsEngine *engine);
+   void Draw(HDC hdc, AsEngine *engine, RECT &paint_area);
+
+   int X_Pos;
+   int Width;
+   int X_Step;
+
+   static const int Y_Pos = 185;
+private:
+   int Inner_Width;
+
+   RECT Platform_Rect, Prev_Platform_Rect;
+
+   HPEN Highlight_Pen, Platform_Cercle_Pen, Platform_Inner_Pen;
+   HBRUSH Platform_Cercle_Brush, Platform_Inner_Brush;
+
+   static const int Height = 7;
+   static const int Circle_Size = 7;
+};
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
+//AsBorder
+//------------------------------------------------------------------------------------------------------------
+class AsBorder
+{
+public:
+   void Init();
+   void Draw(HDC hdc, RECT &paint_area, AsEngine *engine);
+
+   static const int Border_X_offset = 6;
+   static const int Border_Y_offset = 4;
+
+private:
+   void Draw_Element(HDC hdc, int x, int y, bool top_boder, AsEngine *engine);
+
+   HPEN Border_Blue_Pen, Border_White_Pen; 
+   HBRUSH Border_Blue_Brush, Border_White_Brush;
 };
 //------------------------------------------------------------------------------------------------------------
 
@@ -107,37 +174,15 @@ public:
    HBRUSH BG_Brush;
    HWND Hwnd;
 
-   int Platform_X_Pos;
-   int Platform_width;
-
    static const int Global_Scale = 3;  // Ширина окна
    static const int Max_X_Pos = ALevel::Level_X_Offset + ALevel::Cell_Width * ALevel::Level_Width;
    static const int Max_Y_Pos = 199 - ABall::Ball_Size;
-   static const int Platform_Y_Pos = 185;
-   static const int Border_X_offset = 6;
-   static const int Border_Y_offset = 4;
-
 
 private:
-
-   void Redraw_Platform();
-   void Draw_Platform(HDC hdc, int x, int y);
-   void Draw_Border(HDC hdc, int x, int y, bool top_boder);
-   void Draw_Bounds(HDC hdc, RECT &paint_area);
-
-   HPEN Highlight_Pen, Platform_Cercle_Pen, Platform_Inner_Pen, Border_Blue_Pen, Border_White_Pen; 
-   HBRUSH Platform_Cercle_Brush, Platform_Inner_Brush, Border_Blue_Brush, Border_White_Brush;
-
-   int Inner_Width;
-   int Platform_X_Step;
-
-   RECT Platform_Rect, Prev_Platform_Rect;
-
    ABall Ball;
    ALevel Level;
-
-   static const int Circle_Size = 7;
-   static const int Platform_Height = 7;
+   AsPlatform Platform;
+   AsBorder Border;
 };
 //------------------------------------------------------------------------------------------------------------
 
