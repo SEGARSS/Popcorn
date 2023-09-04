@@ -32,11 +32,11 @@ public:
    int On_Key_Down(EKey_Type key_type);
    int On_Timer();
 
+private:
    HPEN BG_Pen;
    HBRUSH BG_Brush;
    HWND Hwnd;
 
-private:
    ABall Ball;
    ALevel Level;
    AsPlatform Platform;
