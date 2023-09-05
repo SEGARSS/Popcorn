@@ -33,8 +33,6 @@ public:
    int On_Timer();
 
 private:
-   HPEN BG_Pen;
-   HBRUSH BG_Brush;
    HWND Hwnd;
 
    ABall Ball;

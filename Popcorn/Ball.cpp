@@ -13,7 +13,7 @@ void ABall::Init()
    AsConfig::Create_Pen_Brush(255, 255, 255, Ball_Pen, Ball_Brush);
 }
 //------------------------------------------------------------------------------------------------------------
-void ABall::Draw(HDC hdc, RECT &paint_area, HPEN bg_pen, HBRUSH bg_brush)//отрисовка шарика
+void ABall::Draw(HDC hdc, RECT &paint_area)//отрисовка шарика
 {
    RECT intersectRect;
 
@@ -23,8 +23,8 @@ void ABall::Draw(HDC hdc, RECT &paint_area, HPEN bg_pen, HBRUSH bg_brush)//от�
    }
 
    //1. Очищаем фон.
-   SelectObject(hdc, bg_pen);
-   SelectObject(hdc, bg_brush);
+   SelectObject(hdc, AsConfig::BG_Pen);
+   SelectObject(hdc, AsConfig::BG_Brush);
 
    Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
 

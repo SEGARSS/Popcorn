@@ -12,27 +12,27 @@ void AsBorder::Init()
    AsConfig::Create_Pen_Brush(255, 255, 255, Border_White_Pen, Border_White_Brush);
 }
 //------------------------------------------------------------------------------------------------------------
-void AsBorder::Draw(HDC hdc, RECT &paint_area, HPEN bg_pen, HBRUSH bg_brush)//Рисуем полную рамку
+void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рамку
 {
    //Линия слева
    for (int i = 0; i < 50; i++)
    {
-      Draw_Element(hdc, 2, 1 + i * 4, false, bg_pen, bg_brush);
+      Draw_Element(hdc, 2, 1 + i * 4, false);
    }
    //Линия справа
    for (int i = 0; i < 50; i++)
    {
-      Draw_Element(hdc, 201, 1 + i * 4, false, bg_pen, bg_brush);
+      Draw_Element(hdc, 201, 1 + i * 4, false);
    }
    //Линия сверху
    for (int i = 0; i < 50; i++)
    {
-      Draw_Element(hdc, 3 + i * 4, 0, true, bg_pen, bg_brush);
+      Draw_Element(hdc, 3 + i * 4, 0, true);
    }
 }
 //------------------------------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------------------------------
-void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN bg_pen, HBRUSH bg_brush)//Отрисовка элемента боковой рамки
+void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)//Отрисовка элемента боковой рамки
 {
    //Выводиться основная линия
    SelectObject(hdc, Border_Blue_Pen);
@@ -61,8 +61,8 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border, HPEN bg_pen,
    }
 
    //Перфорация (Точки в нутри рамки)
-   SelectObject(hdc, bg_pen);
-   SelectObject(hdc, bg_brush);
+   SelectObject(hdc, AsConfig::BG_Pen);
+   SelectObject(hdc, AsConfig::BG_Brush);
 
    if (top_border)
    {

@@ -3,15 +3,15 @@
 //AsEngine
 //------------------------------------------------------------------------------------------------------------
 AsEngine::AsEngine()
-: BG_Pen(0), BG_Brush(0), Hwnd(0)
+: Hwnd(0)
 {
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при старте
 {
-   Hwnd = hwnd;
+   Hwnd = hwnd;   
 
-   AsConfig::Create_Pen_Brush(15, 63, 31, BG_Pen, BG_Brush);
+   AActive_Brick::Setup_Color();
 
    Ball.Init();
    Level.Init();
@@ -28,7 +28,7 @@ void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)//отрисовка экр�
 {
    Level.Draw(Hwnd, hdc, paint_area);
    
-   Platform.Draw(hdc, BG_Pen, BG_Brush, paint_area);
+   Platform.Draw(hdc, paint_area);
    
 
    /*for (int i = 0; i < 16; i++)
@@ -37,9 +37,9 @@ void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)//отрисовка экр�
       Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Red, ELT_O, i);
    }*/
 
-   Ball.Draw(hdc, paint_area, BG_Pen, BG_Brush);
+   Ball.Draw(hdc, paint_area);
 
-   Border.Draw(hdc, paint_area, BG_Pen, BG_Brush);
+   Border.Draw(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
 int AsEngine::On_Key_Down(EKey_Type key_type)
