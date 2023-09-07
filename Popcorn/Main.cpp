@@ -77,7 +77,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClassExW(&wcex);
 }
 //------------------------------------------------------------------------------------------------------------
-//   ФУНКЦИЯ: InitInstance(HINSTANCE, int)
+//   ФУНКЦИЯ:: InitInstance(HINSTANCE, int)
 //
 //   ЦЕЛЬ: Сохраняет маркер экземпляра и создает главное окно
 //
