@@ -23,9 +23,7 @@ public:
 
 private:
    EBrick_Type Brick_Type;
-
    int Fade_Step;
-
    RECT Brick_Rect;
 
    static unsigned char Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step);
