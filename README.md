@@ -7,7 +7,7 @@
 
 <details>
 <summary> План работы по проекту 
-
+</summary>
 
 ###
 
