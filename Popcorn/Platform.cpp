@@ -3,9 +3,9 @@
 //AsPlatform
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
-: Inner_Width(21), X_Pos(AsConfig::Border_X_offset), X_Step(AsConfig::Global_Scale * 2), Width(28), Platform_Rect{}, 
-  Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Cercle_Pen(0), Platform_Inner_Pen(0), Platform_Cercle_Brush(0), 
-  Platform_Inner_Brush(0)
+: Inner_Width(21), X_Pos(AsConfig::Border_X_offset), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), 
+  Width(28), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Cercle_Pen(0), Platform_Inner_Pen(0), 
+  Platform_Cercle_Brush(0), Platform_Inner_Brush(0)
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -15,6 +15,16 @@ void AsPlatform::Init()
 
    AsConfig::Create_Pen_Brush(151, 0, 0, Platform_Cercle_Pen, Platform_Cercle_Brush);
    AsConfig::Create_Pen_Brush(0, 128, 192, Platform_Inner_Pen, Platform_Inner_Brush);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Act(HWND hwnd)
+{
+   Platform_State = EPS_Meltdown;
+
+   if (Platform_State == EPS_Meltdown)
+   {
+      Redraw_Platform(hwnd);
+   }
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Redraw_Platform(HWND hwnd)
@@ -30,7 +40,20 @@ void AsPlatform::Redraw_Platform(HWND hwnd)
    InvalidateRect(hwnd, &Platform_Rect, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
-void AsPlatform::Draw(HDC hdc, RECT &paint_area) // Функция вывода управляемой платформой.
+void AsPlatform::Draw(HDC hdc, RECT &paint_area)
+{
+   switch (Platform_State)
+   {
+   case EPS_Normal:
+      Draw_Normal_State(hdc, paint_area);
+      break;
+   case EPS_Meltdown:
+      Draw_Meltdown_State(hdc, paint_area);
+      break;
+   }
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) // Функция вывода управляемой платформой.
 {
    int x = X_Pos;
    int y = AsConfig::Platform_Y_Pos;
@@ -63,5 +86,10 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area) // Функция вывода 
    SelectObject(hdc, Platform_Inner_Brush);
    RoundRect(hdc, (x + 4) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 4 + Inner_Width - 1) * AsConfig::Global_Scale, 
                   (y + 1 + 5) * AsConfig::Global_Scale, 3 * AsConfig::Global_Scale, AsConfig::Global_Scale * 3);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area) //Функция расстаивания платформы.
+{
+
 }
 //------------------------------------------------------------------------------------------------------------
