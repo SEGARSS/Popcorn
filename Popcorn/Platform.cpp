@@ -53,7 +53,7 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
    }
 }
 //------------------------------------------------------------------------------------------------------------
-void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) // Функция вывода управляемой платформой.
+void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //Рисуем платфолрму в нормальном состоянии
 {
    int x = X_Pos;
    int y = AsConfig::Platform_Y_Pos;
