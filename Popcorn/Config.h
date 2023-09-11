@@ -26,7 +26,9 @@ public:
    static void Setup_Color();
    static void Create_Pen_Brush(const AColor &color, HPEN &pen, HBRUSH &bruch);
    static void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN &pen, HBRUSH &bruch);
+   static int Rand(int range);
 
+   static int Current_Timer_Tick;
    static const AColor BG_Color, Red_Brick_Color, Blue_Brick_Color;
    static HPEN BG_Pen;
    static HBRUSH BG_Brush;
@@ -42,7 +44,7 @@ public:
    static const int Border_X_offset = 6;
    static const int Border_Y_offset = 4;
    static const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width;
-   static const int Max_Y_Pos = 199 - Ball_Size;
+   static const int Max_Y_Pos = 199;
    static const int Platform_Y_Pos = 185;
    static const int FPS = 20;
    static const int Brick_Width = 15;         // Ширина кирпича
