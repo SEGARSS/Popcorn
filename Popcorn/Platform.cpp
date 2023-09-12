@@ -20,12 +20,23 @@ void AsPlatform::Init()
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act(HWND hwnd)
 {
+   if (Platform_State == EPS_Meltdown || Platform_State == EPS_Roll_In)
+   {
+      Redraw_Platform(hwnd);
+   }
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Set_State(EPlatform_State new_state)
+{
    int len;
 
-   if (Platform_State != EPS_Meltdown)
+   if (Platform_State == new_state)
    {
-      Platform_State = EPS_Meltdown;
+      return;
+   }
 
+   if (new_state == EPS_Meltdown)
+   {
       len = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
 
       for (int i = 0; i < len; i++)
@@ -34,10 +45,7 @@ void AsPlatform::Act(HWND hwnd)
       }
    }
 
-   if (Platform_State == EPS_Meltdown)
-   {
-      Redraw_Platform(hwnd);
-   }
+   Platform_State = new_state;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Redraw_Platform(HWND hwnd)
@@ -68,6 +76,9 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
    case EPS_Meltdown:
       Draw_Meltdown_State(hdc, paint_area);
       break;
+   case EPS_Roll_In:
+      Draw_Roll_In_State(hdc, paint_area);
+      break;
    }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -91,7 +102,8 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //Рисуем п�
    //2. Рисуем боковые шарики
    SelectObject(hdc, Platform_Cercle_Pen);
    SelectObject(hdc, Platform_Cercle_Brush);
-   Ellipse(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Circle_Size) * AsConfig::Global_Scale, (y + Circle_Size) * AsConfig::Global_Scale);
+   Ellipse(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Circle_Size) * AsConfig::Global_Scale, 
+               (y + Circle_Size) * AsConfig::Global_Scale);
    Ellipse(hdc, (x + Inner_Width) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Circle_Size + Inner_Width) * AsConfig::Global_Scale, 
                 (y + Circle_Size) * AsConfig::Global_Scale);
    //3. Рисуем блик
@@ -147,3 +159,25 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area) //Рисуем �
    
 }
 //------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area)//Рисуем выкатывающуюся платформу
+{
+   int x = X_Pos * AsConfig::Global_Scale;
+   int y = AsConfig::Platform_Y_Pos;
+   int roller_size = Circle_Size * AsConfig::Global_Scale;
+
+   //1.Шарик.
+   SelectObject(hdc, Platform_Cercle_Pen);
+   SelectObject(hdc, Platform_Cercle_Brush);
+   Ellipse(hdc, x, y, x + Circle_Size * AsConfig::Global_Scale, (y + Circle_Size) * AsConfig::Global_Scale);
+
+   //2.Разделительная линия.
+   SelectObject(hdc, AsConfig::BG_Pen);
+   SelectObject(hdc, AsConfig::BG_Brush);
+
+   Rectangle(hdc, x + roller_size / 2 - AsConfig::Global_Scale / 2, y, x + roller_size / 2 + AsConfig::Global_Scale / 2, 
+                  y + roller_size);
+   
+   //3.Блики.
+}
+//------------------------------------------------------------------------------------------------------------
+/*Продолжить 22 видео с 23.53,*/
