@@ -32,6 +32,7 @@ public:
    static const AColor BG_Color, Red_Brick_Color, Blue_Brick_Color;
    static HPEN BG_Pen;
    static HBRUSH BG_Brush;
+   static HWND Hwnd;
 
    static const int Global_Scale = 3;         // Ширина окна
    static const int Level_Width = 12;         // Ширина уровня в ячейках
@@ -49,6 +50,5 @@ public:
    static const int FPS = 20;
    static const int Brick_Width = 15;         // Ширина кирпича
    static const int Brick_Heigth = 7;         // Высота кирпича
-
 };
 //------------------------------------------------------------------------------------------------------------
