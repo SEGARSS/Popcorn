@@ -4,24 +4,31 @@
 
 //ABall
 //------------------------------------------------------------------------------------------------------------
+enum EBall_State
+{
+   EBS_Normal,
+   EBS_Lost,
+   EBS_On_Platdorm,
+};
+//------------------------------------------------------------------------------------------------------------
 class ABall
 {
 public:
    ABall();
 
-   void Init();
+   void Init(int x_pos);
    void Draw(HDC hdc, RECT &paint_area);
    void Move(ALevel *level, int platform_x_pos, int platform_width);
+
+   EBall_State Ball_State;
 
 private:
    HPEN Ball_Pen;
    HBRUSH Ball_Brush;
 
    double Ball_Direction;
-
-   int Ball_X_Pos;
-   int Ball_Y_Pos;
-
+   double Ball_X_Pos;
+   double Ball_Y_Pos;
    double Ball_Speed;
 
    RECT Ball_Rect, Prev_Ball_Rect;

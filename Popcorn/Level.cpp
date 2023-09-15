@@ -24,7 +24,8 @@ char ALevel::Level_01[AsConfig::Level_Heigth][AsConfig::Level_Width] =
 //ALevel
 //------------------------------------------------------------------------------------------------------------
 ALevel::ALevel()
-: Active_Brick(EBT_Red), Brick_Red_Pen(), Brick_Blue_Pen(), Letter_Pen(), Brick_Red_Brush(), Brick_Blue_Brush(), Level_Rect{}
+: Has_Floor(false), Active_Brick(EBT_Red), Brick_Red_Pen(), Brick_Blue_Pen(), Letter_Pen(), Brick_Red_Brush(), 
+  Brick_Blue_Brush(), Level_Rect{}
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -40,7 +41,7 @@ void ALevel::Init()
    Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Heigth * AsConfig::Level_Heigth * AsConfig::Global_Scale;
 }
 //------------------------------------------------------------------------------------------------------------
-void ALevel::Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction) // Проверка попадания по кирпичу
+void ALevel::Check_Level_Brick_Hit(double &next_y_pos, double &ball_direction) // Проверка попадания по кирпичу
 {
    int brick_y_pos = AsConfig::Level_Y_Offset + AsConfig::Level_Heigth * AsConfig::Cell_Heigth;
    // Корректируем позицию при отражении от кирпичей

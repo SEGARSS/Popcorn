@@ -6,6 +6,8 @@
 #include "Ball.h"
 #include"Platform.h"
 
+
+//AsEngine
 //------------------------------------------------------------------------------------------------------------
 enum EKey_Type
 {
@@ -14,13 +16,14 @@ enum EKey_Type
    EKT_Space
 };
 //------------------------------------------------------------------------------------------------------------
-const int Timer_ID = WM_USER + 1;
+enum EGame_State
+{
+   EGS_Play_Level,
+   EGS_Lost_Ball,
+   EGS_Restart_Level
+};
 //------------------------------------------------------------------------------------------------------------
-
-
-
-
-//AsEngine
+const int Timer_ID = WM_USER + 1;
 //------------------------------------------------------------------------------------------------------------
 class AsEngine
 {
@@ -33,6 +36,8 @@ public:
    int On_Timer();
 
 private:
+   EGame_State Game_State;
+
    ABall Ball;
    ALevel Level;
    AsPlatform Platform;
