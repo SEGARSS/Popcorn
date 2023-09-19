@@ -31,6 +31,47 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рам
    }
 }
 //------------------------------------------------------------------------------------------------------------
+bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
+{
+   bool got_hit = false;
+
+	// Корректируем позиции по отражению от рамки
+	if (next_x_pos - ball->Radius < AsConfig::Border_X_Offset)
+	{
+		got_hit = true;
+		ball->Ball_Direction = M_PI - ball->Ball_Direction;
+	}
+
+	if (next_y_pos - ball->Radius < AsConfig::Border_Y_Offset)
+	{
+		got_hit = true;
+		ball->Ball_Direction =- ball->Ball_Direction;
+	}
+
+	if (next_x_pos + ball->Radius > AsConfig::Max_X_Pos)
+	{
+		got_hit = true;
+		ball->Ball_Direction = M_PI - ball->Ball_Direction;
+	}
+
+	if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos)
+	{
+		if (AsConfig::Level_Has_Floor)
+		{
+			got_hit = true;
+			ball->Ball_Direction = - ball->Ball_Direction;
+		}
+		else
+		{
+			if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos + ball->Radius * 4.0)
+			{
+				ball->Set_State(EBS_Lost, next_x_pos);
+			}
+		}
+	}
+
+   return got_hit;
+}
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)//Отрисовка элемента боковой рамки
 {

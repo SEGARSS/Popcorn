@@ -13,7 +13,9 @@ AColor::AColor(unsigned char r, unsigned char g, unsigned char b)
 
 //AsConfig
 //------------------------------------------------------------------------------------------------------------
+bool AsConfig::Level_Has_Floor = false;
 int AsConfig::Current_Timer_Tick = 0;
+
 const AColor AsConfig::BG_Color(15, 63, 31);
 const AColor AsConfig::Red_Brick_Color(255, 85, 85);
 const AColor AsConfig::Blue_Brick_Color(87, 255, 255);
