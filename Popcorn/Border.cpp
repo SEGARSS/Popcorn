@@ -63,7 +63,7 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 		}
 		else
 		{
-			if (next_y_pos + ball->Radius > AsConfig::Max_Y_Pos + ball->Radius * 4.0)
+			if (next_y_pos + ball->Radius > (double)AsConfig::Max_Y_Pos + ball->Radius * 4.0)//Чтобы шарик смог улететь ниже пола
 			{
 				ball->Set_State(EBS_Lost, next_x_pos);
 			}

@@ -4,10 +4,12 @@
 //------------------------------------------------------------------------------------------------------------
 const double ABall::Start_Ball_Y_Pos = 181.0;
 const double ABall::Radius = 2.0;
+int ABall::Hit_Checkers_Count = 0;
+AHit_Checker *ABall::Hit_Checkers[] = {};
 //------------------------------------------------------------------------------------------------------------
 ABall::ABall()
 : Ball_State(EBS_Normal), Ball_Pen(0), Ball_Brush(0), Center_X_Pos(0.0), Center_Y_Pos(181.0), Ball_Speed(0.0), 
-  Ball_Direction(0), Ball_Rect{}, Prev_Ball_Rect{}
+  Rest_Distance(0.0), Ball_Direction(0), Ball_Rect{}, Prev_Ball_Rect{}
 {
    Set_State(EBS_Normal, 0);
 }
@@ -40,7 +42,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)//отрисовка шарика
    }
 }
 //------------------------------------------------------------------------------------------------------------
-void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Checker *hit_checker) // Смещение шарика
+void ABall::Move() // Смещение шарика
 {
    bool got_hit;
    double next_x_pos, next_y_pos;
@@ -57,25 +59,16 @@ void ABall::Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Che
 
 	while (Rest_Distance >= step_size)
 	{
+      got_hit = false;
+
 		next_x_pos = Center_X_Pos + step_size * cos(Ball_Direction);
 		next_y_pos = Center_Y_Pos - step_size * sin(Ball_Direction);
 
-      got_hit = hit_checker->Check_Hit(next_x_pos, next_y_pos, this);
-
-		
-
-		// Корректируем позицию при отражении от платформы
-		//if (next_y_pos > platform_y_pos)
-		//{
-		//	if (next_x_pos >= platform_x_pos && next_x_pos <= platform_x_pos + platform_width)
-		//	{
-		//		next_y_pos = platform_y_pos - (next_y_pos - platform_y_pos);
-		//		Ball_Direction = M_PI + (M_PI - Ball_Direction);
-		//	}
-		//}
-
-      //Проверка попадания по кирпичу
-      //level->Check_Level_Brick_Hit(next_y_pos, Ball_Direction);
+      // Корректируем позицию при отражении:
+      for (int i = 0; i < Hit_Checkers_Count; i++)
+      {
+          got_hit |= Hit_Checkers[i]->Check_Hit(next_x_pos, next_y_pos, this); // от рамки
+      }
 
       if (! got_hit)
       {
@@ -103,6 +96,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
       Center_X_Pos = x_pos;
       Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 3.0;
+      Rest_Distance = 0.0;
       Ball_Direction = M_PI - M_PI_4;
       Redraw_Ball();
       break;
@@ -115,11 +109,21 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
       Center_X_Pos = x_pos;
       Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 0.0;
+      Rest_Distance = 0.0;
       Ball_Direction = M_PI - M_PI_4;
       Redraw_Ball();
       break;
    }
    Ball_State = new_state;
+}
+//------------------------------------------------------------------------------------------------------------
+void ABall::Add_Hit_Checkers (AHit_Checker *hit_checker)
+{
+   if(Hit_Checkers_Count >= sizeof(Hit_Checkers) / sizeof(Hit_Checkers[0]))
+   {
+      return;
+   }
+   Hit_Checkers[Hit_Checkers_Count++] = hit_checker;
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Redraw_Ball()

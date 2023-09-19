@@ -18,6 +18,11 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    Ball.Init();
    Border.Init();
 
+   ABall::Add_Hit_Checkers(&Border);
+   ABall::Add_Hit_Checkers(&Level);
+   ABall::Add_Hit_Checkers(&Platform);
+;
+
    Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
 
    Platform.Set_State(EPS_Normal);
@@ -88,7 +93,7 @@ int AsEngine::On_Timer() // Смещение по таймеру
    switch (Game_State)
    {
    case EGS_Play_Level:
-      Ball.Move(Platform.X_Pos, Platform.Width, &Level, &Border);
+      Ball.Move();
 
       if (Ball.Get_State() == EBS_Lost)
       {

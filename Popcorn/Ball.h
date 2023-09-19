@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include"Config.h"
-#include "Level.h"
 
 
 //Iterfase
@@ -9,7 +8,7 @@ class ABall;
 class AHit_Checker
 {
 public:
-   virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *bal) = 0;
+   virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) = 0;
 private:
 };
 //------------------------------------------------------------------------------------------------------------
@@ -34,11 +33,13 @@ public:
    void Init();
 
    void Draw(HDC hdc, RECT &paint_area);
-   void Move(int platform_x_pos, int platform_width, ALevel *level, AHit_Checker *hit_checker);
+   void Move();
    EBall_State Get_State();
    void Set_State(EBall_State new_state, double x_pos);
 
    double Ball_Direction;
+
+   static void Add_Hit_Checkers (AHit_Checker *hit_checker);
 
    static const double Radius;
 
@@ -57,5 +58,7 @@ private:
    RECT Ball_Rect, Prev_Ball_Rect;
 
    static const double Start_Ball_Y_Pos;
+   static int Hit_Checkers_Count;
+   static AHit_Checker *Hit_Checkers[3];
 };
 //------------------------------------------------------------------------------------------------------------
