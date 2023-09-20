@@ -46,7 +46,6 @@ void ABall::Move() // Смещение шарика
 {
    bool got_hit;
    double next_x_pos, next_y_pos;
-   int platform_y_pos = AsConfig::Platform_Y_Pos - AsConfig::Ball_Size;
    double step_size = 1.0 / AsConfig::Global_Scale;
 
    if (Ball_State != EBS_Normal)
@@ -97,7 +96,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
       Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 3.0;
       Rest_Distance = 0.0;
-      Ball_Direction = M_PI - M_PI_4;
+      Ball_Direction = M_PI_4;
       Redraw_Ball();
       break;
 
@@ -110,11 +109,27 @@ void ABall::Set_State(EBall_State new_state, double x_pos)
       Center_Y_Pos = Start_Ball_Y_Pos;
       Ball_Speed = 0.0;
       Rest_Distance = 0.0;
-      Ball_Direction = M_PI - M_PI_4;
+      Ball_Direction = M_PI_4;
       Redraw_Ball();
       break;
    }
    Ball_State = new_state;
+}
+//------------------------------------------------------------------------------------------------------------
+double ABall::Get_Direction()
+{
+   return Ball_Direction;
+}
+//------------------------------------------------------------------------------------------------------------
+void ABall::Set_Direction(double new_Direction)
+{
+   const double pi_2 = 2.0 * M_PI
+
+   if (new_Direction > 2.0 * M_PI)
+   {
+      new_Direction -= 2.0 * M_PI;
+   }
+   Ball_Direction = new_Direction;
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Add_Hit_Checkers (AHit_Checker *hit_checker)

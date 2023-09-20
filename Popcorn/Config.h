@@ -46,7 +46,6 @@ public:
    static const int Cell_Heigth = 8;          // Высота ячейки
    static const int Brick_Width = 15;         // Ширина кирпича
    static const int Brick_Heigth = 7;         // Высота кирпича
-   static const int Ball_Size = 4;            // Размер шарика
    static const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width;
    static const int Max_Y_Pos = 199;
    static const int Platform_Y_Pos = 185;
