@@ -123,7 +123,7 @@ double ABall::Get_Direction()
 //------------------------------------------------------------------------------------------------------------
 void ABall::Set_Direction(double new_Direction)
 {
-   const double pi_2 = 2.0 * M_PI
+   const double pi_2 = 2.0 * M_PI;
 
    if (new_Direction > 2.0 * M_PI)
    {
