@@ -37,7 +37,8 @@ public:
    EBall_State Get_State();
    void Set_State(EBall_State new_state, double x_pos);
    double Get_Direction();
-   void Set_Direction(double new_Direction);
+   void Set_Direction(double new_direction);
+   void Reflect(bool from_horizontal);
 
    static void Add_Hit_Checkers (AHit_Checker *hit_checker);
 

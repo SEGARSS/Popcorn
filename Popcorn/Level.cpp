@@ -31,6 +31,7 @@ ALevel::ALevel()
 //------------------------------------------------------------------------------------------------------------
 bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // Проверка попадания по кирпичу
 {
+   double direction = ball->Get_Direction();
    double brick_left_x;
    double brick_right_x;
    double brick_top_y;
@@ -53,21 +54,21 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
 	      brick_right_x = brick_left_x + AsConfig::Brick_Width;
 
          // Проверяет попадание в нижнюю грань.
-			if (ball->Ball_Direction >= 0 && ball->Ball_Direction < M_PI)
+			if (direction >= 0 && direction < M_PI)
 			{
 				if (Hit_Circle_On_Line(next_y_pos - brick_low_y, next_x_pos, brick_left_x, brick_right_x, ball->Radius))
 				{
-					ball->Ball_Direction = -ball->Ball_Direction;
+					ball->Reflect(true);
 					return true;
 				}
 			}
          
          // Проверяет попадание в верхнию грань.
-			if (ball->Ball_Direction >= M_PI && ball->Ball_Direction <= 2.0 * M_PI)
+			if (direction >= M_PI && direction <= 2.0 * M_PI)
 			{
 				if (Hit_Circle_On_Line(next_y_pos - brick_top_y, next_x_pos, brick_left_x, brick_right_x, ball->Radius))
 				{
-					ball->Ball_Direction = -ball->Ball_Direction;
+					ball->Reflect(true);
 					return true;
 				}
 			}  
