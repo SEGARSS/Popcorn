@@ -22,9 +22,12 @@ public:
    void Init();
    void Draw(HDC hdc, RECT &paint_area);
 
-   AActive_Brick Active_Brick;
+   /*AActive_Brick Active_Brick;*/
 
 private:
+   bool Is_Check_Horizontal_First(double next_x_pos, double next_y_pos);
+   bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball);
+   bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball);
    bool Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius);
    void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type);
    void Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, HPEN &back_pen, HBRUSH &back_brush);
@@ -34,6 +37,14 @@ private:
    HBRUSH Brick_Red_Brush, Brick_Blue_Brush;
    RECT Level_Rect;
 
-   static char Level_01[AsConfig::Level_Heigth][AsConfig::Level_Width];
+   double Current_Brick_Left_X; 
+   double Current_Brick_Right_X;
+	double Current_Brick_Top_Y; 
+   double Current_Brick_Low_Y;
+
+   char Current_Level[AsConfig::Level_Height][AsConfig::Level_Width];
+
+   static char Level_01[AsConfig::Level_Height][AsConfig::Level_Width];
 };
 //------------------------------------------------------------------------------------------------------------
+// 45 минута видео №26, продолжить.

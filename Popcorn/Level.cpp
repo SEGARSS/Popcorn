@@ -1,93 +1,136 @@
 ﻿#include "Level.h"
 
-char ALevel::Level_01[AsConfig::Level_Heigth][AsConfig::Level_Width] =
+char ALevel::Level_01[AsConfig::Level_Height][AsConfig::Level_Width] =
 {
-   0,0,0,0,0,0,0,0,0,0,0,0,
-   1,1,1,1,1,1,1,1,1,1,1,1,
-   1,1,1,1,1,1,1,1,1,1,1,1,
-   2,2,2,2,2,2,2,2,2,2,2,2,
-   2,2,2,2,2,2,2,2,2,2,2,2,
-   1,1,1,1,1,1,1,1,1,1,1,1,
-   1,1,1,1,1,1,1,1,1,1,1,1,
-   2,2,2,2,2,2,2,2,2,2,2,2,
-   2,2,2,2,2,2,2,2,2,2,2,2,
-   0,0,0,0,0,0,0,0,0,0,0,0,
-   0,0,0,0,0,0,0,0,0,0,0,0,
-   0,0,0,0,0,0,0,0,0,0,0,0,
-   0,0,0,0,0,0,0,0,0,0,0,0,
-   0,0,0,0,0,0,0,0,0,0,0,0
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-
+char ALevel::Test_Level[AsConfig::Level_Height][AsConfig::Level_Width] =
+{
+   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
 
 
 //ALevel
 //------------------------------------------------------------------------------------------------------------
 ALevel::ALevel()
-: Active_Brick(EBT_Red), Brick_Red_Pen(), Brick_Blue_Pen(), Letter_Pen(), Brick_Red_Brush(), 
-  Brick_Blue_Brush(), Level_Rect{}
+: Brick_Red_Pen(0), Brick_Blue_Pen(0), Letter_Pen(0), Brick_Red_Brush(0), Brick_Blue_Brush(0), 
+  Level_Rect{}
 {
 }
 //------------------------------------------------------------------------------------------------------------
 bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // Проверка попадания по кирпичу
 {
-   double direction = ball->Get_Direction();
-   double brick_left_x;
-   double brick_right_x;
-   double brick_top_y;
-   double brick_low_y;
+   double direction;
+   double min_ball_x;
+   double max_ball_x;
+   double min_ball_y;
+   double max_ball_y;
+   int min_level_x;
+   int max_level_x;
+   int min_level_y;
+   int max_level_y;
 
-   // Корректируем позицию при отражении от кирпичей
-   for (int i = AsConfig::Level_Heigth - 1; i >= 0; i--)
+   if (next_y_pos > AsConfig::Level_Y_Offset + (AsConfig::Level_Height - 1) * AsConfig::Cell_Height + AsConfig::Brick_Height)
    {
-      brick_top_y = AsConfig::Level_Y_Offset + i * AsConfig::Cell_Heigth;
-      brick_low_y = brick_top_y + AsConfig::Brick_Heigth;
+      return false;
+   }
 
-      for (int j = 0; j < AsConfig::Level_Width; j++)
-      {
-         if (Level_01[i][j] == 0)
-         {
-            continue;
-         }
+   direction = ball->Get_Direction();
 
-         brick_left_x = j * AsConfig::Cell_Width;
-	      brick_right_x = brick_left_x + AsConfig::Brick_Width;
+   min_ball_x = next_x_pos - ball->Radius;
+   max_ball_x = next_x_pos + ball->Radius;
+   min_ball_y = next_y_pos - ball->Radius;
+   max_ball_y = next_y_pos + ball->Radius;
 
-         // Проверяет попадание в нижнюю грань.
-			if (direction >= 0 && direction < M_PI)
+   min_level_x = (int)((min_ball_x - AsConfig::Level_X_Offset) / (double)AsConfig::Cell_Width);
+   max_level_x = (int)((max_ball_x - AsConfig::Level_X_Offset) / (double)AsConfig::Cell_Width);
+   min_level_y = (int)((min_ball_y - AsConfig::Level_Y_Offset) / (double)AsConfig::Cell_Height);
+   max_level_y = (int)((max_ball_y - AsConfig::Level_Y_Offset) / (double)AsConfig::Cell_Height);
+
+	// Корректируем позицию при отражении от кирпичей
+	for (int i = max_level_y; i >= min_level_y; i--)
+	{
+		Current_Brick_Top_Y = AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height;
+		Current_Brick_Low_Y = Current_Brick_Top_Y + AsConfig::Brick_Height;
+
+		for (int j = min_level_x; j <= max_level_x; j++)
+		{
+			if (Level_01[i][j] == 0)
 			{
-				if (Hit_Circle_On_Line(next_y_pos - brick_low_y, next_x_pos, brick_left_x, brick_right_x, ball->Radius))
+				continue;
+			}
+
+			Current_Brick_Left_X = AsConfig::Level_X_Offset + j * AsConfig::Cell_Width;
+			Current_Brick_Right_X = Current_Brick_Left_X + AsConfig::Brick_Width;
+
+			if (Is_Check_Horizontal_First(next_x_pos, next_y_pos))
+			{
+				if (Check_Horizontal_Hit(next_x_pos, next_y_pos, j, i, ball))
 				{
-					ball->Reflect(true);
+					return true;
+				}
+
+				if (Check_Vertical_Hit(next_x_pos, next_y_pos, j, i, ball))
+				{
 					return true;
 				}
 			}
-         
-         // Проверяет попадание в верхнию грань.
-			if (direction >= M_PI && direction <= 2.0 * M_PI)
+			else
 			{
-				if (Hit_Circle_On_Line(next_y_pos - brick_top_y, next_x_pos, brick_left_x, brick_right_x, ball->Radius))
+				if (Check_Vertical_Hit(next_x_pos, next_y_pos, j, i, ball))
 				{
-					ball->Reflect(true);
 					return true;
 				}
-			}  
-      }
-   }
 
-   return false;
+				if (Check_Horizontal_Hit(next_x_pos, next_y_pos, j, i, ball))
+				{
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Init()
 {
    Letter_Pen = CreatePen(PS_SOLID, AsConfig::Global_Scale, RGB(255, 255, 255));
+
    AsConfig::Create_Pen_Brush(AsConfig::Red_Brick_Color, Brick_Red_Pen, Brick_Red_Brush);
    AsConfig::Create_Pen_Brush(AsConfig::Blue_Brick_Color, Brick_Blue_Pen, Brick_Blue_Brush);
 
    Level_Rect.left = AsConfig::Level_X_Offset * AsConfig::Global_Scale;
    Level_Rect.top = AsConfig::Level_Y_Offset * AsConfig::Global_Scale;
    Level_Rect.right = Level_Rect.left + AsConfig::Cell_Width * AsConfig::Level_Width * AsConfig::Global_Scale;
-   Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Heigth * AsConfig::Level_Heigth * AsConfig::Global_Scale;
+   Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Height * AsConfig::Level_Height * AsConfig::Global_Scale;
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Draw(HDC hdc, RECT &paint_area)//Вывод всех кирпичей
@@ -98,15 +141,133 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)//Вывод всех кирпиче
    {
       return;
    }
-   for (int i = 0; i < AsConfig::Level_Heigth; i++)
+   for (int i = 0; i < AsConfig::Level_Height; i++)
    {
       for (int j = 0; j < AsConfig::Level_Width; j++)
       {
-         Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, AsConfig::Level_Y_Offset + i * AsConfig::Cell_Heigth, (EBrick_Type)Level_01[i][j]);
+         Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height, (EBrick_Type)Level_01[i][j]);
       }
    }
 
-   Active_Brick.Draw(hdc, paint_area);
+   /*Active_Brick.Draw(hdc, paint_area);*/
+}
+//------------------------------------------------------------------------------------------------------------
+bool ALevel::Is_Check_Horizontal_First(double next_x_pos, double next_y_pos)
+{
+   double min_distance_to_horizontal;
+   double min_distance_to_vertical;
+   double another_min_distance;
+
+	min_distance_to_horizontal = fabs(next_x_pos - Current_Brick_Left_X);
+	another_min_distance = fabs(next_x_pos - Current_Brick_Right_X);
+
+	if (another_min_distance < min_distance_to_horizontal)
+	{
+		min_distance_to_horizontal = another_min_distance;
+	}
+
+	min_distance_to_vertical = fabs(next_y_pos - Current_Brick_Top_Y);
+	another_min_distance = fabs(next_y_pos - Current_Brick_Low_Y);
+
+	if (another_min_distance < min_distance_to_vertical)
+	{
+		min_distance_to_vertical = another_min_distance;
+	}
+
+	if (min_distance_to_horizontal <= min_distance_to_vertical)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball)
+{
+   double direction = ball->Get_Direction();
+
+	// Проверяет попадание в нижнюю грань.
+	if (direction >= 0.0 && direction < M_PI)
+	{
+		if (Hit_Circle_On_Line(next_y_pos - Current_Brick_Low_Y, next_x_pos, Current_Brick_Left_X, Current_Brick_Right_X, ball->Radius))
+		{
+         //Проверка возможности отскока вниз
+         if (level_y < AsConfig::Level_Height - 1 && Level_01[level_y +1][level_x] == 0)
+         {
+            ball->Reflect(true);
+			   return true;
+         }
+         else
+         {
+            return false;
+         }
+		}
+	}
+
+	// Проверяет попадание в верхнию грань.
+	if (direction >= M_PI && direction <= 2.0 * M_PI)
+	{
+		if (Hit_Circle_On_Line(next_y_pos - Current_Brick_Top_Y, next_x_pos, Current_Brick_Left_X, Current_Brick_Right_X, ball->Radius))
+		{
+         //Проверка возможности отскока вверх
+         if (level_y > 0 && Level_01[level_y - 1][level_x] == 0)
+         {
+            ball->Reflect(true);
+			   return true;
+         }
+         else
+         {
+            return false;
+         }
+		}
+	}
+
+   return false;
+}
+//------------------------------------------------------------------------------------------------------------
+bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball)
+{
+   double direction = ball->Get_Direction();
+
+	// Проверяет попадание в левую грань.
+	if (direction >= 0.0 && direction < M_PI_2 || direction >= M_PI + M_PI_2 && direction <= 2.0 * M_PI)
+	{
+		if (Hit_Circle_On_Line(Current_Brick_Left_X - next_x_pos, next_y_pos, Current_Brick_Top_Y, Current_Brick_Low_Y, ball->Radius))
+		{
+          //Проверка возможности отскока влево
+         if (level_x > 0 && Level_01[level_y][level_x - 1] == 0)
+         {
+            ball->Reflect(false);
+			   return true;
+         }
+         else
+         {
+            return false;
+         }
+		}
+	}
+
+	// Проверяет попадание в правую грань.
+	if (direction > M_PI_2 && direction < M_PI + M_PI_2)
+	{
+		if (Hit_Circle_On_Line(Current_Brick_Right_X - next_x_pos, next_y_pos, Current_Brick_Top_Y, Current_Brick_Low_Y, ball->Radius))
+		{
+         //Проверка возможности отскока вправо
+         if (level_x < AsConfig::Level_Width - 1 && Level_01[level_y][level_x + 1] == 0)
+         {
+            ball->Reflect(false);
+			   return true;
+         }
+         else
+         {
+            return false;
+         }
+		}
+	}
+
+   return false;
 }
 //------------------------------------------------------------------------------------------------------------
 bool ALevel::Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius)
@@ -123,7 +284,7 @@ bool ALevel::Hit_Circle_On_Line(double y, double next_x_pos, double left_x, doub
 	x = sqrt(radius * radius - y * y);
 
    max_x = next_x_pos + x;
-   min_x = next_x_pos - x;
+	min_x = next_x_pos - x;
 
          if (max_x >= left_x && max_x <= right_x || min_x >= left_x && min_x <= right_x)
          {
@@ -165,45 +326,45 @@ void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)//Выво
    SelectObject(hdc, pen);
    SelectObject(hdc, brush);
    RoundRect(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + AsConfig::Brick_Width) * AsConfig::Global_Scale, 
-                 (y + AsConfig::Brick_Heigth) * AsConfig::Global_Scale, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
+                 (y + AsConfig::Brick_Height) * AsConfig::Global_Scale, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, 
    HPEN &back_pen, HBRUSH &back_brush)
 {
    if (is_switch_color)
-   {
-      front_pen = Brick_Red_Pen;
-      front_brush = Brick_Red_Brush;
+	{
+		front_pen = Brick_Red_Pen;
+		front_brush = Brick_Red_Brush;
 
-      back_pen = Brick_Blue_Pen;
-      back_brush = Brick_Blue_Brush;
-   }
-   else
-   {
-      front_pen = Brick_Blue_Pen;
-      front_brush = Brick_Blue_Brush;
+		back_pen = Brick_Blue_Pen;
+		back_brush = Brick_Blue_Brush;
+	}
+	else
+	{
+		front_pen = Brick_Blue_Pen;
+		front_brush = Brick_Blue_Brush;
 
-      back_pen = Brick_Red_Pen;
-      back_brush = Brick_Red_Brush;
-   }
+		back_pen = Brick_Red_Pen;
+		back_brush = Brick_Red_Brush;
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y,
                                EBrick_Type brick_type, ELetter_Type letter_type, int rotation_step)//Вывод падающией буквы
 {
    bool switch_color;
-   double offset;
-   double rotation_angle; // Преобразование шага в угол поворота
-   int brick_half_heigt = (AsConfig::Brick_Heigth * AsConfig::Global_Scale / 2);
-   int back_part_offset;
-   HPEN front_pen, back_pen;
-   HBRUSH front_brush, back_brush;
-   XFORM xform, old_xform;
+	double offset;
+	double rotation_angle;  // Преобразование шага в угол поворота
+	int brick_half_height = AsConfig::Brick_Height * AsConfig::Global_Scale / 2;
+	int back_part_offset;
+	HPEN front_pen, back_pen;
+	HBRUSH front_brush, back_brush;
+	XFORM xform, old_xform;
 
-   if (!(brick_type == EBT_Blue || brick_type == EBT_Red)) // Падающие буквы могут быть только от кирпичей такого типа 
+   if (!(brick_type == EBT_Blue || brick_type == EBT_Red))
    {
-      return;
+      return;  // Падающие буквы могут быть только от кирпичей такого типа
    }
 
    // Корректируем шаг вращения и угол поворота
@@ -215,7 +376,7 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y,
    }
    else
    {
-      rotation_angle = 2.0 * M_PI / 16.0 * (double)(8L - rotation_step);
+      rotation_angle = 2.0 * M_PI / 16.0 * (double)(8 - rotation_step);
    }
 
    if (rotation_step > 4 && rotation_step <= 12)
@@ -248,15 +409,15 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y,
       SelectObject(hdc, back_pen);
       SelectObject(hdc, back_brush);
 
-      Rectangle(hdc, x, y + brick_half_heigt - AsConfig::Global_Scale, x + AsConfig::Brick_Width * AsConfig::Global_Scale, 
-                     y + brick_half_heigt);
+      Rectangle(hdc, x, y + brick_half_height - AsConfig::Global_Scale, x + AsConfig::Brick_Width * AsConfig::Global_Scale, 
+                     y + brick_half_height);
 
       //Выводим передний план
       SelectObject(hdc, front_pen);
       SelectObject(hdc, front_brush);
 
-      Rectangle(hdc, x, y + brick_half_heigt, x + AsConfig::Brick_Width * AsConfig::Global_Scale, 
-                     y + brick_half_heigt + AsConfig::Global_Scale - 1);
+      Rectangle(hdc, x, y + brick_half_height, x + AsConfig::Brick_Width * AsConfig::Global_Scale, 
+                     y + brick_half_height + AsConfig::Global_Scale - 1);
    }
    else
    {
@@ -268,7 +429,7 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y,
       xform.eM21 = 0.0f;
       xform.eM22 = (float)cos(rotation_angle);
       xform.eDx = (float)x;
-      xform.eDy = (float)y + (float)(brick_half_heigt);
+      xform.eDy = (float)y + (float)(brick_half_height);
       GetWorldTransform(hdc, &old_xform);
       SetWorldTransform(hdc, &xform);
 
@@ -278,15 +439,15 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y,
 
       offset = 3.0 * (1.0 - fabs(xform.eM22)) * (double)AsConfig::Global_Scale;
       back_part_offset = (int)round(offset);
-      Rectangle(hdc, 0, -brick_half_heigt - back_part_offset, AsConfig::Brick_Width * AsConfig::Global_Scale, 
-                     brick_half_heigt - back_part_offset);
+      Rectangle(hdc, 0, -brick_half_height - back_part_offset, AsConfig::Brick_Width * AsConfig::Global_Scale, 
+                     brick_half_height - back_part_offset);
 
       //Выводим передний план
       SelectObject(hdc, front_pen);
       SelectObject(hdc, front_brush);
 
       
-      Rectangle(hdc, 0, -brick_half_heigt, AsConfig::Brick_Width * AsConfig::Global_Scale, brick_half_heigt);
+      Rectangle(hdc, 0, -brick_half_height, AsConfig::Brick_Width * AsConfig::Global_Scale, brick_half_height);
 
       if (rotation_step > 4 && rotation_step <= 12)
       {

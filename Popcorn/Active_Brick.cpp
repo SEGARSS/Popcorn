@@ -44,9 +44,9 @@ void AActive_Brick::Draw(HDC hdc, RECT &paint_area)
    SelectObject(hdc, brush);
 
    Brick_Rect.left = (AsConfig::Level_X_Offset + AsConfig::Cell_Width) * AsConfig::Global_Scale;
-   Brick_Rect.top = (AsConfig::Level_Y_Offset + AsConfig::Cell_Heigth) * AsConfig::Global_Scale;
+   Brick_Rect.top = (AsConfig::Level_Y_Offset + AsConfig::Cell_Height) * AsConfig::Global_Scale;
    Brick_Rect.right = Brick_Rect.left + AsConfig::Brick_Width * AsConfig::Global_Scale;
-   Brick_Rect.bottom = Brick_Rect.top + AsConfig::Brick_Heigth * AsConfig::Global_Scale;
+   Brick_Rect.bottom = Brick_Rect.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
 
    RoundRect(hdc, Brick_Rect.left, Brick_Rect.top, Brick_Rect.right, Brick_Rect.bottom, 
              2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);

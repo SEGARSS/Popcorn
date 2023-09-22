@@ -39,13 +39,13 @@ public:
    static const int Border_X_Offset = 6;
    static const int Border_Y_Offset = 4;
    static const int Level_Width = 12;         // Ширина уровня в ячейках
-   static const int Level_Heigth = 14;        // Высота уровня в ячейках
+   static const int Level_Height = 14;        // Высота уровня в ячейках
    static const int Level_X_Offset = 8;       // Смещение по оси X
    static const int Level_Y_Offset = 6;       // Смещение по оси Y
    static const int Cell_Width = 16;          // Ширина ячейки
-   static const int Cell_Heigth = 8;          // Высота ячейки
+   static const int Cell_Height = 8;          // Высота ячейки
    static const int Brick_Width = 15;         // Ширина кирпича
-   static const int Brick_Heigth = 7;         // Высота кирпича
+   static const int Brick_Height = 7;         // Высота кирпича
    static const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width;
    static const int Max_Y_Pos = 199;
    static const int Platform_Y_Pos = 185;
