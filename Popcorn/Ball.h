@@ -34,6 +34,7 @@ public:
 
    void Draw(HDC hdc, RECT &paint_area);
    void Move();
+   void Set_For_test();
    EBall_State Get_State();
    void Set_State(EBall_State new_state, double x_pos);
    double Get_Direction();

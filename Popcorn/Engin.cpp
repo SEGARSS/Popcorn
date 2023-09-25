@@ -22,6 +22,7 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    ABall::Add_Hit_Checkers(&Level);
    ABall::Add_Hit_Checkers(&Platform);
 ;
+   Level.Set_Current_Level(ALevel::Test_Level);
 
    Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
 
@@ -92,6 +93,12 @@ int AsEngine::On_Timer() // Смещение по таймеру
 
    switch (Game_State)
    {
+   case EGS_Test_Ball:
+      Ball.Set_For_test();
+      Game_State = EGS_Play_Level;
+      break;
+
+
    case EGS_Play_Level:
       Ball.Move();
 

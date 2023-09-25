@@ -82,7 +82,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
 
 		for (int j = min_level_x; j <= max_level_x; j++)
 		{
-			if (Level_01[i][j] == 0)
+			if (Current_Level[i][j] == 0)
 			{
 				continue;
 			}
@@ -131,6 +131,13 @@ void ALevel::Init()
    Level_Rect.top = AsConfig::Level_Y_Offset * AsConfig::Global_Scale;
    Level_Rect.right = Level_Rect.left + AsConfig::Cell_Width * AsConfig::Level_Width * AsConfig::Global_Scale;
    Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Height * AsConfig::Level_Height * AsConfig::Global_Scale;
+
+   memset(Current_Level, 0, sizeof(Current_Level));
+}
+//------------------------------------------------------------------------------------------------------------
+void ALevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Level_Width])
+{
+   memcpy(Current_Level, level, sizeof(Current_Level));
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Draw(HDC hdc, RECT &paint_area)//Вывод всех кирпичей
@@ -145,7 +152,7 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)//Вывод всех кирпиче
    {
       for (int j = 0; j < AsConfig::Level_Width; j++)
       {
-         Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height, (EBrick_Type)Level_01[i][j]);
+         Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height, (EBrick_Type)Current_Level[i][j]);
       }
    }
 
@@ -194,7 +201,7 @@ bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_
 		if (Hit_Circle_On_Line(next_y_pos - Current_Brick_Low_Y, next_x_pos, Current_Brick_Left_X, Current_Brick_Right_X, ball->Radius))
 		{
          //Проверка возможности отскока вниз
-         if (level_y < AsConfig::Level_Height - 1 && Level_01[level_y +1][level_x] == 0)
+         if (level_y < AsConfig::Level_Height - 1 && Current_Level[level_y +1][level_x] == 0)
          {
             ball->Reflect(true);
 			   return true;
@@ -212,7 +219,7 @@ bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_
 		if (Hit_Circle_On_Line(next_y_pos - Current_Brick_Top_Y, next_x_pos, Current_Brick_Left_X, Current_Brick_Right_X, ball->Radius))
 		{
          //Проверка возможности отскока вверх
-         if (level_y > 0 && Level_01[level_y - 1][level_x] == 0)
+         if (level_y > 0 && Current_Level[level_y - 1][level_x] == 0)
          {
             ball->Reflect(true);
 			   return true;
@@ -237,7 +244,7 @@ bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int leve
 		if (Hit_Circle_On_Line(Current_Brick_Left_X - next_x_pos, next_y_pos, Current_Brick_Top_Y, Current_Brick_Low_Y, ball->Radius))
 		{
           //Проверка возможности отскока влево
-         if (level_x > 0 && Level_01[level_y][level_x - 1] == 0)
+         if (level_x > 0 && Current_Level[level_y][level_x - 1] == 0)
          {
             ball->Reflect(false);
 			   return true;
@@ -255,7 +262,7 @@ bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int leve
 		if (Hit_Circle_On_Line(Current_Brick_Right_X - next_x_pos, next_y_pos, Current_Brick_Top_Y, Current_Brick_Low_Y, ball->Radius))
 		{
          //Проверка возможности отскока вправо
-         if (level_x < AsConfig::Level_Width - 1 && Level_01[level_y][level_x + 1] == 0)
+         if (level_x < AsConfig::Level_Width - 1 && Current_Level[level_y][level_x + 1] == 0)
          {
             ball->Reflect(false);
 			   return true;

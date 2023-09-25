@@ -20,9 +20,13 @@ public:
    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball);
 
    void Init();
+   void Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Level_Width]);
    void Draw(HDC hdc, RECT &paint_area);
 
    /*AActive_Brick Active_Brick;*/
+
+   static char Level_01[AsConfig::Level_Height][AsConfig::Level_Width];
+   static char Test_Level[AsConfig::Level_Height][AsConfig::Level_Width];
 
 private:
    bool Is_Check_Horizontal_First(double next_x_pos, double next_y_pos);
@@ -44,7 +48,5 @@ private:
 
    char Current_Level[AsConfig::Level_Height][AsConfig::Level_Width];
 
-   static char Level_01[AsConfig::Level_Height][AsConfig::Level_Width];
 };
 //------------------------------------------------------------------------------------------------------------
-// 45 минута видео №26, продолжить.
