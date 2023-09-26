@@ -124,31 +124,6 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
                }
             }
          }
-
-			/*if (Is_Check_Horizontal_First(next_x_pos, next_y_pos))
-			{
-				if (Check_Horizontal_Hit(next_x_pos, next_y_pos, j, i, ball))
-				{
-					return true;
-				}
-
-				if (Check_Vertical_Hit(next_x_pos, next_y_pos, j, i, ball))
-				{
-					return true;
-				}
-			}
-			else
-			{
-				if (Check_Vertical_Hit(next_x_pos, next_y_pos, j, i, ball))
-				{
-					return true;
-				}
-
-				if (Check_Horizontal_Hit(next_x_pos, next_y_pos, j, i, ball))
-				{
-					return true;
-				}
-			}*/
 		}
 	}
 
@@ -206,7 +181,6 @@ bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_
          //Проверка возможности отскока вниз
          if (level_y < AsConfig::Level_Height - 1 && Current_Level[level_y +1][level_x] == 0)
          {
-            //ball->Reflect(true);
 			   return true;
          }
          else
@@ -224,7 +198,6 @@ bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_
          //Проверка возможности отскока вверх
          if (level_y > 0 && Current_Level[level_y - 1][level_x] == 0)
          {
-            //ball->Reflect(true);
 			   return true;
          }
          else
@@ -249,7 +222,6 @@ bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int leve
           //Проверка возможности отскока влево
          if (level_x > 0 && Current_Level[level_y][level_x - 1] == 0)
          {
-            /*ball->Reflect(false);*/
 			   return true;
          }
          else
@@ -267,7 +239,6 @@ bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int leve
          //Проверка возможности отскока вправо
          if (level_x < AsConfig::Level_Width - 1 && Current_Level[level_y][level_x + 1] == 0)
          {
-            /*ball->Reflect(false);*/
 			   return true;
          }
          else
