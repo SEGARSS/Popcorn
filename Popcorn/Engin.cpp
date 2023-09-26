@@ -3,7 +3,7 @@
 //AsEngine
 //------------------------------------------------------------------------------------------------------------
 AsEngine::AsEngine()
-: Game_State (EGS_Play_Level) 
+: Game_State (EGS_Test_Ball) 
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
 ;
    Level.Set_Current_Level(ALevel::Test_Level);
 
-   Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
+   /*Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);*/
 
    Platform.Set_State(EPS_Normal);
 
@@ -108,6 +108,10 @@ int AsEngine::On_Timer() // Смещение по таймеру
          Platform.Set_State(EPS_Meltdown); 
       }
 
+      if (Ball.Is_Test_Finished() )
+      {
+         Game_State = EGS_Test_Ball;
+      }
       break;
 
 
