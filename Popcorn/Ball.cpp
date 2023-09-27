@@ -1,5 +1,36 @@
 ﻿#include "Ball.h"
 
+//AHit_Checker
+//------------------------------------------------------------------------------------------------------------
+bool AHit_Checker::Hit_Circle_On_Line(double y, double next_x_pos, double left_x, double right_x, double radius, double &x)
+{//Проверяет пересечение горизонтального отрезка (проходящего от left_x до right_x через у) с окружностью радиусом radius
+
+   double min_x, max_x;
+
+	if (y > radius)
+	{
+		return false;
+	}
+
+	x = sqrt(radius * radius - y * y);
+
+   max_x = next_x_pos + x;
+	min_x = next_x_pos - x;
+
+         if (max_x >= left_x && max_x <= right_x || min_x >= left_x && min_x <= right_x)
+         {
+            return true;
+         }
+         else
+         {
+            return false;
+         }
+}
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
 //ABall
 //------------------------------------------------------------------------------------------------------------
 const double ABall::Start_Ball_Y_Pos = 181.0;
@@ -71,7 +102,7 @@ void ABall::Move() // Смещение шарика
       // Корректируем позицию при отражении:
       for (int i = 0; i < Hit_Checkers_Count; i++)
       {
-          got_hit |= Hit_Checkers[i]->Check_Hit(next_x_pos, next_y_pos, this); // от рамки
+          got_hit |= Hit_Checkers[i]->Check_Hit(next_x_pos, next_y_pos, this);
       }
 
       if (! got_hit)
@@ -183,6 +214,30 @@ void ABall::Reflect(bool from_horizontal)
 	{
 		Set_Direction(M_PI - Ball_Direction);
 	}
+}
+//------------------------------------------------------------------------------------------------------------
+bool ABall::Is_Moving_Up()
+{
+   if (Ball_Direction >= 0.0 && Ball_Direction < M_PI)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+//------------------------------------------------------------------------------------------------------------
+bool ABall::Is_Moving_Left()
+{
+   if (Ball_Direction > M_PI_2 && Ball_Direction < M_PI + M_PI_2)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Add_Hit_Checkers (AHit_Checker *hit_checker)
