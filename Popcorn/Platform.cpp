@@ -16,8 +16,6 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
    double inner_top_y, inner_low_y;
    double reflection_pos;
 
-ball->Ball_Speed = 3.0;
-
 	if (next_y_pos + ball->Radius < AsConfig::Platform_Y_Pos)
 	{
 		return false;
@@ -27,8 +25,6 @@ ball->Ball_Speed = 3.0;
    inner_low_y = (double)(AsConfig::Platform_Y_Pos + Height - 1);
    inner_left_x = (double)(X_Pos + Circle_Size - 1);
    inner_right_x = (double)(X_Pos + Width - (Circle_Size - 1) );
-
-ball->Ball_Speed = 0.3;
 
    //Проверяме отражение от центральной части
    if (ball->Is_Moving_Up() )
