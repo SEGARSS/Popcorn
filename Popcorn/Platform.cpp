@@ -15,7 +15,7 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
    double inner_left_x, inner_right_x;
    double inner_top_y, inner_low_y;
    double reflection_pos;
-
+   double inner_y;
 	if (next_y_pos + ball->Radius < AsConfig::Platform_Y_Pos)
 	{
 		return false;
@@ -26,25 +26,34 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
    inner_left_x = (double)(X_Pos + Circle_Size - 1);
    inner_right_x = (double)(X_Pos + Width - (Circle_Size - 1) );
 
-   //Проверяме отражение от центральной части
+   // 1. Проверяем отражение от боковых шариков
+   // От левого
+   if (Reflect_On_Circle(next_x_pos, next_y_pos, 0.0, ball) )
+   {
+      return true;
+   }
+
+   // 2. Проверяем отражение от боковых шариков
+   // От правого
+   if (Reflect_On_Circle(next_x_pos, next_y_pos, Width - Circle_Size, ball) )
+   {
+      return true;
+   }
+
+   // 3. Проверяме отражение от центральной части
    if (ball->Is_Moving_Up() )
    {
-      //От нижней грани
-      if (Hit_Circle_On_Line(next_y_pos - inner_low_y, next_x_pos, inner_left_x, inner_right_x, ball->Radius, reflection_pos))
-      {
-			ball->Reflect(true);
-			return true;
-		}
+      inner_y = inner_low_y; //От нижней грани
    }
-	else
+   else
+   {
+      inner_y = inner_top_y; //От верхней грани
+   }
+	if (Hit_Circle_On_Line(next_y_pos - inner_y, next_x_pos, inner_left_x, inner_right_x, ball->Radius, reflection_pos) )
 	{
-		//От верхней грани
-      if (Hit_Circle_On_Line(next_y_pos - inner_top_y, next_x_pos, inner_left_x, inner_right_x, ball->Radius, reflection_pos))
-      {
-			ball->Reflect(true);
-			return true;
-		}
-	}	
+		ball->Reflect(true);
+		return true;
+	}
 	return false;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -319,6 +328,57 @@ void AsPlatform::Draw_Expanding_Roll_In_State(HDC hdc, RECT &paint_area)//Рис
       Platform_State = EPS_Ready;
       Redraw_Platform();
    }
+}
+//------------------------------------------------------------------------------------------------------------
+bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double platform_ball_x_offset, ABall* ball)
+{
+   double dx,dy;
+   double platform_ball_x, platform_ball_y, platform_ball_radius;
+   double distance, two_radiuses;
+   double gamma, beta, alpha;
+   double related_ball_direction;
+   const double pi_2 = 2.0 * M_PI;
+
+
+   platform_ball_radius = (double)Circle_Size / 2.0;
+   platform_ball_x = (double)X_Pos + platform_ball_radius + platform_ball_x_offset;
+   platform_ball_y = (double)AsConfig::Platform_Y_Pos + platform_ball_radius;
+
+   dx = next_x_pos - platform_ball_x;
+   dy = next_y_pos - platform_ball_y;
+
+   distance = sqrt(dx * dx + dy * dy);
+   two_radiuses = platform_ball_radius + ball->Radius;
+
+   if (fabs(distance - two_radiuses) < AsConfig::Moving_Step_Size)
+   {
+      // Мячик коснулся бокового шарика
+      beta = atan2(-dy, dx);
+
+      related_ball_direction = ball->Get_Direction();
+      related_ball_direction -= beta;
+
+      if (related_ball_direction > pi_2)
+      {                            
+         related_ball_direction -= pi_2;
+      }
+
+      if (related_ball_direction < 0.0)
+      {                            
+         related_ball_direction += pi_2;
+      }
+
+		if (related_ball_direction > M_PI_2 && related_ball_direction < M_PI + M_PI_2)
+		{
+			alpha = beta + M_PI - ball->Get_Direction();
+			gamma = beta + alpha;
+
+			ball->Set_Direction(gamma);
+
+         return true;
+		}
+   }
+   return false;
 }
 //------------------------------------------------------------------------------------------------------------
 

@@ -34,7 +34,7 @@ bool AHit_Checker::Hit_Circle_On_Line(double y, double next_x_pos, double left_x
 //ABall
 //------------------------------------------------------------------------------------------------------------
 const double ABall::Start_Ball_Y_Pos = 181.0;
-const double ABall::Radius = 2.0;
+const double ABall::Radius = 2.0 - 0.5 / AsConfig::Global_Scale;
 int ABall::Hit_Checkers_Count = 0;
 AHit_Checker *ABall::Hit_Checkers[] = {};
 //------------------------------------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)//отрисовка шарика
       SelectObject(hdc, AsConfig::BG_Pen);
       SelectObject(hdc, AsConfig::BG_Brush);
 
-      Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
+      Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right, Prev_Ball_Rect.bottom);
    }
 
    if (Ball_State == EBS_Lost)
@@ -74,7 +74,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)//отрисовка шарика
       SelectObject(hdc, Ball_Pen);
       SelectObject(hdc, Ball_Brush);
 
-      Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
+      Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right, Ball_Rect.bottom);
    }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -82,7 +82,6 @@ void ABall::Move() // Смещение шарика
 {
    bool got_hit;
    double next_x_pos, next_y_pos;
-   double step_size = 1.0 / AsConfig::Global_Scale;
 
    if (Ball_State != EBS_Normal)
    {
@@ -92,12 +91,12 @@ void ABall::Move() // Смещение шарика
    Prev_Ball_Rect = Ball_Rect;
    Rest_Distance += Ball_Speed;
 
-	while (Rest_Distance >= step_size)
+	while (Rest_Distance >= AsConfig::Moving_Step_Size)
 	{
       got_hit = false;
 
-		next_x_pos = Center_X_Pos + step_size * cos(Ball_Direction);
-		next_y_pos = Center_Y_Pos - step_size * sin(Ball_Direction);
+		next_x_pos = Center_X_Pos + AsConfig::Moving_Step_Size * cos(Ball_Direction);
+		next_y_pos = Center_Y_Pos - AsConfig::Moving_Step_Size * sin(Ball_Direction);
 
       // Корректируем позицию при отражении:
       for (int i = 0; i < Hit_Checkers_Count; i++)
@@ -108,14 +107,14 @@ void ABall::Move() // Смещение шарика
       if (! got_hit)
       {
          //Мячик продолжит движение, если не взаимодействует с другими объектами
-         Rest_Distance -= step_size;
+         Rest_Distance -= AsConfig::Moving_Step_Size;
 
          Center_X_Pos = next_x_pos;
          Center_Y_Pos = next_y_pos;
 
          if (Testing_Is_Active)
          {
-            Rest_Test_Distance -= step_size;
+            Rest_Test_Distance -= AsConfig::Moving_Step_Size;
          }
       }
 	}
@@ -128,8 +127,19 @@ void ABall::Set_For_test()
    Testing_Is_Active = true;
    Rest_Test_Distance = 30.0;
 
-   Set_State(EBS_Normal, 100 + Test_Iteration, 90);
-   Ball_Direction = M_PI - M_PI_4;
+   /*Set_State(EBS_Normal, 100 - Test_Iteration, 194);
+   Ball_Direction = M_PI - M_PI_4;*/
+
+   /*Set_State(EBS_Normal, 80 + Test_Iteration, 194);
+   Ball_Direction = M_PI_4;*/
+  
+   /*Set_State(EBS_Normal, 80, 189 - Test_Iteration);
+   Ball_Direction = M_PI_4 / 4.0;
+   Ball_Speed = 1.1;*/
+
+   Set_State(EBS_Normal, 100 + Test_Iteration, 170);
+   Ball_Direction = 5.0;
+   Ball_Speed = 1.0;
 
    ++Test_Iteration;
 }

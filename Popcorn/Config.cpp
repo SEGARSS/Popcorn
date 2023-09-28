@@ -13,7 +13,7 @@ AColor::AColor(unsigned char r, unsigned char g, unsigned char b)
 
 //AsConfig
 //------------------------------------------------------------------------------------------------------------
-bool AsConfig::Level_Has_Floor = true;
+bool AsConfig::Level_Has_Floor = false;
 int AsConfig::Current_Timer_Tick = 0;
 
 const AColor AsConfig::BG_Color(15, 63, 31);
@@ -23,6 +23,8 @@ const AColor AsConfig::Blue_Brick_Color(87, 255, 255);
 HPEN AsConfig::BG_Pen;
 HBRUSH AsConfig::BG_Brush;
 HWND AsConfig::Hwnd;
+
+const double AsConfig::Moving_Step_Size = 1.0 / AsConfig::Global_Scale;
 //------------------------------------------------------------------------------------------------------------
 void AsConfig::Setup_Color()
 {

@@ -35,6 +35,8 @@ public:
    static HBRUSH BG_Brush;
    static HWND Hwnd;
 
+   static const double Moving_Step_Size;
+
    static const int Global_Scale = 3;         // Ширина окна
    static const int Border_X_Offset = 6;
    static const int Border_Y_Offset = 4;
