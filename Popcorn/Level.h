@@ -48,6 +48,6 @@ private:
 
    char Current_Level[AsConfig::Level_Height][AsConfig::Level_Width];
    int Active_Bricks_Count;
-   AActive_Brick *Active_Brick[10];
+   AActive_Brick *Active_Brick[AsConfig::Max_Active_Bricks_Count];
 };
 //------------------------------------------------------------------------------------------------------------

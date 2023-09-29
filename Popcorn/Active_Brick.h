@@ -26,6 +26,7 @@ public:
 
    void Act();
    void Draw(HDC hdc, RECT &paint_area);
+   bool Is_Finished();
 
    static void Setup_Color();
 
@@ -45,3 +46,4 @@ private:
    static HBRUSH Fading_Blue_Brick_Brushes[Max_Fade_Step];
 };
 //------------------------------------------------------------------------------------------------------------
+// c 38 мину

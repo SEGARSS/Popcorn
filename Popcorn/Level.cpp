@@ -147,8 +147,8 @@ void ALevel::Init()
    Level_Rect.right = Level_Rect.left + AsConfig::Cell_Width * AsConfig::Level_Width * AsConfig::Global_Scale;
    Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Height * AsConfig::Level_Height * AsConfig::Global_Scale;
 
-   memset(Current_Level, 0, sizeof(Current_Level));
-   memset(Active_Brick, 0, sizeof(Active_Brick));
+   memset(Current_Level, 0, sizeof(Current_Level) );
+   memset(Active_Brick, 0, sizeof(Active_Brick) );
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Level_Width])
@@ -160,7 +160,16 @@ void ALevel::Act()
 {
    for (int i = 0; i < Active_Bricks_Count; i++)
    {
-      Active_Brick[i]->Act();
+      if ( Active_Brick[i] != 0)
+      {
+         Active_Brick[i]->Act();
+
+         if (Active_Brick[i]->Is_Finished() )
+         {
+            delete Active_Brick[i];
+            Active_Brick[i] = 0;
+         }
+      }
    }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -182,7 +191,10 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)//Вывод всех кирпиче
 
    for (int i = 0; i < Active_Bricks_Count; i++)
    {
-      Active_Brick[i]->Draw(hdc, paint_area);
+      if (Active_Brick[i] != 0)
+      {
+         Active_Brick[i]->Draw(hdc, paint_area);
+      }
    }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -191,7 +203,7 @@ void ALevel::Add_Active_Brick(int brick_x, int brick_y)
    EBrick_Type brick_type;
    AActive_Brick *active_brick;
 
-	if (Active_Bricks_Count >= sizeof(Active_Brick) / sizeof(Active_Brick[0]))
+	if (Active_Bricks_Count >= AsConfig::Max_Active_Bricks_Count)
 	{
 		return; //Активных кирпичей слишком много
 	}
@@ -226,7 +238,16 @@ void ALevel::Add_Active_Brick(int brick_x, int brick_y)
       return;
    }
   
-   Active_Brick[Active_Bricks_Count++] = active_brick;
+   //Добавляем новый активный кирпич на первое свободное место
+   for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
+   {
+      if(Active_Brick[i] == 0)
+      {
+         Active_Brick[i] = active_brick;
+         ++Active_Bricks_Count;
+         break;
+      }
+   }
 }
 //------------------------------------------------------------------------------------------------------------
 bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos)
