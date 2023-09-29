@@ -40,8 +40,8 @@ char ALevel::Test_Level[AsConfig::Level_Height][AsConfig::Level_Width] =
 //ALevel
 //------------------------------------------------------------------------------------------------------------
 ALevel::ALevel()
-: Brick_Red_Pen(0), Brick_Blue_Pen(0), Letter_Pen(0), Brick_Red_Brush(0), Brick_Blue_Brush(0), 
-  Level_Rect{}
+: Brick_Red_Pen(0), Brick_Blue_Pen(0), Letter_Pen(0), Brick_Red_Brush(0), Brick_Blue_Brush(0), Level_Rect{},
+  Active_Bricks_Count(0)
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -106,6 +106,9 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
             {
                ball->Reflect(false);
             }
+
+            Add_Active_Brick(j, i);
+
             return true;
          }
          else
@@ -113,6 +116,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
             if (got_horizontal_Hit)
             {
                ball->Reflect(false);
+               Add_Active_Brick(j, i);
                return true;
             }
             else
@@ -120,6 +124,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
                if (got_vertical_Hit)
                {
                   ball->Reflect(true);
+                  Add_Active_Brick(j, i);
                   return true;
                }
             }
@@ -143,11 +148,20 @@ void ALevel::Init()
    Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Height * AsConfig::Level_Height * AsConfig::Global_Scale;
 
    memset(Current_Level, 0, sizeof(Current_Level));
+   memset(Active_Brick, 0, sizeof(Active_Brick));
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Level_Width])
 {
    memcpy(Current_Level, level, sizeof(Current_Level));
+}
+//------------------------------------------------------------------------------------------------------------
+void ALevel::Act()
+{
+   for (int i = 0; i < Active_Bricks_Count; i++)
+   {
+      Active_Brick[i]->Act();
+   }
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Draw(HDC hdc, RECT &paint_area)//Вывод всех кирпичей
@@ -166,7 +180,53 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)//Вывод всех кирпиче
       }
    }
 
-   /*Active_Brick.Draw(hdc, paint_area);*/
+   for (int i = 0; i < Active_Bricks_Count; i++)
+   {
+      Active_Brick[i]->Draw(hdc, paint_area);
+   }
+}
+//------------------------------------------------------------------------------------------------------------
+void ALevel::Add_Active_Brick(int brick_x, int brick_y)
+{
+   EBrick_Type brick_type;
+   AActive_Brick *active_brick;
+
+	if (Active_Bricks_Count >= sizeof(Active_Brick) / sizeof(Active_Brick[0]))
+	{
+		return; //Активных кирпичей слишком много
+	}
+
+   brick_type = (EBrick_Type)Current_Level[brick_y][brick_x];
+
+   switch (brick_type)
+   {
+   case EBT_None:
+      return;
+   case EBT_Red:
+   case EBT_Blue:
+      active_brick = new AActive_Brick(brick_type, brick_x, brick_y);
+      break;
+   /*case EBT_Unbreakable:
+      break;
+   case EBT_Multihit_1:
+      break;
+   case EBT_Multihit_2:
+      break;
+   case EBT_Multihit_3:
+      break;
+   case EBT_Multihit_4:
+      break;
+   case EBT_Parachute:
+      break;
+   case EBT_Teleport:
+      break;
+   case EBT_Ad:
+      break;*/
+   default:
+      return;
+   }
+  
+   Active_Brick[Active_Bricks_Count++] = active_brick;
 }
 //------------------------------------------------------------------------------------------------------------
 bool ALevel::Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos)
@@ -413,3 +473,4 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y,
    }
 }
 //------------------------------------------------------------------------------------------------------------
+// 29 минута 29 видео. доделать
