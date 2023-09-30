@@ -107,8 +107,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
                ball->Reflect(false);
             }
 
-            Add_Active_Brick(j, i);
-
+            On_Hit(j, i);
             return true;
          }
          else
@@ -116,7 +115,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
             if (got_horizontal_Hit)
             {
                ball->Reflect(false);
-               Add_Active_Brick(j, i);
+               On_Hit(j, i);
                return true;
             }
             else
@@ -124,7 +123,7 @@ bool ALevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball) // П�
                if (got_vertical_Hit)
                {
                   ball->Reflect(true);
-                  Add_Active_Brick(j, i);
+                  On_Hit(j, i);
                   return true;
                }
             }
@@ -158,7 +157,7 @@ void ALevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Leve
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Act()
 {
-   for (int i = 0; i < Active_Bricks_Count; i++)
+   for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
    {
       if ( Active_Brick[i] != 0)
       {
@@ -168,6 +167,7 @@ void ALevel::Act()
          {
             delete Active_Brick[i];
             Active_Brick[i] = 0;
+            --Active_Bricks_Count;
          }
       }
    }
@@ -189,13 +189,19 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)//Вывод всех кирпиче
       }
    }
 
-   for (int i = 0; i < Active_Bricks_Count; i++)
+   for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
    {
       if (Active_Brick[i] != 0)
       {
          Active_Brick[i]->Draw(hdc, paint_area);
       }
    }
+}
+//------------------------------------------------------------------------------------------------------------
+void ALevel::On_Hit(int brick_x, int brick_y)
+{
+
+   Add_Active_Brick(brick_x, brick_y);
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Add_Active_Brick(int brick_x, int brick_y)
@@ -494,4 +500,4 @@ void ALevel::Draw_Brick_Letter(HDC hdc, int x, int y,
    }
 }
 //------------------------------------------------------------------------------------------------------------
-// 29 минута 29 видео. доделать
+// 5 минута 30 видео

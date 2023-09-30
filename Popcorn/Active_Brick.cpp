@@ -50,6 +50,18 @@ void AActive_Brick::Draw(HDC hdc, RECT &paint_area)
              2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
 }
 //------------------------------------------------------------------------------------------------------------
+bool AActive_Brick::Is_Finished()
+{
+   if (Fade_Step >= Max_Fade_Step -1)
+   {
+      return true;
+   }
+   else
+   {
+      return false;
+   }
+}
+//------------------------------------------------------------------------------------------------------------
 void AActive_Brick::Setup_Color()
 {
    for (int i = 0; i < Max_Fade_Step; i++)

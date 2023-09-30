@@ -30,6 +30,7 @@ public:
    static char Test_Level[AsConfig::Level_Height][AsConfig::Level_Width];
 
 private:
+   void On_Hit(int brick_x, int brick_y);
    void Add_Active_Brick(int brick_x, int brick_y);
    bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos);
    bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos);
