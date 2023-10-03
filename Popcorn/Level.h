@@ -29,6 +29,7 @@ public:
 
    const EBrick_Type Brick_Type;
    const ELetter_Type Letter_Type;
+   bool Got_Hit;
 
 private:
    void Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, HPEN &back_pen, HBRUSH &back_brush);
@@ -36,7 +37,10 @@ private:
 
    int X, Y;
    int Rotation_Step;
-   RECT Letter_Cell;
+   int Next_Rotation_Tick;
+   RECT Letter_Cell, Prev_Letter_Cell;
+
+   static const int Tick_Per_Step = 4;
 };
 //------------------------------------------------------------------------------------------------------------
 

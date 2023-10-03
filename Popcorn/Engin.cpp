@@ -36,6 +36,8 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)//отрисовка экрана игры
 {
+   SetGraphicsMode(hdc, GM_ADVANCED);
+
    Level.Draw(hdc, paint_area);   
 
    /*for (int i = 0; i < 16; i++)

@@ -4,38 +4,65 @@
 //AFalling_Letter
 //------------------------------------------------------------------------------------------------------------
 AFalling_Letter::AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_type, int x, int y)
-: Brick_Type(brick_type), Letter_Type(letter_type), X(x), Y(y), Rotation_Step(0)
+: Brick_Type(brick_type), Letter_Type(letter_type), Got_Hit(false), X(x), Y(y), Rotation_Step(2), 
+  Next_Rotation_Tick(AsConfig::Current_Timer_Tick + Tick_Per_Step)
 {
    Letter_Cell.left = X;
    Letter_Cell.top = Y;
    Letter_Cell.right = Letter_Cell.left + AsConfig::Brick_Width * AsConfig::Global_Scale;
    Letter_Cell.bottom = Letter_Cell.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
+
+   Prev_Letter_Cell = Letter_Cell;
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Act()
 {
-   //if (Fade_Step < Max_Fade_Step - 1)
-   //{
-   //   ++Fade_Step;
-      InvalidateRect(AsConfig::Hwnd, &Letter_Cell, FALSE);
-   //}
+   Prev_Letter_Cell = Letter_Cell;
+
+   Y += AsConfig::Global_Scale;
+   Letter_Cell.top += AsConfig::Global_Scale;
+   Letter_Cell.bottom += AsConfig::Global_Scale;
+
+   if (AsConfig::Current_Timer_Tick >= Next_Rotation_Tick)
+   {
+      ++Rotation_Step;
+      Next_Rotation_Tick += Tick_Per_Step;
+   }
+
+   InvalidateRect(AsConfig::Hwnd, &Prev_Letter_Cell, FALSE);
+   InvalidateRect(AsConfig::Hwnd, &Letter_Cell, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Draw(HDC hdc, RECT &paint_area)
 {
-	Draw_Brick_Letter(hdc);
+   RECT intersectRect;
+
+   //1. Очищаем фон.
+   if (IntersectRect(&intersectRect, &paint_area, &Prev_Letter_Cell) )
+   {
+      SelectObject(hdc, AsConfig::BG_Pen);
+      SelectObject(hdc, AsConfig::BG_Brush);
+
+      Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
+   }
+
+   if (IntersectRect(&intersectRect, &paint_area, &Letter_Cell) )
+   {
+      Draw_Brick_Letter(hdc);
+   }
+	
 }
 //------------------------------------------------------------------------------------------------------------
 bool AFalling_Letter::Is_Finished()
 {
-   //if (Fade_Step >= Max_Fade_Step -1)
-   //{
-   //   return true;
-   //}
-   //else
-   //{
+   if(Got_Hit || Letter_Cell.top >= AsConfig::Max_Y_Pos * AsConfig::Global_Scale)
+   {
+      return true;
+   }
+   else
+   {
       return false;
-   //}
+   }
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, 
@@ -130,8 +157,6 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    }
    else
    {
-      SetGraphicsMode(hdc, GM_ADVANCED);
-
       // Настраиваем матрицу "переворота" буквы
       xform.eM11 = 1.0f;
       xform.eM12 = 0.0f;
@@ -364,25 +389,23 @@ void ALevel::Draw(HDC hdc, RECT &paint_area)
 
    RECT intersectRect;
 
-   if (! IntersectRect(&intersectRect, &paint_area, &Level_Rect))
-   {
-      return;
-   }
-   for (int i = 0; i < AsConfig::Level_Height; i++)
-   {
-      for (int j = 0; j < AsConfig::Level_Width; j++)
-      {
-         Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height, (EBrick_Type)Current_Level[i][j]);
-      }
-   }
-
-   for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
-   {
-      if (Active_Brick[i] != 0)
-      {
-         Active_Brick[i]->Draw(hdc, paint_area);
-      }
-   }
+	if (IntersectRect(&intersectRect, &paint_area, &Level_Rect))
+	{
+		for (int i = 0; i < AsConfig::Level_Height; i++)
+		{
+			for (int j = 0; j < AsConfig::Level_Width; j++)
+			{
+				Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height, (EBrick_Type)Current_Level[i][j]);
+			}
+		}
+		for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
+		{
+			if (Active_Brick[i] != 0)
+			{
+				Active_Brick[i]->Draw(hdc, paint_area);
+			}
+		}
+	}
 
    //!!! Копия логики!
    for (int i = 0; i < AsConfig::Max_Falling_Letter_Count; i++)
@@ -399,7 +422,11 @@ void ALevel::On_Hit(int brick_x, int brick_y)
    EBrick_Type brick_type;
    brick_type = (EBrick_Type)Current_Level[brick_y][brick_x];
 
-   if (! Add_Falling_Letter(brick_x, brick_y, brick_type) )
+   if (Add_Falling_Letter(brick_x, brick_y, brick_type) )
+   {
+      Current_Level[brick_y][brick_x] = EBT_None;
+   }
+   else
    {
       Add_Active_Brick(brick_x, brick_y, brick_type);
    }
@@ -454,6 +481,7 @@ void ALevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
    case EBT_Red:
    case EBT_Blue:
       active_brick = new AActive_Brick(brick_type, brick_x, brick_y);
+      Current_Level[brick_y][brick_x] = EBT_None;
       break;
    /*case EBT_Unbreakable:
       break;
@@ -575,28 +603,34 @@ void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
    {
    case EBT_None:
    {
-      return;
+      pen = AsConfig::BG_Pen;
+      brush = AsConfig::BG_Brush;
+      break;
    }
+
    case EBT_Red:
    {
       pen = AsConfig::Brick_Red_Pen;
       brush = AsConfig::Brick_Red_Brush;
       break;
    }
+
    case EBT_Blue:
    {
       pen = AsConfig::Brick_Blue_Pen;
       brush = AsConfig::Brick_Blue_Brush;
       break;
    }
+
    default:
       return;
    }
 
    SelectObject(hdc, pen);
    SelectObject(hdc, brush);
-   RoundRect(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + AsConfig::Brick_Width) * AsConfig::Global_Scale, 
-                 (y + AsConfig::Brick_Height) * AsConfig::Global_Scale, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
+
+   RoundRect(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + AsConfig::Brick_Width) * AsConfig::Global_Scale - 1, 
+                 (y + AsConfig::Brick_Height) * AsConfig::Global_Scale - 1, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
 }
 //------------------------------------------------------------------------------------------------------------
-//52 минута, 30 видео
+
