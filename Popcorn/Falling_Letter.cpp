@@ -1,4 +1,4 @@
-#include"Falling_Letter.h"
+п»ї#include"Falling_Letter.h"
 
 //AFalling_Letter
 //------------------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ void AFalling_Letter::Draw(HDC hdc, RECT &paint_area)
 {
    RECT intersectRect;
 
-   //1. Очищаем фон.
+   //1. РћС‡РёС‰Р°РµРј С„РѕРЅ.
    if (IntersectRect(&intersectRect, &paint_area, &Prev_Letter_Cell) )
    {
       SelectObject(hdc, AsConfig::BG_Pen);
@@ -86,11 +86,11 @@ void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
-{//Вывод падающией буквы
+{//Р’С‹РІРѕРґ РїР°РґР°СЋС‰РёРµР№ Р±СѓРєРІС‹
 
    bool switch_color;
 	double offset;
-	double rotation_angle;  // Преобразование шага в угол поворота
+	double rotation_angle;  // РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С€Р°РіР° РІ СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р°
 	int brick_half_height = AsConfig::Brick_Height * AsConfig::Global_Scale / 2;
 	int back_part_offset;
 	HPEN front_pen, back_pen;
@@ -99,10 +99,10 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 
    if (!(Brick_Type == EBT_Blue || Brick_Type == EBT_Red))
    {
-      return;  // Падающие буквы могут быть только от кирпичей такого типа
+      return;  // РџР°РґР°СЋС‰РёРµ Р±СѓРєРІС‹ РјРѕРіСѓС‚ Р±С‹С‚СЊ С‚РѕР»СЊРєРѕ РѕС‚ РєРёСЂРїРёС‡РµР№ С‚Р°РєРѕРіРѕ С‚РёРїР°
    }
 
-   // Корректируем шаг вращения и угол поворота
+   // РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј С€Р°Рі РІСЂР°С‰РµРЅРёСЏ Рё СѓРіРѕР» РїРѕРІРѕСЂРѕС‚Р°
    Rotation_Step = Rotation_Step % 16;
 
    if (Rotation_Step < 8)
@@ -140,14 +140,14 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 
    if (Rotation_Step == 4 || Rotation_Step == 12)
    {
-      // Выводим фон
+      // Р’С‹РІРѕРґРёРј С„РѕРЅ
       SelectObject(hdc, back_pen);
       SelectObject(hdc, back_brush);
 
       Rectangle(hdc, X, Y + brick_half_height - AsConfig::Global_Scale, X + AsConfig::Brick_Width * AsConfig::Global_Scale, 
                      Y + brick_half_height);
 
-      //Выводим передний план
+      //Р’С‹РІРѕРґРёРј РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ
       SelectObject(hdc, front_pen);
       SelectObject(hdc, front_brush);
 
@@ -156,7 +156,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    }
    else
    {
-      // Настраиваем матрицу "переворота" буквы
+      // РќР°СЃС‚СЂР°РёРІР°РµРј РјР°С‚СЂРёС†Сѓ "РїРµСЂРµРІРѕСЂРѕС‚Р°" Р±СѓРєРІС‹
       xform.eM11 = 1.0f;
       xform.eM12 = 0.0f;
       xform.eM21 = 0.0f;
@@ -166,7 +166,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
       GetWorldTransform(hdc, &old_xform);
       SetWorldTransform(hdc, &xform);
 
-      // Выводим фон
+      // Р’С‹РІРѕРґРёРј С„РѕРЅ
       SelectObject(hdc, back_pen);
       SelectObject(hdc, back_brush);
 
@@ -175,7 +175,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
       Rectangle(hdc, 0, -brick_half_height - back_part_offset, AsConfig::Brick_Width * AsConfig::Global_Scale, 
                      brick_half_height - back_part_offset);
 
-      //Выводим передний план
+      //Р’С‹РІРѕРґРёРј РїРµСЂРµРґРЅРёР№ РїР»Р°РЅ
       SelectObject(hdc, front_pen);
       SelectObject(hdc, front_brush);
 
