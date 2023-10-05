@@ -352,69 +352,36 @@ void ALevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Leve
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Act()
 {
-   for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
-   {
-      if ( Active_Brick[i] != 0)
-      {
-         Active_Brick[i]->Act();
-
-         if (Active_Brick[i]->Is_Finished() )
-         {
-            delete Active_Brick[i];
-            Active_Brick[i] = 0;
-            --Active_Bricks_Count;
-         }
-      }
-   }
-
-   //!!! Копия логики!
-   for (int i = 0; i < AsConfig::Max_Falling_Letter_Count; i++)
-   {
-      if ( Falling_Letter[i] != 0)
-      {
-         Falling_Letter[i]->Act();
-
-         if (Falling_Letter[i]->Is_Finished() )
-         {
-            delete Falling_Letter[i];
-            Falling_Letter[i] = 0;
-            --Falling_Letter_Count;
-         }
-      }
-   }
+   Act_Objects( (AGraphics_Object **)&Active_Brick, AsConfig::Max_Active_Bricks_Count);
+   Act_Objects( (AGraphics_Object **)&Falling_Letter, AsConfig::Max_Falling_Letter_Count);
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::Draw(HDC hdc, RECT &paint_area)
 {//Вывод всех кирпичей
 
    RECT intersectRect;
+   RECT brick_rect;
 
-	if (IntersectRect(&intersectRect, &paint_area, &Level_Rect))
+	if (IntersectRect(&intersectRect, &paint_area, &Level_Rect) )
 	{
 		for (int i = 0; i < AsConfig::Level_Height; i++)
 		{
 			for (int j = 0; j < AsConfig::Level_Width; j++)
 			{
-				Draw_Brick(hdc, AsConfig::Level_X_Offset + j * AsConfig::Cell_Width, AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height, (EBrick_Type)Current_Level[i][j]);
-			}
-		}
-		for (int i = 0; i < AsConfig::Max_Active_Bricks_Count; i++)
-		{
-			if (Active_Brick[i] != 0)
-			{
-				Active_Brick[i]->Draw(hdc, paint_area);
-			}
-		}
-	}
+            brick_rect.left = (AsConfig::Level_X_Offset + j * AsConfig::Cell_Width) * AsConfig::Global_Scale;
+            brick_rect.top = (AsConfig::Level_Y_Offset + i * AsConfig::Cell_Height) * AsConfig::Global_Scale;
+            brick_rect.right = brick_rect.left + AsConfig::Brick_Width * AsConfig::Global_Scale;
+            brick_rect.bottom = brick_rect.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
 
-   //!!! Копия логики!
-   for (int i = 0; i < AsConfig::Max_Falling_Letter_Count; i++)
-   {
-      if (Falling_Letter[i] != 0)
-      {
-         Falling_Letter[i]->Draw(hdc, paint_area);
-      }
-   }
+            if (IntersectRect(&intersectRect, &paint_area, &brick_rect) )
+            {
+               Draw_Brick(hdc, brick_rect, (EBrick_Type)Current_Level[i][j]);
+            }
+			}
+		}
+      Draw_Objects(hdc, paint_area, (AGraphics_Object **)&Active_Brick, AsConfig::Max_Active_Bricks_Count);
+	}
+   Draw_Objects(hdc, paint_area, (AGraphics_Object **)&Falling_Letter, AsConfig::Max_Falling_Letter_Count);
 }
 //------------------------------------------------------------------------------------------------------------
 void ALevel::On_Hit(int brick_x, int brick_y)
@@ -593,7 +560,7 @@ bool ALevel::Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int leve
    return false;
 }
 //------------------------------------------------------------------------------------------------------------
-void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
+void ALevel::Draw_Brick(HDC hdc, RECT &brick_rect, EBrick_Type brick_type)
 {//Вывод кирпича
 
    HPEN pen;
@@ -629,8 +596,36 @@ void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type)
    SelectObject(hdc, pen);
    SelectObject(hdc, brush);
 
-   RoundRect(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + AsConfig::Brick_Width) * AsConfig::Global_Scale - 1, 
-                 (y + AsConfig::Brick_Height) * AsConfig::Global_Scale - 1, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
+   RoundRect(hdc, brick_rect.left, brick_rect.top, brick_rect.right - 1, brick_rect.bottom - 1, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
+}
+//------------------------------------------------------------------------------------------------------------
+void ALevel::Draw_Objects(HDC hdc, RECT &paint_area, AGraphics_Object ** objects_array, int objectc_max_count)
+{
+   for (int i = 0; i < objectc_max_count; i++)
+   {
+      if (objects_array[i] != 0)
+      {
+         objects_array[i]->Draw(hdc, paint_area);
+      }
+   }
+}
+//------------------------------------------------------------------------------------------------------------
+void ALevel::Act_Objects(AGraphics_Object ** objects_array, int objectc_max_count)
+{
+   for (int i = 0; i < objectc_max_count; i++)
+   {
+      if ( objects_array[i] != 0)
+      {
+         objects_array[i]->Act();
+
+         if (objects_array[i]->Is_Finished() )
+         {
+            delete objects_array[i];
+            objects_array[i] = 0;
+            --Falling_Letter_Count;
+         }
+      }
+   }
 }
 //------------------------------------------------------------------------------------------------------------
 

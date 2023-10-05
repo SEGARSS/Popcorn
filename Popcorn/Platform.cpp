@@ -2,6 +2,11 @@
 
 //AsPlatform
 //------------------------------------------------------------------------------------------------------------
+AsPlatform::~AsPlatform()
+{
+   delete[] Normal_Platform_Imege;
+}
+//------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
 : X_Pos(AsConfig::Border_X_Offset), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Inner_Width(Normal_Platform_Inner_Width), 
   Rolling_Step(0), Normal_Platform_Imege_Width(0), Normal_Platform_Imege_Height(0), Normal_Platform_Imege(0), 
@@ -10,11 +15,6 @@ AsPlatform::AsPlatform()
   Platform_Cercle_Pen_Color(151, 0 , 0), Platform_Inner_Pen_Color(0, 128, 192)
 {
    X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
-}
-//------------------------------------------------------------------------------------------------------------
-AsPlatform::~AsPlatform()
-{
-   delete[] Normal_Platform_Imege;
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
@@ -168,6 +168,32 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
       Draw_Expanding_Roll_In_State(hdc, paint_area);
       break;
    }
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Move(bool to_left)
+{
+	if (true)
+	{
+		X_Pos -= X_Step;
+
+		if (X_Pos <= AsConfig::Border_X_Offset)
+		{
+			X_Pos = AsConfig::Border_X_Offset;
+		}
+		Redraw_Platform();
+	}
+   else
+   {
+     X_Pos += X_Step;
+
+		if (X_Pos >= AsConfig::Max_X_Pos - Width + 1)
+			X_Pos = AsConfig::Max_X_Pos - Width + 1;
+
+		Redraw_Platform();
+   }
+   
+
+		
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Circle_BG(HDC hdc)//Очистка фона

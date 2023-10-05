@@ -17,9 +17,8 @@ enum EPlatform_State
 class AsPlatform: public AHit_Checker
 {
 public:
-   AsPlatform();
-
    ~AsPlatform();
+   AsPlatform();
 
    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball);
 
@@ -29,6 +28,7 @@ public:
    void Set_State(EPlatform_State new_state);
    void Redraw_Platform();
    void Draw(HDC hdc, RECT &paint_area);
+   void Move(bool to_left);
 
    int X_Pos;
    int Width;
