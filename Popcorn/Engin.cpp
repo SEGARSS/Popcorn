@@ -30,7 +30,7 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    ABall::Add_Hit_Checkers(&Level);
    ABall::Add_Hit_Checkers(&Platform);
 ;
-   Level.Set_Current_Level(ALevel::Level_01);
+   Level.Set_Current_Level(AsLevel::Level_01);
 
    Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);
 
@@ -169,7 +169,7 @@ void AsEngine::Act()
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
 {
-   falling_letter->Got_Hit = true;
+   falling_letter->Finalize();
 }
 //------------------------------------------------------------------------------------------------------------
 

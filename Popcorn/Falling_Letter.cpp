@@ -3,7 +3,7 @@
 //AFalling_Letter
 //------------------------------------------------------------------------------------------------------------
 AFalling_Letter::AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_type, int x, int y)
-: Brick_Type(brick_type), Letter_Type(letter_type), Got_Hit(false), X(x), Y(y), Rotation_Step(2), 
+: Brick_Type(brick_type), Letter_Type(letter_type), Falling_Letter_State(EFLS_Normal), X(x), Y(y), Rotation_Step(2), 
   Next_Rotation_Tick(AsConfig::Current_Timer_Tick + Tick_Per_Step)
 {
    Letter_Cell.left = X;
@@ -16,6 +16,17 @@ AFalling_Letter::AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_typ
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Act()
 {
+   if (Falling_Letter_State != EFLS_Normal)
+   {
+      return;
+   }
+
+   if (Letter_Cell.top >= AsConfig::Max_Y_Pos * AsConfig::Global_Scale)
+   {
+      Finalize();
+      return;
+   }
+
    Prev_Letter_Cell = Letter_Cell;
 
    Y += AsConfig::Global_Scale;
@@ -45,6 +56,12 @@ void AFalling_Letter::Draw(HDC hdc, RECT &paint_area)
       Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
    }
 
+   if (Falling_Letter_State == EFLS_Finalizing)
+   {
+      Falling_Letter_State = EFLS_Finished;
+      return;
+   }
+
    if (IntersectRect(&intersectRect, &paint_area, &Letter_Cell) )
    {
       Draw_Brick_Letter(hdc);
@@ -54,7 +71,7 @@ void AFalling_Letter::Draw(HDC hdc, RECT &paint_area)
 //------------------------------------------------------------------------------------------------------------
 bool AFalling_Letter::Is_Finished()
 {
-   if(Got_Hit || Letter_Cell.top >= AsConfig::Max_Y_Pos * AsConfig::Global_Scale)
+   if (Falling_Letter_State == EFLS_Finished)
    {
       return true;
    }
@@ -62,6 +79,18 @@ bool AFalling_Letter::Is_Finished()
    {
       return false;
    }
+}
+//------------------------------------------------------------------------------------------------------------
+void AFalling_Letter::Get_Letter_Cell(RECT &rect)
+{
+   rect = Letter_Cell;
+}
+//------------------------------------------------------------------------------------------------------------
+void AFalling_Letter::Finalize()
+{
+   Falling_Letter_State = EFLS_Finalizing;
+   InvalidateRect(AsConfig::Hwnd, &Prev_Letter_Cell, FALSE);
+   InvalidateRect(AsConfig::Hwnd, &Letter_Cell, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, 

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include"Falling_Letter.h"
 #include "Ball.h"
 
 
@@ -29,6 +30,7 @@ public:
    void Redraw_Platform();
    void Draw(HDC hdc, RECT &paint_area);
    void Move(bool to_left);
+   bool Hit_By(AFalling_Letter *falling_letter);
 
    int X_Pos;
    int Width;

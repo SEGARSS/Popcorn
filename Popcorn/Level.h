@@ -4,12 +4,12 @@
 #include "Ball.h"
 
 
-//ALevel
+//AsLevel
 //------------------------------------------------------------------------------------------------------------
-class ALevel: public AHit_Checker
+class AsLevel: public AHit_Checker
 {
 public:
-   ALevel();
+   AsLevel();
 
    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball);
 
@@ -48,4 +48,3 @@ private:
    AFalling_Letter *Falling_Letter[AsConfig::Max_Falling_Letter_Count];
 };
 //------------------------------------------------------------------------------------------------------------
-//10 минута 33 видео
