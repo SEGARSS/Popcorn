@@ -8,7 +8,7 @@ AsPlatform::~AsPlatform()
 }
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
-: X_Pos(AsConfig::Border_X_Offset), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Inner_Width(Normal_Platform_Inner_Width), 
+: X_Pos(AsConfig::Border_X_Offset), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Missing), Inner_Width(Normal_Platform_Inner_Width), 
   Rolling_Step(0), Normal_Platform_Imege_Width(0), Normal_Platform_Imege_Height(0), Normal_Platform_Imege(0), 
   Width(Normal_Width), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Cercle_Pen(0), Platform_Inner_Pen(0), 
   Platform_Cercle_Brush(0), Platform_Inner_Brush(0), Highlight_Pen_Color(255, 255, 255), 
@@ -263,7 +263,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //Рисуем п�
    x *= AsConfig::Global_Scale;
    y *= AsConfig::Global_Scale;
 
-   if (Normal_Platform_Imege == 0)
+   if (Normal_Platform_Imege == 0 && Platform_State == EPS_Ready)
    {
       Normal_Platform_Imege_Width = Width * AsConfig::Global_Scale;
       Normal_Platform_Imege_Height = Height * AsConfig::Global_Scale;
