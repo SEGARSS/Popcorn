@@ -163,6 +163,9 @@ void AsLevel::Draw(HDC hdc, RECT &paint_area)
    RECT intersectRect;
    RECT brick_rect;
 
+   AFalling_Letter falling_letter(EBT_Blue, ELT_I, 8 * AsConfig::Global_Scale, 150 * AsConfig::Global_Scale);
+   falling_letter.Test_Draw_All_Steps(hdc);
+
 	if (IntersectRect(&intersectRect, &paint_area, &Level_Rect) )
 	{
 		for (int i = 0; i < AsConfig::Level_Height; i++)

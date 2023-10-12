@@ -93,6 +93,21 @@ void AFalling_Letter::Finalize()
    InvalidateRect(AsConfig::Hwnd, &Letter_Cell, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
+void AFalling_Letter::Test_Draw_All_Steps(HDC hdc)
+{
+   Rotation_Step = 0;
+   int x_step = AsConfig::Cell_Width * AsConfig::Global_Scale;
+
+   for (int i = 0; i < Max_Rotation_Step; i++)
+   {
+      Draw_Brick_Letter(hdc);
+      ++Rotation_Step;
+      X += x_step;
+      Letter_Cell.left += x_step;
+      Letter_Cell.right += x_step;
+   }
+}
+//------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, 
    HPEN &back_pen, HBRUSH &back_brush)
 {
@@ -120,8 +135,11 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    bool switch_color;
 	double offset;
 	double rotation_angle;  // Преобразование шага в угол поворота
+   double y_ratio;
+
 	int brick_half_height = AsConfig::Brick_Height * AsConfig::Global_Scale / 2;
 	int back_part_offset;
+
 	HPEN front_pen, back_pen;
 	HBRUSH front_brush, back_brush;
 	XFORM xform, old_xform;
@@ -132,15 +150,15 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    }
 
    // Корректируем шаг вращения и угол поворота
-   Rotation_Step = Rotation_Step % 16;
+   Rotation_Step = Rotation_Step % Max_Rotation_Step;
 
    if (Rotation_Step < 8)
    {
-      rotation_angle = 2.0 * M_PI / 16.0 * (double)Rotation_Step;
+      rotation_angle = 2.0 * M_PI / (double)Max_Rotation_Step * (double)Rotation_Step;
    }
    else
    {
-      rotation_angle = 2.0 * M_PI / 16.0 * (double)(8 - Rotation_Step);
+      rotation_angle = 2.0 * M_PI / (double)Max_Rotation_Step * (double)(8 - Rotation_Step);
    }
 
    if (Rotation_Step > 4 && Rotation_Step <= 12)
@@ -186,10 +204,12 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    else
    {
       // Настраиваем матрицу "переворота" буквы
+      y_ratio = cos(rotation_angle);
+
       xform.eM11 = 1.0f;
       xform.eM12 = 0.0f;
       xform.eM21 = 0.0f;
-      xform.eM22 = (float)cos(rotation_angle);
+      xform.eM22 = (float)fabs(cos(rotation_angle) );
       xform.eDx = (float)X;
       xform.eDy = (float)Y + (float)(brick_half_height);
       GetWorldTransform(hdc, &old_xform);
@@ -201,6 +221,12 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 
       offset = 3.0 * (1.0 - fabs(xform.eM22)) * (double)AsConfig::Global_Scale;
       back_part_offset = (int)round(offset);
+
+      if (y_ratio < 0.0)
+      {
+         back_part_offset = -back_part_offset;
+      }
+
       Rectangle(hdc, 0, -brick_half_height - back_part_offset, AsConfig::Brick_Width * AsConfig::Global_Scale, 
                      brick_half_height - back_part_offset);
 
@@ -213,14 +239,24 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 
       if (Rotation_Step > 4 && Rotation_Step <= 12)
       {
-         if (Letter_Type == ELT_O)
+         SelectObject(hdc, AsConfig::Letter_Pen);
+
+         switch (Letter_Type)
          {
-            SelectObject(hdc, AsConfig::Letter_Pen);
-            Ellipse(hdc, 0 + 5 * AsConfig::Global_Scale, (-5 * AsConfig::Global_Scale) / 2, 
-                         0 + 10 * AsConfig::Global_Scale, 5 * AsConfig::Global_Scale / 2);
+         case ELT_O:
+            Ellipse(hdc, 0 + 5 * AsConfig::Global_Scale, 1 * AsConfig::Global_Scale - brick_half_height, 0 + 10 * AsConfig::Global_Scale, 6 * AsConfig::Global_Scale - brick_half_height - 1);
+            break;
+
+         case ELT_I:
+            MoveToEx(hdc, 5 * AsConfig::Global_Scale, 1 * AsConfig::Global_Scale - brick_half_height, 0);
+            LineTo(hdc, 5 * AsConfig::Global_Scale, 6 * AsConfig::Global_Scale - brick_half_height - 1);
+            LineTo(hdc, 9 * AsConfig::Global_Scale, 1 * AsConfig::Global_Scale - brick_half_height);
+            LineTo(hdc, 9 * AsConfig::Global_Scale, 6 * AsConfig::Global_Scale - brick_half_height - 1);
+            break;
          }
       }
       SetWorldTransform(hdc, &old_xform);
    }
 }
 //------------------------------------------------------------------------------------------------------------
+//43 минута 34 видео

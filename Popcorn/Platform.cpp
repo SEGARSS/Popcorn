@@ -155,15 +155,22 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
 
    switch (Platform_State)
    {
+   case EPS_Ready:
    case EPS_Normal:
       Draw_Normal_State(hdc, paint_area);
       break;
+
+
    case EPS_Meltdown:
       Draw_Meltdown_State(hdc, paint_area);
       break;
+
+
    case EPS_Roll_In:
       Draw_Roll_In_State(hdc, paint_area);
       break;
+
+
    case EPS_Expand_Roll_In:
       Draw_Expanding_Roll_In_State(hdc, paint_area);
       break;
@@ -368,7 +375,7 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area)//Рисуем в�
    SelectObject(hdc, AsConfig::BG_Pen);
    SelectObject(hdc, AsConfig::BG_Brush);
 
-   Rectangle(hdc, - AsConfig::Global_Scale / 2, -roller_size / 2, AsConfig::Global_Scale / 2 - 1, roller_size / 2 - 1);
+   Rectangle(hdc, - AsConfig::Global_Scale / 2, -roller_size / 2, AsConfig::Global_Scale / 2, roller_size / 2);
 
    SetWorldTransform(hdc, &old_xform);
    
