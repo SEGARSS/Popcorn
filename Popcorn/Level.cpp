@@ -163,7 +163,7 @@ void AsLevel::Draw(HDC hdc, RECT &paint_area)
    RECT intersectRect;
    RECT brick_rect;
 
-   AFalling_Letter falling_letter(EBT_Blue, ELT_I, 8 * AsConfig::Global_Scale, 150 * AsConfig::Global_Scale);
+   AFalling_Letter falling_letter(EBT_Blue, ELT_G, 8 * AsConfig::Global_Scale, 150 * AsConfig::Global_Scale);
    falling_letter.Test_Draw_All_Steps(hdc);
 
 	if (IntersectRect(&intersectRect, &paint_area, &Level_Rect) )
@@ -237,30 +237,29 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
    int leter_x, leter_y;
 	AFalling_Letter* falling_letter;
 
-	if (brick_type == EBT_Red || brick_type == EBT_Blue)
+	if (! (brick_type == EBT_Red || brick_type == EBT_Blue) )
+      return false;
+   
+	if (AsConfig::Rand(AsConfig::Hit_Per_Letter) != 0)
+      return false;
+	
+	if (Falling_Letter_Count >= AsConfig::Max_Falling_Letter_Count)
+      return false;
+	
+	for (int i = 0; i < AsConfig::Max_Falling_Letter_Count; i++)
 	{
-		if (AsConfig::Rand(AsConfig::Hit_Per_Letter) == 0)
+		if (Falling_Letter[i] == 0)
 		{
-			if (Falling_Letter_Count < AsConfig::Max_Falling_Letter_Count)
-			{
-				for (int i = 0; i < AsConfig::Max_Falling_Letter_Count; i++)
-				{
-					if (Falling_Letter[i] == 0)
-					{
-                  leter_x = (brick_x * AsConfig::Cell_Width + AsConfig::Level_X_Offset) * AsConfig::Global_Scale;
-                  leter_y = (brick_y * AsConfig::Cell_Height + AsConfig::Level_Y_Offset) * AsConfig::Global_Scale;
+			leter_x = (brick_x * AsConfig::Cell_Width + AsConfig::Level_X_Offset) * AsConfig::Global_Scale;
+			leter_y = (brick_y * AsConfig::Cell_Height + AsConfig::Level_Y_Offset) * AsConfig::Global_Scale;
 
-						falling_letter = new AFalling_Letter(brick_type, ELT_O, leter_x, leter_y);
-						Falling_Letter[i] = falling_letter;
-						++Falling_Letter_Count;
-						break;
-					}
-				}
-				return true;
-			}
+			falling_letter = new AFalling_Letter(brick_type, ELT_G, leter_x, leter_y);
+			Falling_Letter[i] = falling_letter;
+			++Falling_Letter_Count;
+			return true;
 		}
 	}
-   return false;
+	return false;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
