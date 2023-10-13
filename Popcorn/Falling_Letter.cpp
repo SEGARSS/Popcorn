@@ -136,8 +136,6 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 	double offset;
 	double rotation_angle;  // Преобразование шага в угол поворота
    double y_ratio;
-
-	int brick_half_height = AsConfig::Brick_Height * AsConfig::Global_Scale / 2;
 	int back_part_offset;
 
 	HPEN front_pen, back_pen;
@@ -191,14 +189,14 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
       SelectObject(hdc, back_pen);
       SelectObject(hdc, back_brush);
 
-      Rectangle(hdc, X, Y + brick_half_height - AsConfig::Global_Scale, X + AsConfig::Brick_Width * AsConfig::Global_Scale, 
-                     Y + brick_half_height);
+      Rectangle(hdc, X, Y + Brick_Half_Height - AsConfig::Global_Scale, X + AsConfig::Brick_Width * AsConfig::Global_Scale, 
+                     Y + Brick_Half_Height);
 
       //Выводим передний план
       SelectObject(hdc, front_pen);
       SelectObject(hdc, front_brush);
 
-      Rectangle(hdc, X, Y + brick_half_height, X + AsConfig::Brick_Width * AsConfig::Global_Scale, Y + brick_half_height + AsConfig::Global_Scale - 1);
+      Rectangle(hdc, X, Y + Brick_Half_Height, X + AsConfig::Brick_Width * AsConfig::Global_Scale, Y + Brick_Half_Height + AsConfig::Global_Scale - 1);
    }
    else
    {
@@ -210,7 +208,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
       xform.eM21 = 0.0f;
       xform.eM22 = (float)fabs(cos(rotation_angle) );
       xform.eDx = (float)X;
-      xform.eDy = (float)Y + (float)(brick_half_height);
+      xform.eDy = (float)Y + (float)(Brick_Half_Height);
       GetWorldTransform(hdc, &old_xform);
       SetWorldTransform(hdc, &xform);
 
@@ -226,14 +224,14 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
          back_part_offset = -back_part_offset;
       }
 
-      Rectangle(hdc, 0, -brick_half_height - back_part_offset, AsConfig::Brick_Width * AsConfig::Global_Scale - 1, brick_half_height - back_part_offset);
+      Rectangle(hdc, 0, -Brick_Half_Height - back_part_offset, AsConfig::Brick_Width * AsConfig::Global_Scale - 1, Brick_Half_Height - back_part_offset);
 
       //Выводим передний план
       SelectObject(hdc, front_pen);
       SelectObject(hdc, front_brush);
 
       
-      Rectangle(hdc, 0, -brick_half_height, AsConfig::Brick_Width * AsConfig::Global_Scale - 1, brick_half_height);
+      Rectangle(hdc, 0, -Brick_Half_Height, AsConfig::Brick_Width * AsConfig::Global_Scale - 1, Brick_Half_Height);
 
       if (Rotation_Step > 4 && Rotation_Step <= 12)
       {
@@ -242,34 +240,22 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
          switch (Letter_Type)
          {
          case ELT_O:
-            Ellipse(hdc, 0 + 5 * AsConfig::Global_Scale, 1 * AsConfig::Global_Scale - brick_half_height, 0 + 10 * AsConfig::Global_Scale, 6 * AsConfig::Global_Scale - brick_half_height - 1);
+            Ellipse(hdc, 0 + 5 * AsConfig::Global_Scale, 1 * AsConfig::Global_Scale - Brick_Half_Height, 0 + 10 * AsConfig::Global_Scale, 6 * AsConfig::Global_Scale - Brick_Half_Height - 1);
             break;
 
          case ELT_I:
-            MoveToEx(hdc, 5 * AsConfig::Global_Scale + 1, 1 * AsConfig::Global_Scale - brick_half_height, 0);
-            LineTo(hdc, 5 * AsConfig::Global_Scale + 1, 6 * AsConfig::Global_Scale - brick_half_height - 1);
-            LineTo(hdc, 9 * AsConfig::Global_Scale + 1, 1 * AsConfig::Global_Scale - brick_half_height);
-            LineTo(hdc, 9 * AsConfig::Global_Scale + 1, 6 * AsConfig::Global_Scale - brick_half_height - 1);
+            Draw_Line(hdc, 5, 1, 5, 6);
+            Draw_Line(hdc, 5, 6, 9, 1);
+            Draw_Line(hdc, 9, 1, 9, 6);
             break;
 
          case ELT_G:
-            MoveToEx(hdc, 7 * AsConfig::Global_Scale + 1, 1 * AsConfig::Global_Scale - brick_half_height, 0);
-            LineTo(hdc, 7 * AsConfig::Global_Scale + 1, 6 * AsConfig::Global_Scale - brick_half_height - 1);
-
-            MoveToEx(hdc, 5 * AsConfig::Global_Scale + 1, 3 * AsConfig::Global_Scale - brick_half_height, 0);
-            LineTo(hdc, 9 * AsConfig::Global_Scale + 1, 3 * AsConfig::Global_Scale - brick_half_height);
-
-            MoveToEx(hdc, 4 * AsConfig::Global_Scale + 1, 1 * AsConfig::Global_Scale - brick_half_height, 0);
-            LineTo(hdc, 5 * AsConfig::Global_Scale + 1, 3 * AsConfig::Global_Scale - brick_half_height);
-
-            MoveToEx(hdc, 5 * AsConfig::Global_Scale + 1, 3 * AsConfig::Global_Scale - brick_half_height, 0);
-            LineTo(hdc, 4 * AsConfig::Global_Scale + 1, 6 * AsConfig::Global_Scale - brick_half_height - 1);
-
-            MoveToEx(hdc, 10 * AsConfig::Global_Scale + 1, 1 * AsConfig::Global_Scale - brick_half_height, 0);
-            LineTo(hdc, 9 * AsConfig::Global_Scale + 1, 3 * AsConfig::Global_Scale - brick_half_height);
-
-            MoveToEx(hdc, 9 * AsConfig::Global_Scale + 1, 3 * AsConfig::Global_Scale - brick_half_height, 0);
-            LineTo(hdc, 10 * AsConfig::Global_Scale + 1, 6 * AsConfig::Global_Scale - brick_half_height - 1);
+            Draw_Line(hdc, 7, 1, 7, 6);
+            Draw_Line(hdc, 5, 3, 9, 3);
+            Draw_Line(hdc, 4, 1, 5, 3);
+            Draw_Line(hdc, 5, 3, 4, 6);
+            Draw_Line(hdc, 10, 1, 9, 3);
+            Draw_Line(hdc, 9, 3, 10, 6);
             break;
          }
       }
@@ -277,4 +263,21 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    }
 }
 //------------------------------------------------------------------------------------------------------------
-//55 минута 34 видео
+void AFalling_Letter::Draw_Line(HDC hdc, int x_1, int y_1, int x_2, int y_2)
+{
+   int start_y, end_y;
+
+   start_y = y_1 * AsConfig::Global_Scale - Brick_Half_Height;
+
+   if (y_1 == 6)
+      --start_y;  
+
+   end_y = y_2 * AsConfig::Global_Scale - Brick_Half_Height;
+
+   if (y_2 == 6)
+      --end_y;
+
+	MoveToEx(hdc, x_1 * AsConfig::Global_Scale + 1, start_y, 0);
+	LineTo(hdc, x_2 * AsConfig::Global_Scale + 1, end_y);
+}
+//------------------------------------------------------------------------------------------------------------
