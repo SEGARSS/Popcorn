@@ -26,6 +26,8 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    Ball.Init();
    Border.Init();
 
+   AFalling_Letter::Init();
+
    ABall::Add_Hit_Checkers(&Border);
    ABall::Add_Hit_Checkers(&Level);
    ABall::Add_Hit_Checkers(&Platform);

@@ -77,7 +77,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)//отрисовка шарика
       Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
    }
 }
-//------------------------------------------------------------------------------------------------------------
+
 void ABall::Move() // Смещение шарика
 {
    bool got_hit;
@@ -121,7 +121,7 @@ void ABall::Move() // Смещение шарика
 
    Redraw_Ball();
 }
-//------------------------------------------------------------------------------------------------------------
+
 void ABall::Set_For_test()
 {
    Testing_Is_Active = true;
@@ -143,7 +143,7 @@ void ABall::Set_For_test()
 
    ++Test_Iteration;
 }
-//------------------------------------------------------------------------------------------------------------
+
 bool ABall::Is_Test_Finished()
 {
    if (Testing_Is_Active)
@@ -157,12 +157,12 @@ bool ABall::Is_Test_Finished()
    }
    return false;
 }
-//------------------------------------------------------------------------------------------------------------
+
 EBall_State ABall::Get_State()
 {
    return Ball_State;
 }
-//------------------------------------------------------------------------------------------------------------
+
 void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
 {
    switch (new_state)
@@ -191,12 +191,12 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
    }
    Ball_State = new_state;
 }
-//------------------------------------------------------------------------------------------------------------
+
 double ABall::Get_Direction()
 {
    return Ball_Direction;
 }
-//------------------------------------------------------------------------------------------------------------
+
 void ABall::Set_Direction(double new_direction)
 {
    const double pi_2 = 2.0 * M_PI;
@@ -213,7 +213,7 @@ void ABall::Set_Direction(double new_direction)
 
    Ball_Direction = new_direction;
 }
-//------------------------------------------------------------------------------------------------------------
+
 void ABall::Reflect(bool from_horizontal)
 {
    if (from_horizontal)
@@ -225,7 +225,7 @@ void ABall::Reflect(bool from_horizontal)
 		Set_Direction(M_PI - Ball_Direction);
 	}
 }
-//------------------------------------------------------------------------------------------------------------
+
 bool ABall::Is_Moving_Up()
 {
    if (Ball_Direction >= 0.0 && Ball_Direction < M_PI)
@@ -237,7 +237,7 @@ bool ABall::Is_Moving_Up()
       return false;
    }
 }
-//------------------------------------------------------------------------------------------------------------
+
 bool ABall::Is_Moving_Left()
 {
    if (Ball_Direction > M_PI_2 && Ball_Direction < M_PI + M_PI_2)
@@ -270,4 +270,3 @@ void ABall::Redraw_Ball()
    InvalidateRect(AsConfig::Hwnd, &Ball_Rect, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
-// С 55 МИНУТЫ 26 видео

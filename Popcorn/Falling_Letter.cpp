@@ -2,6 +2,9 @@
 
 //AFalling_Letter
 //------------------------------------------------------------------------------------------------------------
+int AFalling_Letter::All_Letters_Popularity;
+int AFalling_Letter::Letters_Popularity[ELT_MAX] = {7, 7, 7, 7, 7, 7, 7, 3, 3, 3, 1};
+//------------------------------------------------------------------------------------------------------------
 AFalling_Letter::AFalling_Letter(EBrick_Type brick_type, ELetter_Type letter_type, int x, int y)
 : Brick_Type(brick_type), Letter_Type(letter_type), Falling_Letter_State(EFLS_Normal), X(x), Y(y), Rotation_Step(2), 
   Next_Rotation_Tick(AsConfig::Current_Timer_Tick + Tick_Per_Step)
@@ -106,6 +109,29 @@ void AFalling_Letter::Test_Draw_All_Steps(HDC hdc)
       Letter_Cell.left += x_step;
       Letter_Cell.right += x_step;
    }
+}
+//------------------------------------------------------------------------------------------------------------
+void AFalling_Letter::Init()
+{
+   All_Letters_Popularity = 0;
+
+   for (int i = 0; i < ELT_MAX; i++)
+      All_Letters_Popularity += Letters_Popularity[i];
+}
+//------------------------------------------------------------------------------------------------------------
+ELetter_Type AFalling_Letter::Get_Random_Letter_Type()
+{
+   int letters_popularity;
+   letters_popularity = AsConfig::Rand(All_Letters_Popularity);
+
+   for (int i = 0; i < ELT_MAX; i++)
+   {
+      if (letters_popularity < Letters_Popularity[i])
+         return (ELetter_Type)i;
+
+      letters_popularity -= Letters_Popularity[i];
+   }
+   return ELT_O;
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, 
@@ -239,17 +265,28 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 
          switch (Letter_Type)
          {
-         case ELT_O:
+         case ELT_O: // Отмена
             Ellipse(hdc, 0 + 5 * AsConfig::Global_Scale, 1 * AsConfig::Global_Scale - Brick_Half_Height, 0 + 10 * AsConfig::Global_Scale, 6 * AsConfig::Global_Scale - Brick_Half_Height - 1);
             break;
 
-         case ELT_I:
+         case ELT_I: // Инверсия
             Draw_Line(hdc, 5, 1, 5, 6);
-            Draw_Line(hdc, 5, 6, 9, 1);
-            Draw_Line(hdc, 9, 1, 9, 6);
+            Draw_Line_To(hdc, 9, 1);
+            Draw_Line_To(hdc, 9, 6);
             break;
 
-         case ELT_G:
+         case ELT_C: // Скорость
+            Draw_C(hdc);
+            break;
+
+         case ELT_M: // Монстры
+            Draw_Line(hdc, 5, 6, 5, 1);
+            Draw_Line_To(hdc, 7, 3);
+            Draw_Line_To(hdc, 9, 1);
+            Draw_Line_To(hdc, 9, 6);
+            break;
+
+         case ELT_G: // Жизнь
             Draw_Line(hdc, 7, 1, 7, 6);
             Draw_Line(hdc, 5, 3, 9, 3);
             Draw_Line(hdc, 4, 1, 5, 3);
@@ -257,10 +294,53 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
             Draw_Line(hdc, 10, 1, 9, 3);
             Draw_Line(hdc, 9, 3, 10, 6);
             break;
+
+         case ELT_K: // Клей
+            Draw_Line(hdc, 5, 1, 5, 6);
+            Draw_Line(hdc, 5, 5, 9, 1);
+            Draw_Line(hdc, 7, 4, 9, 6);
+            break;
+
+         case ELT_W: // Шире
+            Draw_Line(hdc, 4, 1, 4, 6);
+            Draw_Line_To(hdc, 10, 6);
+            Draw_Line_To(hdc, 10, 1);
+            Draw_Line(hdc, 7, 1, 7, 6);
+            break;
+
+         case ELT_P: // Пол
+            Draw_Line(hdc, 5, 6, 5, 1);
+            Draw_Line_To(hdc, 9, 1);
+            Draw_Line_To(hdc, 9, 6);
+            break;
+
+         case ELT_L: // Лазер
+            Draw_Line(hdc, 5, 6, 7, 1);
+            Draw_Line_To(hdc, 9, 6);
+            break;
+
+         case ELT_T: // Три
+            Draw_Line(hdc, 5, 1, 9, 1);
+            Draw_Line(hdc, 7, 1, 7, 6);
+            break;
+
+         case ELT_Plus: // Переход на следующий уровень 
+            Draw_Line(hdc, 7, 1, 7, 5);
+            Draw_Line(hdc, 5, 3, 9, 3);
+            break;
          }
       }
       SetWorldTransform(hdc, &old_xform);
    }
+}
+//------------------------------------------------------------------------------------------------------------
+void AFalling_Letter::Draw_C(HDC hdc)
+{
+   int arc_x = 5 * AsConfig::Global_Scale;
+   int arc_y = 1 * AsConfig::Global_Scale - Brick_Half_Height;
+   int arc_size = 5 * AsConfig::Global_Scale - 1;
+
+   Arc(hdc, arc_x, arc_y, arc_x + arc_size, arc_y + arc_size, arc_x + arc_size, arc_y, arc_x + arc_size, arc_y + arc_size);
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Draw_Line(HDC hdc, int x_1, int y_1, int x_2, int y_2)
@@ -279,5 +359,14 @@ void AFalling_Letter::Draw_Line(HDC hdc, int x_1, int y_1, int x_2, int y_2)
 
 	MoveToEx(hdc, x_1 * AsConfig::Global_Scale + 1, start_y, 0);
 	LineTo(hdc, x_2 * AsConfig::Global_Scale + 1, end_y);
+}
+//------------------------------------------------------------------------------------------------------------
+void AFalling_Letter::Draw_Line_To(HDC hdc, int x, int y)
+{
+   int end_y = y * AsConfig::Global_Scale - Brick_Half_Height;
+
+   if (y == 6)
+      --end_y;
+   LineTo(hdc, x * AsConfig::Global_Scale + 1, end_y);
 }
 //------------------------------------------------------------------------------------------------------------
