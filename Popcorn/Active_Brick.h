@@ -28,6 +28,8 @@ enum EBrick_Type
 class AGraphics_Object
 {
 public:
+   virtual ~AGraphics_Object();
+
    virtual void Act() = 0;
    virtual void Draw(HDC hdc, RECT &paint_area) = 0;
    virtual bool Is_Finished() = 0;
@@ -36,13 +38,29 @@ public:
 
 
 
-
 //AActive_Brick
 //------------------------------------------------------------------------------------------------------------
 class AActive_Brick: public AGraphics_Object
 {
-public:
+protected:
+   virtual ~AActive_Brick();
    AActive_Brick(EBrick_Type brick_type, int level_x, int level_y);
+
+   EBrick_Type Brick_Type;
+   RECT Brick_Rect;
+};
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
+//AActive_Brick_Red_Blue
+//------------------------------------------------------------------------------------------------------------
+class AActive_Brick_Red_Blue: public AActive_Brick
+{
+public:
+   ~AActive_Brick_Red_Blue();
+   AActive_Brick_Red_Blue(EBrick_Type brick_type, int level_x, int level_y);
 
    virtual void Act();
    virtual void Draw(HDC hdc, RECT &paint_area);
@@ -51,9 +69,7 @@ public:
    static void Setup_Color();
 
 private:
-   EBrick_Type Brick_Type;
    int Fade_Step;
-   RECT Brick_Rect;
 
    static unsigned char Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step);
    static void Get_Fading_Color(const AColor &color, int step, HPEN &pen, HBRUSH &brush);
@@ -64,6 +80,28 @@ private:
    static HBRUSH Fading_Red_Brick_Brushes[Max_Fade_Step];
    static HPEN Fading_Blue_Brick_Pens[Max_Fade_Step];
    static HBRUSH Fading_Blue_Brick_Brushes[Max_Fade_Step];
+};
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
+//AActive_Brick_Unbreakable
+//------------------------------------------------------------------------------------------------------------
+class AActive_Brick_Unbreakable: public AActive_Brick
+{
+public:
+   ~AActive_Brick_Unbreakable();
+   AActive_Brick_Unbreakable(int level_x, int level_y);
+
+   virtual void Act();
+   virtual void Draw(HDC hdc, RECT &paint_area);
+   virtual bool Is_Finished();
+
+private:
+   int Unreakable_Animation_step;
+
+   static const int Max_Unreakable_Animation_step = 5;
 };
 //------------------------------------------------------------------------------------------------------------
 

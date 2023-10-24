@@ -19,7 +19,7 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
 
    AsConfig::Hwnd = hwnd;   
 
-   AActive_Brick::Setup_Color();
+   AActive_Brick_Red_Blue::Setup_Color();
 
    Level.Init();
    Platform.Init();

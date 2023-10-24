@@ -32,12 +32,12 @@ public:
 
    static bool Level_Has_Floor;
    static int Current_Timer_Tick;
-   static const AColor BG_Color, Red_Brick_Color, Blue_Brick_Color;
+   static const AColor BG_Color, Red_Brick_Color, Blue_Brick_Color, White_Brick_Color;
    static HPEN BG_Pen;
    static HBRUSH BG_Brush;
    static HWND Hwnd;
-   static HPEN Brick_Red_Pen, Brick_Blue_Pen, Letter_Pen;
-   static HBRUSH Brick_Red_Brush, Brick_Blue_Brush;
+   static HPEN Brick_Red_Pen, Brick_Blue_Pen, Brick_White_Pen, Letter_Pen;
+   static HBRUSH Brick_Red_Brush, Brick_Blue_Brush, Brick_White_Brush;
 
    static const double Moving_Step_Size;
 
@@ -57,7 +57,7 @@ public:
    static const int Platform_Y_Pos = 185;
    static const int FPS = 20;
    static const int Max_Active_Bricks_Count = 10; // Размер массива
-   static const int Hit_Per_Letter = 1; // Верочятность выбить букву = 1.0 / Hit_Per_Letter
+   static const int Hit_Per_Letter = 10; // Верочятность выбить букву = 1.0 / Hit_Per_Letter
    static const int Max_Falling_Letter_Count = 10;
 };
 //------------------------------------------------------------------------------------------------------------
