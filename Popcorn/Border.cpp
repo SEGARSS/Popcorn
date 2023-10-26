@@ -102,8 +102,7 @@ void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)//Отрис�
    }
 
    //Перфорация (Точки в нутри рамки)
-   SelectObject(hdc, AsConfig::BG_Pen);
-   SelectObject(hdc, AsConfig::BG_Brush);
+   AsConfig::BG_Color.Select(hdc);
 
    if (top_border)
    {

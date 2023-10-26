@@ -225,9 +225,7 @@ bool AsPlatform::Hit_By(AFalling_Letter *falling_letter)
 void AsPlatform::Circle_BG(HDC hdc)//Очистка фона
 {
    //Очищение фоном прежнее место
-   SelectObject(hdc, AsConfig::BG_Pen);
-   SelectObject(hdc, AsConfig::BG_Brush);
-
+   AsConfig::BG_Color.Select(hdc);
    Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -331,7 +329,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area) //Рисуем �
       // Стираем фоном пиксели над штрихом
       y = Meltdown_Platform_Y_Pos[i];
       MoveToEx(hdc, x, y, 0);
-      SelectObject(hdc, AsConfig::BG_Pen);
+      SelectObject(hdc, AsConfig::BG_Color.Pen);
       LineTo(hdc, x, y + y_offset);
 
       Meltdown_Platform_Y_Pos[i] += y_offset;
@@ -372,8 +370,7 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area)//Рисуем в�
    GetWorldTransform(hdc, &old_xform);
    SetWorldTransform(hdc, &xform);
 
-   SelectObject(hdc, AsConfig::BG_Pen);
-   SelectObject(hdc, AsConfig::BG_Brush);
+   AsConfig::BG_Color.Select(hdc);
 
    Rectangle(hdc, - AsConfig::Global_Scale / 2, -roller_size / 2, AsConfig::Global_Scale / 2, roller_size / 2);
 

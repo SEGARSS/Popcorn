@@ -53,9 +53,7 @@ void AFalling_Letter::Draw(HDC hdc, RECT &paint_area)
    //1. Очищаем фон.
    if (IntersectRect(&intersectRect, &paint_area, &Prev_Letter_Cell) )
    {
-      SelectObject(hdc, AsConfig::BG_Pen);
-      SelectObject(hdc, AsConfig::BG_Brush);
-
+      AsConfig::BG_Color.Select(hdc);
       Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
    }
 
@@ -134,8 +132,7 @@ ELetter_Type AFalling_Letter::Get_Random_Letter_Type()
    return ELT_O;
 }
 //------------------------------------------------------------------------------------------------------------
-void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, 
-   HPEN &back_pen, HBRUSH &back_brush)
+void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, AColor **front_color, AColor **back_color)
 {
    if (is_switch_color)
 	{
@@ -370,3 +367,4 @@ void AFalling_Letter::Draw_Line_To(HDC hdc, int x, int y)
    LineTo(hdc, x * AsConfig::Global_Scale + 1, end_y);
 }
 //------------------------------------------------------------------------------------------------------------
+// 37 виде, 15 минута, продолжить
