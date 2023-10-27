@@ -159,10 +159,8 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 	HBRUSH front_brush, back_brush;
 	XFORM xform, old_xform;
 
-   if (!(Brick_Type == EBT_Blue || Brick_Type == EBT_Red))
-   {
+   if (!(Brick_Type == EBT_Blue || Brick_Type == EBT_Red)) 
       return;  // Падающие буквы могут быть только от кирпичей такого типа
-   }
 
    // Корректируем шаг вращения и угол поворота
    Rotation_Step = Rotation_Step % Max_Rotation_Step;
