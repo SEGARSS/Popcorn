@@ -132,23 +132,17 @@ ELetter_Type AFalling_Letter::Get_Random_Letter_Type()
    return ELT_O;
 }
 //------------------------------------------------------------------------------------------------------------
-void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, AColor **front_color, AColor **back_color)
+void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, const AColor **front_color, const AColor **back_color)
 {
    if (is_switch_color)
 	{
-		front_pen = AsConfig::Brick_Red_Pen;
-		front_brush = AsConfig::Brick_Red_Brush;
-
-		back_pen = AsConfig::Brick_Blue_Pen;
-		back_brush = AsConfig::Brick_Blue_Brush;
+      *front_color = &AsConfig::Red_Brick_Color;
+      *back_color = &AsConfig::Blue_Brick_Color;
 	}
 	else
 	{
-		front_pen = AsConfig::Brick_Blue_Pen;
-		front_brush = AsConfig::Brick_Blue_Brush;
-
-		back_pen = AsConfig::Brick_Red_Pen;
-		back_brush = AsConfig::Brick_Red_Brush;
+      *front_color = &AsConfig::Blue_Brick_Color;
+      *back_color = &AsConfig::Red_Brick_Color;
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -174,36 +168,25 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    Rotation_Step = Rotation_Step % Max_Rotation_Step;
 
    if (Rotation_Step < 8)
-   {
       rotation_angle = 2.0 * M_PI / (double)Max_Rotation_Step * (double)Rotation_Step;
-   }
    else
-   {
       rotation_angle = 2.0 * M_PI / (double)Max_Rotation_Step * (double)(8 - Rotation_Step);
-   }
-
+   
    if (Rotation_Step > 4 && Rotation_Step <= 12)
    {
       if (Brick_Type == EBT_Blue)
-      {
          switch_color = true;
-      }
       else
-      {
          switch_color = false;
-      }
    }
    else
    {
       if (Brick_Type == EBT_Red)
-      {
          switch_color = true;
-      }
       else
-      {
          switch_color = false;
-      }
    }
+
    Set_Brick_Letter_Colors(switch_color, front_pen, front_brush, back_pen, back_brush);
 
    if (Rotation_Step == 4 || Rotation_Step == 12)
@@ -367,4 +350,4 @@ void AFalling_Letter::Draw_Line_To(HDC hdc, int x, int y)
    LineTo(hdc, x * AsConfig::Global_Scale + 1, end_y);
 }
 //------------------------------------------------------------------------------------------------------------
-// 37 виде, 15 минута, продолжить Fal
+
