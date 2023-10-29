@@ -136,13 +136,13 @@ void AFalling_Letter::Set_Brick_Letter_Colors(bool is_switch_color, const AColor
 {
    if (is_switch_color)
 	{
-      *front_color = &AsConfig::Red_Brick_Color;
-      *back_color = &AsConfig::Blue_Brick_Color;
+      *front_color = &AsConfig::Red_Color;
+      *back_color = &AsConfig::Blue_Color;
 	}
 	else
 	{
-      *front_color = &AsConfig::Blue_Brick_Color;
-      *back_color = &AsConfig::Red_Brick_Color;
+      *front_color = &AsConfig::Blue_Color;
+      *back_color = &AsConfig::Red_Color;
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -154,9 +154,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 	double rotation_angle;  // Преобразование шага в угол поворота
    double y_ratio;
 	int back_part_offset;
-
-	HPEN front_pen, back_pen;
-	HBRUSH front_brush, back_brush;
+   const AColor *front_color, *back_color;
 	XFORM xform, old_xform;
 
    if (!(Brick_Type == EBT_Blue || Brick_Type == EBT_Red)) 
@@ -185,20 +183,18 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
          switch_color = false;
    }
 
-   Set_Brick_Letter_Colors(switch_color, front_pen, front_brush, back_pen, back_brush);
+   Set_Brick_Letter_Colors(switch_color, &front_color, &back_color);
 
    if (Rotation_Step == 4 || Rotation_Step == 12)
    {
       // Выводим фон
-      SelectObject(hdc, back_pen);
-      SelectObject(hdc, back_brush);
+      back_color->Select(hdc);
 
       Rectangle(hdc, X, Y + Brick_Half_Height - AsConfig::Global_Scale, X + AsConfig::Brick_Width * AsConfig::Global_Scale, 
                      Y + Brick_Half_Height);
 
       //Выводим передний план
-      SelectObject(hdc, front_pen);
-      SelectObject(hdc, front_brush);
+      front_color->Select(hdc);
 
       Rectangle(hdc, X, Y + Brick_Half_Height, X + AsConfig::Brick_Width * AsConfig::Global_Scale, Y + Brick_Half_Height + AsConfig::Global_Scale - 1);
    }
@@ -217,29 +213,24 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
       SetWorldTransform(hdc, &xform);
 
       // Выводим фон
-      SelectObject(hdc, back_pen);
-      SelectObject(hdc, back_brush);
+      back_color->Select(hdc);
 
       offset = 3.0 * (1.0 - fabs(xform.eM22)) * (double)AsConfig::Global_Scale;
       back_part_offset = (int)round(offset);
 
       if (y_ratio < 0.0)
-      {
          back_part_offset = -back_part_offset;
-      }
-
+      
       Rectangle(hdc, 0, -Brick_Half_Height - back_part_offset, AsConfig::Brick_Width * AsConfig::Global_Scale - 1, Brick_Half_Height - back_part_offset);
 
       //Выводим передний план
-      SelectObject(hdc, front_pen);
-      SelectObject(hdc, front_brush);
+      front_color->Select(hdc);
 
-      
       Rectangle(hdc, 0, -Brick_Half_Height, AsConfig::Brick_Width * AsConfig::Global_Scale - 1, Brick_Half_Height);
 
       if (Rotation_Step > 4 && Rotation_Step <= 12)
       {
-         SelectObject(hdc, AsConfig::Letter_Pen);
+         SelectObject(hdc, AsConfig::White_Color.Pen);
 
          switch (Letter_Type)
          {

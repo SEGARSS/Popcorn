@@ -8,6 +8,7 @@
 class AColor
 {
 public:
+   AColor();
    AColor(unsigned char r, unsigned char g, unsigned char b);
 
    int Get_RGB() const;
@@ -28,20 +29,12 @@ public:
 class AsConfig
 {
 public:
-   static void Setup_Color();
-   static void Create_Pen_Brush(const AColor &color, HPEN &pen, HBRUSH &bruch);
-   static void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN &pen, HBRUSH &bruch);
    static int Rand(int range);
 
    static bool Level_Has_Floor;
    static int Current_Timer_Tick;
-   static const AColor BG_Color, Red_Brick_Color, Blue_Brick_Color, White_Color;
-   //static HPEN BG_Pen;
-   //static HBRUSH BG_Brush;
+   static const AColor BG_Color, Red_Color, Blue_Color, White_Color;
    static HWND Hwnd;
-   //static HPEN Brick_Red_Pen, Brick_Blue_Pen, Brick_White_Pen, Letter_Pen;
-   //static HBRUSH Brick_Red_Brush, Brick_Blue_Brush, Brick_White_Brush;
-   static HPEN Letter_Pen;
 
    static const double Moving_Step_Size;
 

@@ -22,9 +22,6 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    AActive_Brick_Red_Blue::Setup_Color();
 
    Level.Init();
-   Platform.Init();
-   Ball.Init();
-   Border.Init();
 
    AFalling_Letter::Init();
 
