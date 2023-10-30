@@ -49,3 +49,9 @@ int AsConfig::Rand(int range)//Вычисляет псевдо случайны�
    return rand() * range / RAND_MAX;
 }
 //------------------------------------------------------------------------------------------------------------
+void AsConfig::Round_Rect(HDC hdc, RECT &rect, int corner_radius)
+{
+   int radius = corner_radius * AsConfig::Global_Scale;
+   RoundRect(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1, radius, radius);
+}
+//------------------------------------------------------------------------------------------------------------

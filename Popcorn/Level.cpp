@@ -193,14 +193,10 @@ bool AsLevel::Get_Next_Fallin_Letter(int &index, AFalling_Letter **falling_lette
    AFalling_Letter *current_letter;
 
    if (Falling_Letter_Count == 0)
-   {
       return false;
-   }
 
    if (index < 0 || index >= AsConfig::Max_Falling_Letter_Count)
-   {
       return false;
-   }
 
    while (index < AsConfig::Max_Falling_Letter_Count)
    {
@@ -432,7 +428,7 @@ void AsLevel::Draw_Brick(HDC hdc, RECT &brick_rect, EBrick_Type brick_type)
       color->Select(hdc);
 
 
-   RoundRect(hdc, brick_rect.left, brick_rect.top, brick_rect.right - 1, brick_rect.bottom - 1, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
+   AsConfig::Round_Rect(hdc, brick_rect);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsLevel::Draw_Objects(HDC hdc, RECT &paint_area, AGraphics_Object ** objects_array, int objectc_max_count)

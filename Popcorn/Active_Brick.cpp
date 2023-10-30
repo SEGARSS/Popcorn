@@ -72,19 +72,15 @@ void AActive_Brick_Red_Blue::Draw(HDC hdc, RECT &paint_area)
    if (color != 0)
       color->Select(hdc);
 
-   RoundRect(hdc, Brick_Rect.left, Brick_Rect.top, Brick_Rect.right - 1, Brick_Rect.bottom - 1, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
+   AsConfig::Round_Rect(hdc, Brick_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AActive_Brick_Red_Blue::Is_Finished()
 {
    if (Fade_Step >= Max_Fade_Step -1)
-   {
       return true;
-   }
    else
-   {
       return false;
-   }
 }
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Red_Blue::Setup_Color()
@@ -138,26 +134,19 @@ void AActive_Brick_Unbreakable::Act()
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Unbreakable::Draw(HDC hdc, RECT &paint_area)
 {
-   //HPEN pen = 0;
-   //HBRUSH brush = 0;
+   const int scale = AsConfig::Global_Scale;
 
-   //switch (Brick_Type)   
-   //{
-   //case EBT_Red:
-   //   pen = Fading_Red_Brick_Pens[Fade_Step];
-   //   brush = Fading_Red_Brick_Brushes[Fade_Step];
-   //   break;
+   AsConfig::White_Color.Select(hdc);
+   AsConfig::Round_Rect(hdc, Brick_Rect);
 
-   //case EBT_Blue:
-   //   pen = Fading_Blue_Brick_Pens[Fade_Step];
-   //   brush = Fading_Blue_Brick_Brushes[Fade_Step];
-   //   break;
-   //}
+   AsConfig::Red_Color.Select(hdc);
+   MoveToEx(hdc,Brick_Rect.left + 4 * scale, Brick_Rect.top + 7 * scale - 1, 0);
+   LineTo(hdc, Brick_Rect.left + 11 * scale - 1, Brick_Rect.top + 0 * scale);
+   LineTo(hdc, Brick_Rect.left + 14 * scale - 1, Brick_Rect.top + 0 * scale);
+   LineTo(hdc, Brick_Rect.left + 7 * scale, Brick_Rect.top + 7 * scale - 1);
+   LineTo(hdc, Brick_Rect.left + 4 * scale, Brick_Rect.top + 7 * scale - 1);
 
-   //SelectObject(hdc, pen);
-   //SelectObject(hdc, brush);
-
-   //RoundRect(hdc, Brick_Rect.left, Brick_Rect.top, Brick_Rect.right - 1, Brick_Rect.bottom - 1, 2 * AsConfig::Global_Scale, AsConfig::Global_Scale * 2);
+   FloodFill(hdc, Brick_Rect.left + 11 * scale - 1, Brick_Rect.top + 1 * scale,  AsConfig::Red_Color.Get_RGB() );
 }
 //------------------------------------------------------------------------------------------------------------
 bool AActive_Brick_Unbreakable::Is_Finished()
@@ -168,3 +157,4 @@ bool AActive_Brick_Unbreakable::Is_Finished()
       return false;
 }
 //------------------------------------------------------------------------------------------------------------
+//38. 26 мин
