@@ -31,8 +31,8 @@ AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
 
 //AActive_Brick_Red_Blue
 //------------------------------------------------------------------------------------------------------------
-AColor AActive_Brick_Red_Blue::Fading_Red_Colors[Max_Fade_Step];
-AColor AActive_Brick_Red_Blue::Fading_Blue_Colors[Max_Fade_Step];
+AColor AActive_Brick_Red_Blue::Fading_Red_Brick_Colors[Max_Fade_Step];
+AColor AActive_Brick_Red_Blue::Fading_Blue_Brick_Colors[Max_Fade_Step];
 //------------------------------------------------------------------------------------------------------------
 AActive_Brick_Red_Blue::~AActive_Brick_Red_Blue()
 {
@@ -61,11 +61,11 @@ void AActive_Brick_Red_Blue::Draw(HDC hdc, RECT &paint_area)
    switch (Brick_Type)   
    {
    case EBT_Red:
-      color = &Fading_Red_Colors[Fade_Step];
+      color = &Fading_Red_Brick_Colors[Fade_Step];
       break;
 
    case EBT_Blue:
-      color = &Fading_Blue_Colors[Fade_Step];
+      color = &Fading_Blue_Brick_Colors[Fade_Step];
       break;
    }
 
@@ -87,9 +87,43 @@ void AActive_Brick_Red_Blue::Setup_Color()
 {
    for (int i = 0; i < Max_Fade_Step; i++)
    {
-      Get_Fading_Color(AsConfig::Red_Color, i, Fading_Red_Colors[i]);
-      Get_Fading_Color(AsConfig::Blue_Color, i, Fading_Blue_Colors[i]);
+      Get_Fading_Color(AsConfig::Red_Color, i, Fading_Red_Brick_Colors[i]);
+		Get_Fading_Color(AsConfig::Blue_Color, i, Fading_Blue_Brick_Colors[i]);
    }
+}
+//------------------------------------------------------------------------------------------------------------
+void AActive_Brick_Red_Blue::Draw_In_Level(HDC hdc, RECT &brick_rect, EBrick_Type brick_type)
+{// Вывод неактивного кирпича на уровне
+   const AColor *color = 0;
+
+   switch (brick_type)
+   {
+   case EBT_None:
+   {
+      color = &AsConfig::BG_Color;
+      break;
+   }
+
+   case EBT_Red:
+   {
+      color = &AsConfig::Red_Color;
+      break;
+   }
+
+   case EBT_Blue:
+   {
+      color = &AsConfig::Blue_Color;
+      break;
+   }
+
+   default:
+      throw 13;
+   }
+
+   if(color != 0)
+      color->Select(hdc);
+
+   AsConfig::Round_Rect(hdc, brick_rect);
 }
 //------------------------------------------------------------------------------------------------------------
 unsigned char AActive_Brick_Red_Blue::Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step)
@@ -118,53 +152,42 @@ AColor AActive_Brick_Unbreakable::Red_Highlight(AsConfig::Red_Color, 3 * AsConfi
 //------------------------------------------------------------------------------------------------------------
 AActive_Brick_Unbreakable::~AActive_Brick_Unbreakable()
 {
+   DeleteObject(Region);
 }
 //------------------------------------------------------------------------------------------------------------
 AActive_Brick_Unbreakable::AActive_Brick_Unbreakable(int level_x, int level_y)
-: AActive_Brick(EBT_Unbreakable, level_x, level_y), Unreakable_Animation_step(0)
+: AActive_Brick(EBT_Unbreakable, level_x, level_y), Animation_step(0), Region(0)
 {
+   Region = CreateRoundRectRgn(Brick_Rect.left, Brick_Rect.top, Brick_Rect.right + 1, Brick_Rect.bottom + 1, 2 * AsConfig::Global_Scale - 1, 2 * AsConfig::Global_Scale - 1);
 }
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Unbreakable::Act()
 {
-	if (Unreakable_Animation_step <= Max_Unreakable_Animation_step)
+	if (Animation_step <= Max_Animation_step)
 	{
-		++Unreakable_Animation_step;
+		++Animation_step;
 		InvalidateRect(AsConfig::Hwnd, &Brick_Rect, FALSE);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Unbreakable::Draw(HDC hdc, RECT &paint_area)
 {
+   int offset;
    const int scale = AsConfig::Global_Scale;
-   //HPEN red_pen, blue_pen;
-   HRGN region;
 
-   AsConfig::White_Color.Select(hdc);
-   AsConfig::Round_Rect(hdc, Brick_Rect);
+   Draw_In_Level(hdc, Brick_Rect);
 
-   //AsConfig::Red_Color.Select(hdc);
-   //MoveToEx(hdc,Brick_Rect.left + 4 * scale, Brick_Rect.top + 7 * scale - 1, 0);
-   //LineTo(hdc, Brick_Rect.left + 11 * scale - 1, Brick_Rect.top + 0 * scale);
-   //LineTo(hdc, Brick_Rect.left + 14 * scale - 1, Brick_Rect.top + 0 * scale);
-   //LineTo(hdc, Brick_Rect.left + 7 * scale, Brick_Rect.top + 7 * scale - 1);
-   //LineTo(hdc, Brick_Rect.left + 4 * scale, Brick_Rect.top + 7 * scale - 1);
+   SelectClipRgn(hdc, Region);
 
-   //FloodFill(hdc, Brick_Rect.left + 11 * scale - 1, Brick_Rect.top + 1 * scale,  AsConfig::Red_Color.Get_RGB() );
-
-   //red_pen = CreatePen(PS_SOLID, 3 * scale, AsConfig::Red_Color.Get_RGB() );
-   //blue_pen = CreatePen(PS_SOLID, scale, AsConfig::Blue_Color.Get_RGB() );
-
-   region = CreateRoundRectRgn(Brick_Rect.left, Brick_Rect.top, Brick_Rect.right + 1, Brick_Rect.bottom + 1, 2 * scale - 1, 2 * scale - 1);
-   SelectClipRgn(hdc, region);
+   offset = 2 * Animation_step * scale -  AsConfig::Brick_Width * scale;
 
    Blue_Highlight.Select_Pen(hdc);
-   MoveToEx(hdc,Brick_Rect.left + 4 * scale, Brick_Rect.bottom + scale, 0);
-   LineTo(hdc, Brick_Rect.left + 13 * scale - 1, Brick_Rect.top - 1 * scale);
+   MoveToEx(hdc,Brick_Rect.left + 4 * scale + offset, Brick_Rect.bottom + scale, 0);
+   LineTo(hdc, Brick_Rect.left + 13 * scale + offset - 1, Brick_Rect.top - 1 * scale);
 
    Red_Highlight.Select_Pen(hdc);
-   MoveToEx(hdc,Brick_Rect.left + 6 * scale, Brick_Rect.bottom + scale, 0);
-   LineTo(hdc, Brick_Rect.left + 15 * scale - 1, Brick_Rect.top - 1 * scale);
+   MoveToEx(hdc,Brick_Rect.left + 6 * scale + offset, Brick_Rect.bottom + scale, 0);
+   LineTo(hdc, Brick_Rect.left + 15 * scale + offset - 1, Brick_Rect.top - 1 * scale);
 
    SelectClipRgn(hdc, 0);
 }
@@ -175,5 +198,12 @@ bool AActive_Brick_Unbreakable::Is_Finished()
    //   return true;
    //else
       return false;
+}
+//------------------------------------------------------------------------------------------------------------
+void AActive_Brick_Unbreakable::Draw_In_Level(HDC hdc, RECT &brick_rect)
+{// Вывод неактивного кирпича на уровне
+
+   AsConfig::White_Color.Select(hdc);
+   AsConfig::Round_Rect(hdc, brick_rect);
 }
 //------------------------------------------------------------------------------------------------------------

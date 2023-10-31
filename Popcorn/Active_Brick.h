@@ -67,6 +67,7 @@ public:
    virtual bool Is_Finished();
 
    static void Setup_Color();
+   static void Draw_In_Level(HDC hdc, RECT &brick_rect, EBrick_Type brick_type);
 
 private:
    int Fade_Step;
@@ -76,8 +77,8 @@ private:
 
    static const int Max_Fade_Step = AsConfig::FPS;
 
-   static AColor Fading_Red_Colors[Max_Fade_Step];
-   static AColor Fading_Blue_Colors[Max_Fade_Step];
+   static AColor Fading_Red_Brick_Colors[Max_Fade_Step];
+	static AColor Fading_Blue_Brick_Colors[Max_Fade_Step];
 
 };
 //------------------------------------------------------------------------------------------------------------
@@ -97,10 +98,13 @@ public:
    virtual void Draw(HDC hdc, RECT &paint_area);
    virtual bool Is_Finished();
 
-private:
-   int Unreakable_Animation_step;
+   static void Draw_In_Level(HDC hdc, RECT &brick_rect);
 
-   static const int Max_Unreakable_Animation_step = 5;
+private:
+   int Animation_step;
+   HRGN Region;
+
+   static const int Max_Animation_step = 12;
    static AColor Blue_Highlight, Red_Highlight;
 };
 //------------------------------------------------------------------------------------------------------------
