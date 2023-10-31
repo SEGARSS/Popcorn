@@ -101,6 +101,7 @@ private:
    int Unreakable_Animation_step;
 
    static const int Max_Unreakable_Animation_step = 5;
+   static AColor Blue_Highlight, Red_Highlight;
 };
 //------------------------------------------------------------------------------------------------------------
 
