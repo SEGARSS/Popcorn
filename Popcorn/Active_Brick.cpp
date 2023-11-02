@@ -207,3 +207,4 @@ void AActive_Brick_Unbreakable::Draw_In_Level(HDC hdc, RECT &brick_rect)
    AsConfig::Round_Rect(hdc, brick_rect);
 }
 //------------------------------------------------------------------------------------------------------------
+//
