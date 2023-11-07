@@ -128,11 +128,11 @@ public:
 
 private:
    static void Draw_Stage(HDC hdc, RECT &brick_rect, int x, int width);
-   //int Animation_step;
-   //HRGN Region;
 
-   //static const int Max_Animation_step = 12;
-   //static AColor Blue_Highlight, Red_Highlight;
+   int Rotation_step;
+
+   static const int Step_Per_Turn = 16;
+   static const int Max_Rotation_step = Step_Per_Turn * 4;
 };
 //------------------------------------------------------------------------------------------------------------
 

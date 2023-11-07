@@ -54,6 +54,7 @@ const AColor AsConfig::BG_Color(15, 63, 31);
 const AColor AsConfig::Red_Color(255, 85, 85);
 const AColor AsConfig::Blue_Color(87, 255, 255);
 const AColor AsConfig::White_Color(255, 255, 255);
+const AColor AsConfig::Letter_Color(AsConfig::White_Color, AsConfig::Global_Scale);
 
 HWND AsConfig::Hwnd;
 

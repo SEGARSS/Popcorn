@@ -11,7 +11,7 @@ char AsLevel::Level_01[AsConfig::Level_Height][AsConfig::Level_Width] =
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 2, 2, 2, 2, 2, 2, 2, 7, 6, 5, 5,
+	2, 2, 2, 2, 2, 2, 2, 2, 7, 6, 5, 4,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -300,6 +300,7 @@ void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
 
    case EBT_Multihit_1:
       active_brick = new AActive_Brick_Multihit(brick_x, brick_y);
+      Current_Level[brick_y][brick_x] = EBT_None;
       break;
 
    case EBT_Multihit_2:

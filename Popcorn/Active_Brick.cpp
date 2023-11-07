@@ -212,56 +212,77 @@ void AActive_Brick_Unbreakable::Draw_In_Level(HDC hdc, RECT &brick_rect)
 
 
 //AActive_Brick_Multihit
-//AColor AActive_Brick_Multihit::Blue_Highlight(AsConfig::Blue_Color, AsConfig::Global_Scale);
-//AColor AActive_Brick_Multihit::Red_Highlight(AsConfig::Red_Color, 3 * AsConfig::Global_Scale);
 //------------------------------------------------------------------------------------------------------------
 AActive_Brick_Multihit::~AActive_Brick_Multihit()
 {
-   //DeleteObject(Region);
+   
 }
 //------------------------------------------------------------------------------------------------------------
 AActive_Brick_Multihit::AActive_Brick_Multihit(int level_x, int level_y)
-: AActive_Brick(EBT_Multihit_1, level_x, level_y) // Animation_step(0), Region(0)
+: AActive_Brick(EBT_Multihit_1, level_x, level_y), Rotation_step(0)
 {
-   //Region = CreateRoundRectRgn(Brick_Rect.left, Brick_Rect.top, Brick_Rect.right + 1, Brick_Rect.bottom + 1, 2 * AsConfig::Global_Scale - 1, 2 * AsConfig::Global_Scale - 1);
+   
 }
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Multihit::Act()
 {
-	//if (Animation_step <= Max_Animation_step)
-	//{
-	//	++Animation_step;
+	if (Rotation_step <= Max_Rotation_step)
+	{
+		++Rotation_step;
 		InvalidateRect(AsConfig::Hwnd, &Brick_Rect, FALSE);
-	//}
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Multihit::Draw(HDC hdc, RECT &paint_area)
 {
-   //int offset;
-   //const int scale = AsConfig::Global_Scale;
+   int step;
+   const int scale = AsConfig::Global_Scale;
+   double rotation_angle, x_ratio;
+   RECT zero_rect;
+   XFORM xform, old_xform;
 
-   //Draw_In_Level(hdc, Brick_Rect);
+   // 1. Очищаем фон
+   AsConfig::BG_Color.Select(hdc);
+   AsConfig::Round_Rect(hdc, Brick_Rect);
 
-   //SelectClipRgn(hdc, Region);
+   // 2. Настраиваем матрицу поворота буквы
+   step = Rotation_step % Step_Per_Turn;
+   rotation_angle = M_PI_4 / 2.0 * (double)step;
+   x_ratio = cos(rotation_angle);
 
-   //offset = 2 * Animation_step * scale -  AsConfig::Brick_Width * scale;
+	xform.eM11 = (float)x_ratio;
+	xform.eM12 = 0.0f;
+	xform.eM21 = 0.0f;
+	xform.eM22 = 1.0f;
+	xform.eDx = (float)Brick_Rect.left + (1.0 - x_ratio) * (float)(AsConfig::Brick_Width * scale) / 2.0f;
+	xform.eDy = (float)Brick_Rect.top;
+	GetWorldTransform(hdc, &old_xform);
+	SetWorldTransform(hdc, &xform);
 
-   //Blue_Highlight.Select_Pen(hdc);
-   //MoveToEx(hdc,Brick_Rect.left + 4 * scale + offset, Brick_Rect.bottom + scale, 0);
-   //LineTo(hdc, Brick_Rect.left + 13 * scale + offset - 1, Brick_Rect.top - 1 * scale);
+   // 3. Рисуем "100"
+   AsConfig::Letter_Color.Select_Pen(hdc);
+   MoveToEx(hdc, 0 + 1 * scale + 1, 0 + 3 * scale, 0);
+   LineTo(hdc, 0 + 3 * scale + 1, 0 + 1 * scale);
+   LineTo(hdc, 0 + 3 * scale + 1, 0 + 6 * scale - 1);
 
-   //Red_Highlight.Select_Pen(hdc);
-   //MoveToEx(hdc,Brick_Rect.left + 6 * scale + offset, Brick_Rect.bottom + scale, 0);
-   //LineTo(hdc, Brick_Rect.left + 15 * scale + offset - 1, Brick_Rect.top - 1 * scale);
+   zero_rect.left = 0 + 5 * scale + 1;
+   zero_rect.top = 0 + 1 * scale;
+   zero_rect.right = zero_rect.left + 3 * scale + 1;
+   zero_rect.bottom = zero_rect.top + 5 * scale ;
+   AsConfig::Round_Rect(hdc, zero_rect);
 
-   //SelectClipRgn(hdc, 0);
+   zero_rect.left += 5 * scale;
+   zero_rect.right += 5 * scale;
+   AsConfig::Round_Rect(hdc, zero_rect);
+
+   SetWorldTransform(hdc, &old_xform);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AActive_Brick_Multihit::Is_Finished()
 {
-   //if (Fade_Step >= Max_Fade_Step -1)
-   //   return true;
-   //else
+   if (Rotation_step >= Max_Rotation_step)
+      return true;
+   else
       return false;
 }
 //------------------------------------------------------------------------------------------------------------

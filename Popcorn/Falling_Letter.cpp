@@ -206,7 +206,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
       xform.eM11 = 1.0f;
       xform.eM12 = 0.0f;
       xform.eM21 = 0.0f;
-      xform.eM22 = (float)fabs(cos(rotation_angle) );
+      xform.eM22 = (float)fabs(y_ratio);
       xform.eDx = (float)X;
       xform.eDy = (float)Y + (float)(Brick_Half_Height);
       GetWorldTransform(hdc, &old_xform);
@@ -230,7 +230,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
 
       if (Rotation_Step > 4 && Rotation_Step <= 12)
       {
-         AsConfig::White_Color.Select_Pen(hdc);
+         AsConfig::Letter_Color.Select_Pen(hdc);
 
          switch (Letter_Type)
          {
