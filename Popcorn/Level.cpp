@@ -11,7 +11,7 @@ char AsLevel::Level_01[AsConfig::Level_Height][AsConfig::Level_Width] =
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,
+	2, 2, 2, 2, 2, 2, 2, 2, 7, 6, 5, 5,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -215,12 +215,27 @@ bool AsLevel::Get_Next_Fallin_Letter(int &index, AFalling_Letter **falling_lette
 void AsLevel::On_Hit(int brick_x, int brick_y)
 {
    EBrick_Type brick_type;
+
    brick_type = (EBrick_Type)Current_Level[brick_y][brick_x];
 
    if (Add_Falling_Letter(brick_x, brick_y, brick_type) )
       Current_Level[brick_y][brick_x] = EBT_None;
    else
       Add_Active_Brick(brick_x, brick_y, brick_type);
+
+   Redraw_Brick(brick_x, brick_y);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsLevel::Redraw_Brick(int brick_x, int brick_y)
+{
+   RECT brick_rect;
+
+   brick_rect.left = (AsConfig::Level_X_Offset + brick_x * AsConfig::Cell_Width) * AsConfig::Global_Scale;
+   brick_rect.top = (AsConfig::Level_X_Offset + brick_y * AsConfig::Cell_Height) * AsConfig::Global_Scale;
+   brick_rect.right = brick_rect.left + AsConfig::Brick_Width * AsConfig::Global_Scale;
+   brick_rect.bottom = brick_rect.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
+
+   InvalidateRect(AsConfig::Hwnd, &brick_rect, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type)
@@ -261,7 +276,7 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
 void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
 {//Создаём активный кирпич, если можем
 
-   AActive_Brick *active_brick;
+   AActive_Brick *active_brick = 0;
 
 	if (Active_Bricks_Count >= AsConfig::Max_Active_Bricks_Count)
 	{
@@ -283,14 +298,15 @@ void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
       active_brick = new AActive_Brick_Unbreakable(brick_x, brick_y);
       break;
 
-   //case EBT_Multihit_1:
-   //   break;
-   //case EBT_Multihit_2:
-   //   break;
-   //case EBT_Multihit_3:
-   //   break;
-   //case EBT_Multihit_4:
-   //   break;
+   case EBT_Multihit_1:
+      active_brick = new AActive_Brick_Multihit(brick_x, brick_y);
+      break;
+
+   case EBT_Multihit_2:
+   case EBT_Multihit_3:
+   case EBT_Multihit_4:
+      Current_Level[brick_y][brick_x] = brick_type - 1;
+      break;
    //case EBT_Parachute:
    //   break;
    //case EBT_Teleport:
@@ -298,7 +314,7 @@ void AsLevel::Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type)
    //case EBT_Ad:
    //   break;
    default:
-      throw 13;
+      AsConfig::Throw();
    }
   
    //Добавляем новый активный кирпич на первое свободное место
@@ -408,8 +424,15 @@ void AsLevel::Draw_Brick(HDC hdc, RECT &brick_rect, EBrick_Type brick_type)
       AActive_Brick_Unbreakable::Draw_In_Level(hdc, brick_rect);
       break;
 
+	case EBT_Multihit_1:
+	case EBT_Multihit_2:
+	case EBT_Multihit_3:
+	case EBT_Multihit_4:
+		AActive_Brick_Multihit::Draw_In_Level(hdc, brick_rect, brick_type);
+		break;
+
    default:
-      throw 13;
+      AsConfig::Throw();
    }
 }
 //------------------------------------------------------------------------------------------------------------

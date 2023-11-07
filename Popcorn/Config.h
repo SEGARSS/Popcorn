@@ -36,6 +36,7 @@ class AsConfig
 public:
    static int Rand(int range);
    static void Round_Rect(HDC hdc, RECT &rect, int corner_radius = 2);
+   static void Throw();
 
    static bool Level_Has_Floor;
    static int Current_Timer_Tick;
