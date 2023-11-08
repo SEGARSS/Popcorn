@@ -53,6 +53,7 @@ public:
 
 private:
    void Redraw_Ball();
+   void Draw_Parachute(HDC hdc, RECT &pain_area);
 
    EBall_State Ball_State;
 
@@ -67,8 +68,10 @@ private:
    double Center_Y_Pos;
 
    RECT Ball_Rect, Prev_Ball_Rect;
+   RECT Parachute_Rect;
 
    static const double Start_Ball_Y_Pos;
+   static const int Parachute_Size = 15;
    static int Hit_Checkers_Count;
    static AHit_Checker *Hit_Checkers[3];
 };

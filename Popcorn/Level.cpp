@@ -231,7 +231,7 @@ void AsLevel::Redraw_Brick(int brick_x, int brick_y)
    RECT brick_rect;
 
    brick_rect.left = (AsConfig::Level_X_Offset + brick_x * AsConfig::Cell_Width) * AsConfig::Global_Scale;
-   brick_rect.top = (AsConfig::Level_X_Offset + brick_y * AsConfig::Cell_Height) * AsConfig::Global_Scale;
+   brick_rect.top = (AsConfig::Level_Y_Offset + brick_y * AsConfig::Cell_Height) * AsConfig::Global_Scale;
    brick_rect.right = brick_rect.left + AsConfig::Brick_Width * AsConfig::Global_Scale;
    brick_rect.bottom = brick_rect.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
 
