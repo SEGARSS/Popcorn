@@ -24,6 +24,7 @@ enum EBall_State
    EBS_Normal,
    EBS_Lost,
    EBS_On_Platform,
+   EBS_ON_Parachute
 };
 //------------------------------------------------------------------------------------------------------------
 class ABall
@@ -42,6 +43,7 @@ public:
    void Reflect(bool from_horizontal);
    bool Is_Moving_Up();
    bool Is_Moving_Left();
+   void Set_On_Parachute(int brick_x, int brick_y);
 
    double Ball_Speed;
 

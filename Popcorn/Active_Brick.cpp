@@ -254,7 +254,7 @@ void AActive_Brick_Multihit::Draw(HDC hdc, RECT &paint_area)
 	xform.eM12 = 0.0f;
 	xform.eM21 = 0.0f;
 	xform.eM22 = 1.0f;
-	xform.eDx = (float)Brick_Rect.left + (1.0 - x_ratio) * (float)(AsConfig::Brick_Width * scale) / 2.0f;
+	xform.eDx = (float)Brick_Rect.left + (float)(1.0 - x_ratio) * (float)(AsConfig::Brick_Width * scale) / 2.0f;
 	xform.eDy = (float)Brick_Rect.top;
 	GetWorldTransform(hdc, &old_xform);
 	SetWorldTransform(hdc, &xform);

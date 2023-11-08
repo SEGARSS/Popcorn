@@ -231,6 +231,15 @@ bool ABall::Is_Moving_Left()
    }
 }
 //------------------------------------------------------------------------------------------------------------
+void ABall::Set_On_Parachute(int brick_x, int brick_y)
+{
+   Ball_Direction = M_PI + M_PI_2;
+   Ball_Speed = 1.0;
+   Ball_Speed = EBS_ON_Parachute;
+
+   Center_X_Pos = (double)(AsConfig::Level_X_Offset + brick_x * AsConfig::Cell_Width + AsConfig::Cell_Width / 2);
+}
+//------------------------------------------------------------------------------------------------------------
 void ABall::Add_Hit_Checkers (AHit_Checker *hit_checker)
 {
    if(Hit_Checkers_Count >= sizeof(Hit_Checkers) / sizeof(Hit_Checkers[0]))
