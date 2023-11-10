@@ -25,9 +25,9 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
 
    AFalling_Letter::Init();
 
-   ABall::Add_Hit_Checkers(&Border);
-   ABall::Add_Hit_Checkers(&Level);
-   ABall::Add_Hit_Checkers(&Platform);
+   ABall::Add_Hit_Checker(&Border);
+   ABall::Add_Hit_Checker(&Level);
+   ABall::Add_Hit_Checker(&Platform);
 ;
    Level.Set_Current_Level(AsLevel::Level_01);
 
@@ -82,7 +82,7 @@ int AsEngine::On_Timer() // Смещение по таймеру
    switch (Game_State)
    {
    case EGS_Test_Ball:
-      Ball.Set_For_test();
+      Ball.Set_For_Test();
       Game_State = EGS_Play_Level;
       break;
 
@@ -133,7 +133,7 @@ void AsEngine::Act()
    Platform.Act();
    Level.Act();
 
-   while (Level.Get_Next_Fallin_Letter(index, &falling_letter) )
+   while (Level.Get_Next_Falling_Letter(index, &falling_letter) )
    {
       if (Platform.Hit_By(falling_letter) )
       {
