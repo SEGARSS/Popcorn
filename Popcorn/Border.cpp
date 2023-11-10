@@ -10,20 +10,20 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рам
 {
    //Линия слева
    for (int i = 0; i < 50; i++)
-      Draw_Element(hdc, 2, 1 + i * 4, false);
+		Draw_Element(hdc, 2, 1 + i * 4, false);
    //Линия справа
    for (int i = 0; i < 50; i++)
-      Draw_Element(hdc, 201, 1 + i * 4, false);
+		Draw_Element(hdc, 201, 1 + i * 4, false);
    //Линия сверху
    for (int i = 0; i < 50; i++)
-      Draw_Element(hdc, 3 + i * 4, 0, true);
+		Draw_Element(hdc, 3 + i * 4, 0, true);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 {
-   bool got_hit = false;
+	bool got_hit = false;
 
-	// Корректируем позиции по отражению от рамки
+	// Корректируем позицию при отражении от рамки
 	if (next_x_pos - ball->Radius < AsConfig::Border_X_Offset)
 	{
 		got_hit = true;
@@ -51,40 +51,37 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 		}
 		else
 		{
-			if (next_y_pos + ball->Radius > (double)AsConfig::Max_Y_Pos + ball->Radius * 4.0)//Чтобы шарик смог улететь ниже пола
-			{
+			if (next_y_pos + ball->Radius > (double)AsConfig::Max_Y_Pos + ball->Radius * 4.0)  // Чтобы шарик смог улететь ниже пола, проверяем его max_y_pos ниже видимой границы
 				ball->Set_State(EBS_Lost, next_x_pos);
-			}
 		}
 	}
-
-   return got_hit;
+	return got_hit;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)//Отрисовка элемента боковой рамки
+void AsBorder::Draw_Element(HDC hdc, int x, int y, bool top_border)// Рисует элемент рамки уровня
 {
-   //Выводиться основная линия
-   AsConfig::Blue_Color.Select(hdc);
+	// Основная линия
+	AsConfig::Blue_Color.Select(hdc);
 
-   if (top_border)
-      Rectangle(hdc, x * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
-   else
-      Rectangle(hdc, (x + 1) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+	if (top_border)
+		Rectangle(hdc, x * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+	else
+		Rectangle(hdc, (x + 1) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
 
-   //Белая каяма
-   AsConfig::White_Color.Select(hdc);
+	// Белая кайма
+	AsConfig::White_Color.Select(hdc);
 
-   if (top_border)
-      Rectangle(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 1) * AsConfig::Global_Scale - 1);
-   else
-      Rectangle(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 1) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+	if (top_border)
+		Rectangle(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 1) * AsConfig::Global_Scale - 1);
+	else
+		Rectangle(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 1) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
 
-   //Перфорация (Точки в нутри рамки)
-   AsConfig::BG_Color.Select(hdc);
+	// Перфорация
+	AsConfig::BG_Color.Select(hdc);
 
-   if (top_border)
-      Rectangle(hdc, (x + 2) * AsConfig::Global_Scale, (y + 2) * AsConfig::Global_Scale, (x + 3) * AsConfig::Global_Scale - 1, (y + 3) * AsConfig::Global_Scale - 1);
-   else
-      Rectangle(hdc, (x + 2) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 3) * AsConfig::Global_Scale - 1, (y + 2) * AsConfig::Global_Scale - 1);
+	if (top_border)
+		Rectangle(hdc, (x + 2) * AsConfig::Global_Scale, (y + 2) * AsConfig::Global_Scale, (x + 3) * AsConfig::Global_Scale - 1, (y + 3) * AsConfig::Global_Scale - 1);
+	else
+		Rectangle(hdc, (x + 2) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 3) * AsConfig::Global_Scale - 1, (y + 2) * AsConfig::Global_Scale - 1);
 }
 //------------------------------------------------------------------------------------------------------------
