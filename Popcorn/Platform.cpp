@@ -33,12 +33,12 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
    // 1. Проверяем отражение от боковых шариков
    // От левого
    if (Reflect_On_Circle(next_x_pos, next_y_pos, 0.0, ball) )
-      return true;
+      goto _on_hit;
 
    // 2. Проверяем отражение от боковых шариков
    // От правого
    if (Reflect_On_Circle(next_x_pos, next_y_pos, Width - Circle_Size, ball) )
-      return true;
+      goto _on_hit;
 
    // 3. Проверяме отражение от центральной части
    if (ball->Is_Moving_Up() )
@@ -48,9 +48,12 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
 	if (Hit_Circle_On_Line(next_y_pos - inner_y, next_x_pos, inner_left_x, inner_right_x, ball->Radius, reflection_pos) )
 	{
 		ball->Reflect(true);
-		return true;
+		goto _on_hit;
 	}
 	return false;
+
+_on_hit:
+   return true;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act()

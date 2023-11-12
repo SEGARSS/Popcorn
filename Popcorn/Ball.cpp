@@ -69,7 +69,7 @@ void ABall::Move() // Смещение шарика
    bool got_hit;
 	double next_x_pos, next_y_pos;
 
-   if (Ball_State != EBS_Normal)
+   if (Ball_State == EBS_Lost || Ball_State ==  EBS_On_Platform)
 		return;
 
 	Prev_Ball_Rect = Ball_Rect;
@@ -99,6 +99,17 @@ void ABall::Move() // Смещение шарика
       }
 	}
    Redraw_Ball();
+
+	if(Ball_State == EBS_On_Parachute)
+	{
+		Prev_Parachute_Rect = Parachute_Rect;
+
+		Parachute_Rect.bottom = Ball_Rect.bottom;
+		Parachute_Rect.top = Parachute_Rect.bottom - Parachute_Size * AsConfig::Global_Scale;
+
+		InvalidateRect(AsConfig::Hwnd, &Prev_Parachute_Rect, FALSE);
+		InvalidateRect(AsConfig::Hwnd, &Parachute_Rect, FALSE);
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Set_For_Test()
@@ -220,8 +231,13 @@ void ABall::Set_On_Parachute(int brick_x, int brick_y)
 	Parachute_Rect.right = Parachute_Rect.left + Parachute_Size * AsConfig::Global_Scale;
 	Parachute_Rect.bottom = Parachute_Rect.top + Parachute_Size * AsConfig::Global_Scale;
 
-	Center_X_Pos = (double)(cell_x + AsConfig::Cell_Width / 2);
-	Center_X_Pos = (double)(cell_y + Parachute_Size);
+	Prev_Parachute_Rect = Parachute_Rect;
+
+	Center_X_Pos = (double)(cell_x + AsConfig::Cell_Width / 2) - 1.0 / (double)AsConfig::Global_Scale;
+	Center_Y_Pos = (double)(cell_y + Parachute_Size) - ABall::Radius * 2.0;
+
+	InvalidateRect(AsConfig::Hwnd, &Prev_Parachute_Rect, FALSE);
+	InvalidateRect(AsConfig::Hwnd, &Parachute_Rect, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Add_Hit_Checker(AHit_Checker *hit_checker)
@@ -245,15 +261,71 @@ void ABall::Redraw_Ball()
 //------------------------------------------------------------------------------------------------------------
 void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 {
+	const int scale = AsConfig::Global_Scale;
    int dome_height = (Parachute_Rect.bottom - Parachute_Rect.top) / 2;
-   RECT intersectRect;
+	int arc_height = 4 * scale;
+	int arc_x; 
+	int line_y;
+	int ball_center_x, ball_center_y;
+   RECT intersection_rect, sub_arc, other_arc;
 
-   if (! IntersectRect(&intersectRect, &pain_area, &Parachute_Rect))
+   if (! IntersectRect(&intersection_rect, &pain_area, &Parachute_Rect))
       return;
-   
+
+	// 0. Очищаем фон
+	AsConfig::BG_Color.Select(hdc);
+   AsConfig::Round_Rect(hdc, Prev_Parachute_Rect);
+
    // 1. Купол
    AsConfig::Blue_Color.Select(hdc);
-   Pie(hdc, Parachute_Rect.left, Parachute_Rect.top, Parachute_Rect.right - 1, Parachute_Rect.bottom - 1, 
-            Parachute_Rect.right, Parachute_Rect.top + dome_height, Parachute_Rect.left, Parachute_Rect.top + dome_height);
+   Chord(hdc, Parachute_Rect.left, Parachute_Rect.top, Parachute_Rect.right - 1, Parachute_Rect.bottom - 1, 
+            Parachute_Rect.right, Parachute_Rect.top + dome_height - 1, Parachute_Rect.left, Parachute_Rect.top + dome_height - 1);
+
+	// 2. Арки
+	AsConfig::BG_Color.Select(hdc);
+	arc_x = Parachute_Rect.left + 1;
+
+	// 2.1 Левая
+	sub_arc.left = arc_x;
+	sub_arc.top = Parachute_Rect.top + dome_height - arc_height / 2;
+	sub_arc.right = sub_arc.left + 3 * scale;
+	sub_arc.bottom = sub_arc.top + 4 * scale;
+
+	Ellipse(hdc, sub_arc.left, sub_arc.top, sub_arc.right - 1, sub_arc.bottom - 1);
+
+	// 2.2 Средняя
+	other_arc = sub_arc;
+
+	other_arc.left = arc_x + 3 * scale + 1;
+	other_arc.right = arc_x + 11 * scale;
+
+	Ellipse(hdc, other_arc.left, other_arc.top, other_arc.right - 1, other_arc.bottom - 1);
+
+	// 2.3 Правая
+	other_arc = sub_arc;
+
+	other_arc.left = arc_x + 11 * scale + 1;
+	other_arc.right = arc_x + 14 * scale + 1;
+
+	Ellipse(hdc, other_arc.left, other_arc.top, other_arc.right - 1, other_arc.bottom - 1);
+
+	// 3. Стропы
+	line_y = Parachute_Rect.top + dome_height;
+	ball_center_x = (Parachute_Rect.left + Parachute_Rect.right) / 2;
+	ball_center_y = Parachute_Rect.bottom - 2 * scale;
+	
+	AsConfig::White_Color.Select(hdc);
+
+	MoveToEx(hdc, Parachute_Rect.left, line_y, 0);
+	LineTo(hdc, ball_center_x, ball_center_y);
+
+	MoveToEx(hdc, Parachute_Rect.left + 3 * scale + 1, line_y, 0);
+	LineTo(hdc, ball_center_x, ball_center_y);
+
+	MoveToEx(hdc, Parachute_Rect.right - 4 * scale + 1, line_y, 0);
+	LineTo(hdc, ball_center_x, ball_center_y);
+
+	MoveToEx(hdc, Parachute_Rect.right, line_y - 1, 0);
+	LineTo(hdc, ball_center_x, ball_center_y);
 }
 //------------------------------------------------------------------------------------------------------------

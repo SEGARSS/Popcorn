@@ -71,7 +71,7 @@ private:
 	double Center_X_Pos, Center_Y_Pos;
 
 	RECT Ball_Rect, Prev_Ball_Rect;
-	RECT Parachute_Rect;
+	RECT Parachute_Rect, Prev_Parachute_Rect;
 
 	static const double Start_Ball_Y_Pos;
 	static const int Parachute_Size = 15;
