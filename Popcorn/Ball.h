@@ -8,7 +8,8 @@ enum EBall_State
    EBS_Normal,
 	EBS_Lost,
 	EBS_On_Platform,
-	EBS_On_Parachute
+	EBS_On_Parachute,
+	EBS_Off_Parachute
 };
 //------------------------------------------------------------------------------------------------------------
 
@@ -58,9 +59,11 @@ public:
 
 private:
 	void Redraw_Ball();
+	void Redraw_Parachute();
 	void Draw_Parachute(HDC hdc, RECT &paint_area);
+	void Clear_Parachute(HDC hdc);
 
-	EBall_State Ball_State;
+	EBall_State Ball_State, Prev_Ball_State;
 	double Rest_Distance;
 	double Ball_Direction;
 

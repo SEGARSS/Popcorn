@@ -33,7 +33,7 @@ int ABall::Hit_Checkers_Count = 0;
 AHit_Checker *ABall::Hit_Checkers[] = {};
 //------------------------------------------------------------------------------------------------------------
 ABall::ABall()
-: Ball_State(EBS_Normal), Center_X_Pos(0.0), Center_Y_Pos(Start_Ball_Y_Pos), Ball_Speed(0.0),
+: Ball_State(EBS_Normal), Prev_Ball_State(EBS_Normal), Center_X_Pos(0.0), Center_Y_Pos(Start_Ball_Y_Pos), Ball_Speed(0.0),
   Rest_Distance(0.0), Ball_Direction(0), Testing_Is_Active(false), Test_Iteration(0), Ball_Rect{}, Prev_Ball_Rect{}
 {
 	//Set_State(EBS_Normal, 0);
@@ -50,11 +50,22 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
 		Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
 	}
 
-	if (Ball_State == EBS_On_Parachute)
+	switch (Ball_State)
+	{
+	case EBS_On_Parachute:
 		Draw_Parachute(hdc, paint_area);
+		break;
 
-	if (Ball_State == EBS_Lost)
+	case EBS_Off_Parachute:
+		Clear_Parachute(hdc);
+		Set_State(EBS_Normal, Center_X_Pos, Center_Y_Pos);
+		break;
+
+	case EBS_Lost:
+		if(Prev_Ball_State == EBS_On_Parachute)
+			Clear_Parachute(hdc);
 		return;
+	}
 
 	// 2. Рисуем шарик
 	if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect) )
@@ -97,6 +108,9 @@ void ABall::Move() // Смещение шарика
 			if (Testing_Is_Active)
 				Rest_Test_Distance -= AsConfig::Moving_Step_Size;
       }
+
+		if (Ball_State == EBS_Lost)
+			break;
 	}
    Redraw_Ball();
 
@@ -107,8 +121,7 @@ void ABall::Move() // Смещение шарика
 		Parachute_Rect.bottom = Ball_Rect.bottom;
 		Parachute_Rect.top = Parachute_Rect.bottom - Parachute_Size * AsConfig::Global_Scale;
 
-		InvalidateRect(AsConfig::Hwnd, &Prev_Parachute_Rect, FALSE);
-		InvalidateRect(AsConfig::Hwnd, &Parachute_Rect, FALSE);
+		Redraw_Parachute();
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -158,7 +171,12 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
 
 
 	case EBS_Lost:
+		if (! (Ball_State == EBS_Normal || Ball_State == EBS_On_Parachute) )
+			AsConfig::Throw();//Только из этих состояний можно потерять мяч!
+
 		Ball_Speed = 0.0;
+		Redraw_Ball();
+		Redraw_Parachute();
 		break;
 
 
@@ -170,8 +188,25 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
 		Ball_Direction = M_PI_4;
 		Redraw_Ball();
 		break;
+
+
+	case EBS_On_Parachute:
+		AsConfig::Throw(); // Для постановки на парашут, нужно вызвать специальный метод Set_On_Parachute()
+		break;
+
+
+	case EBS_Off_Parachute:
+		if (Ball_State != EBS_Off_Parachute)
+			AsConfig::Throw(); // В этом состоянии можно перейти только из EBS_On_Parachute!
+
+		Ball_Speed = 0.0;
+		Rest_Distance = 0.0;
+		Redraw_Ball();
+		Redraw_Parachute();
+		break;
 	}
 
+	Prev_Ball_State = Ball_State;
 	Ball_State = new_state;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -236,8 +271,7 @@ void ABall::Set_On_Parachute(int brick_x, int brick_y)
 	Center_X_Pos = (double)(cell_x + AsConfig::Cell_Width / 2) - 1.0 / (double)AsConfig::Global_Scale;
 	Center_Y_Pos = (double)(cell_y + Parachute_Size) - ABall::Radius * 2.0;
 
-	InvalidateRect(AsConfig::Hwnd, &Prev_Parachute_Rect, FALSE);
-	InvalidateRect(AsConfig::Hwnd, &Parachute_Rect, FALSE);
+	Redraw_Parachute();
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Add_Hit_Checker(AHit_Checker *hit_checker)
@@ -259,6 +293,12 @@ void ABall::Redraw_Ball()
 	InvalidateRect(AsConfig::Hwnd, &Ball_Rect, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
+void ABall::Redraw_Parachute()
+{
+	InvalidateRect(AsConfig::Hwnd, &Prev_Parachute_Rect, FALSE);
+	InvalidateRect(AsConfig::Hwnd, &Parachute_Rect, FALSE);
+}
+//------------------------------------------------------------------------------------------------------------
 void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 {
 	const int scale = AsConfig::Global_Scale;
@@ -273,8 +313,7 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
       return;
 
 	// 0. Очищаем фон
-	AsConfig::BG_Color.Select(hdc);
-   AsConfig::Round_Rect(hdc, Prev_Parachute_Rect);
+	Clear_Parachute(hdc);
 
    // 1. Купол
    AsConfig::Blue_Color.Select(hdc);
@@ -327,5 +366,12 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 
 	MoveToEx(hdc, Parachute_Rect.right, line_y - 1, 0);
 	LineTo(hdc, ball_center_x, ball_center_y);
+}
+//------------------------------------------------------------------------------------------------------------
+void ABall::Clear_Parachute(HDC hdc)
+{
+	// Стрием парашут
+	AsConfig::BG_Color.Select(hdc);
+   AsConfig::Round_Rect(hdc, Prev_Parachute_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
