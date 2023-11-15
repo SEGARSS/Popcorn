@@ -347,3 +347,4 @@ void AActive_Brick_Multihit::Draw_Stage(HDC hdc, RECT &brick_rect, int x, int wi
    Rectangle(hdc, stage_rect.left, stage_rect.top, stage_rect.right - 1, stage_rect.bottom - 1);
 }
 //------------------------------------------------------------------------------------------------------------
+//Прод
