@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include"Config.h"
+#include "Ball.h"
 
 
 //------------------------------------------------------------------------------------------------------------
@@ -105,7 +105,6 @@ private:
    HRGN Region;
 
    static const int Max_Animation_step = 12;
-   static AColor Blue_Highlight, Red_Highlight;
 };
 //------------------------------------------------------------------------------------------------------------
 
@@ -136,3 +135,27 @@ private:
 };
 //------------------------------------------------------------------------------------------------------------
 
+
+
+
+//AActive_Brick_Teleport
+//------------------------------------------------------------------------------------------------------------
+class AActive_Brick_Teleport: public AActive_Brick
+{
+public:
+   ~AActive_Brick_Teleport();
+   AActive_Brick_Teleport(int level_x, int level_y, ABall *ball);
+
+   virtual void Act();
+   virtual void Draw(HDC hdc, RECT &paint_area);
+   virtual bool Is_Finished();
+
+   static void Draw_In_Level(HDC hdc, RECT &brick_rect, int step = 0);
+
+private:
+   int Animation_step;
+   ABall *Ball;
+
+   static const int Max_Animation_step = 12;
+};
+//------------------------------------------------------------------------------------------------------------
