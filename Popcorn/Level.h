@@ -2,12 +2,20 @@
 
 #include"Falling_Letter.h"
 
+//------------------------------------------------------------------------------------------------------------
+struct SPoint
+{
+	int X, Y;
+};
+//------------------------------------------------------------------------------------------------------------
+
 
 //AsLevel
 //------------------------------------------------------------------------------------------------------------
 class AsLevel: public AHit_Checker
 {
 public:
+	~AsLevel();
 	AsLevel();
 
 	virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball);
@@ -25,7 +33,9 @@ private:
 	void On_Hit(int brick_x, int brick_y, ABall *ball);
 	void Redraw_Brick(int brick_x, int brick_y);
 	bool Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type);
-	void Add_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball);
+	void Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball);
+	void Add_New_Active_Brick(AActive_Brick *active_brick);
+	AActive_Brick_Teleport *Select_Destinatio_Teleport(ABall *ball);
 	bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos);
 	bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos);
 	void Draw_Brick(HDC hdc, RECT &brick_rect, EBrick_Type brick_type);
@@ -46,6 +56,8 @@ private:
 	AActive_Brick *Active_Bricks[AsConfig::Max_Active_Bricks_Count];
 	int Falling_Letters_Count;
 	AFalling_Letter *Falling_Letters[AsConfig::Max_Falling_Letters_Count];
+	int Teleport_Bricks_Count;
+	SPoint *Teleport_Bricks_Pos;
 };
 //------------------------------------------------------------------------------------------------------------
 // Отлажен
