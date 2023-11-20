@@ -306,7 +306,6 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
 void AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball)
 {//Создаём активный кирпич, если можем
 
-	double ball_x, ball_y;
    AActive_Brick *active_brick = 0;
 	AActive_Brick_Teleport *destinatio_teleport = 0;
 
@@ -344,8 +343,7 @@ void AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_ty
 		break;
 
 	case EBT_Teleport:
-		destinatio_teleport = Select_Destinatio_Teleport(ball);
-
+		destinatio_teleport = Select_Destinatio_Teleport();
 		active_brick = new AActive_Brick_Teleport(brick_x, brick_y, ball, destinatio_teleport);
 		break;
 
@@ -373,11 +371,11 @@ void AsLevel::Add_New_Active_Brick(AActive_Brick *active_brick)
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-AActive_Brick_Teleport *AsLevel::Select_Destinatio_Teleport(ABall *ball)
+AActive_Brick_Teleport *AsLevel::Select_Destinatio_Teleport()
 {
 	AActive_Brick_Teleport *destinatio_teleport;
 
-	destinatio_teleport = new AActive_Brick_Teleport(Teleport_Bricks_Pos[0].X, Teleport_Bricks_Pos[0].Y, ball, 0);
+	destinatio_teleport = new AActive_Brick_Teleport(Teleport_Bricks_Pos[0].X, Teleport_Bricks_Pos[0].Y, 0, 0);
 
 	return destinatio_teleport;
 }

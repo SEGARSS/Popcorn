@@ -17,7 +17,7 @@ AActive_Brick::~AActive_Brick()
 }
 //------------------------------------------------------------------------------------------------------------
 AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
-: Brick_Type(brick_type), Brick_Rect{}
+: Brick_Type(brick_type), Level_X(level_x), Level_Y(level_y), Brick_Rect{}
 {
    Brick_Rect.left = (AsConfig::Level_X_Offset + level_x * AsConfig::Cell_Width) * AsConfig::Global_Scale;
    Brick_Rect.top = (AsConfig::Level_Y_Offset + level_y * AsConfig::Cell_Height) * AsConfig::Global_Scale;
@@ -354,12 +354,15 @@ AActive_Brick_Teleport::~AActive_Brick_Teleport()
 }
 //------------------------------------------------------------------------------------------------------------
 AActive_Brick_Teleport::AActive_Brick_Teleport(int level_x, int level_y, ABall *ball, AActive_Brick_Teleport *destinatio_teleport)
-: AActive_Brick(EBT_Teleport, level_x, level_y), Teleport_State(ETS_Starting), Animation_step(0), Ball(ball), Destinatio_Teleport(destinatio_teleport)
+: AActive_Brick(EBT_Teleport, level_x, level_y), Teleport_State(ETS_Starting), Animation_step(0), Ball(0), Destinatio_Teleport(destinatio_teleport)
 {
+   Set_Ball(ball);
 }
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Teleport::Act()
 {
+   double ball_x, ball_y;
+
    //if (AsConfig::Current_Timer_Tick % 10 != 0)
    //   return;
 
@@ -385,6 +388,13 @@ void AActive_Brick_Teleport::Act()
 
       case ETS_Finiching:
          Teleport_State = ETS_Done;
+
+         if (Ball != 0)
+         {
+            Ball->Get_Center(ball_x, ball_y);
+            Ball->Set_State(EBS_Normal, ball_x, ball_y);
+            Ball->Ball_Speed = 0.5;
+         }
          break;
 
       //case ETS_Done:
@@ -408,6 +418,9 @@ void AActive_Brick_Teleport::Draw(HDC hdc, RECT &paint_area)
    case ETS_Finiching:
       step = Max_Animation_step - Animation_step;
       break;
+
+   default:
+      return;
 	}
 
    if (Ball != 0)
@@ -420,15 +433,6 @@ bool AActive_Brick_Teleport::Is_Finished()
    //   return true;
    //else
       return false;
-}
-//------------------------------------------------------------------------------------------------------------
-void AActive_Brick_Teleport::Set_Ball()
-{
-   //Ставим мячик в центр кирпича
-		ball_x = (double)(AsConfig::Level_X_Offset + brick_x * AsConfig::Cell_Width) + (double)AsConfig::Brick_Width / 2.0;
-		ball_y = (double)(AsConfig::Level_Y_Offset + brick_y * AsConfig::Cell_Height) + (double)AsConfig::Brick_Height / 2.0;
-
-		ball->Set_State(EBS_Teleporting, ball_x, ball_y);
 }
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Teleport::Draw_In_Level(HDC hdc, RECT &brick_rect, int step)
@@ -447,4 +451,18 @@ void AActive_Brick_Teleport::Draw_In_Level(HDC hdc, RECT &brick_rect, int step)
    Ellipse(hdc, brick_rect.left + 3 * scale + 1, top_y, brick_rect.left + 11 * scale + 1, low_y);
 }
 //------------------------------------------------------------------------------------------------------------
-//35 минута
+void AActive_Brick_Teleport::Set_Ball(ABall *ball)
+{
+	double ball_x, ball_y;
+
+	//Ставим мячик в центр кирпича
+	ball_x = (double)(AsConfig::Level_X_Offset + Level_X * AsConfig::Cell_Width) + (double)AsConfig::Brick_Width / 2.0;
+	ball_y = (double)(AsConfig::Level_Y_Offset + Level_Y * AsConfig::Cell_Height) + (double)AsConfig::Brick_Height / 2.0;
+
+   if (ball != 0)
+      ball->Set_State(EBS_Teleporting, ball_x, ball_y);
+  
+   Ball = ball;
+	
+}
+//------------------------------------------------------------------------------------------------------------

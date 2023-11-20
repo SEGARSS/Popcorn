@@ -47,6 +47,7 @@ protected:
    AActive_Brick(EBrick_Type brick_type, int level_x, int level_y);
 
    EBrick_Type Brick_Type;
+   int Level_X, Level_Y;
    RECT Brick_Rect;
 };
 //------------------------------------------------------------------------------------------------------------
@@ -165,6 +166,8 @@ public:
    static void Draw_In_Level(HDC hdc, RECT &brick_rect, int step = 0);
 
 private:
+   void Set_Ball(ABall *ball);
+
    ETeleport_State Teleport_State;
    int Animation_step;
    ABall *Ball;

@@ -224,7 +224,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
 		break;
 
 	case EBS_Teleporting:
-		if (! (Ball_State == EBS_Normal || Ball_State == EBS_On_Parachute) )
+		if (! (Ball_State == EBS_Normal || Ball_State == EBS_On_Parachute || Ball_State == EBS_Teleporting) )
 			AsConfig::Throw();//Только из этих состояний можно войти в телепорт!
 
 		Center_X_Pos = x_pos;
@@ -243,6 +243,12 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
 
 	Prev_Ball_State = Ball_State;
 	Ball_State = new_state;
+}
+//------------------------------------------------------------------------------------------------------------
+void ABall::Get_Center(double &x_pos, double &y_pos)
+{
+	x_pos = Center_X_Pos;
+	y_pos = Center_Y_Pos;
 }
 //------------------------------------------------------------------------------------------------------------
 double ABall::Get_Direction()

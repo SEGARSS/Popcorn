@@ -35,7 +35,7 @@ private:
 	bool Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type);
 	void Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball);
 	void Add_New_Active_Brick(AActive_Brick *active_brick);
-	AActive_Brick_Teleport *Select_Destinatio_Teleport(ABall *ball);
+	AActive_Brick_Teleport *Select_Destinatio_Teleport();
 	bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos);
 	bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos);
 	void Draw_Brick(HDC hdc, RECT &brick_rect, EBrick_Type brick_type);
