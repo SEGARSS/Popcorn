@@ -25,6 +25,26 @@ AActive_Brick::AActive_Brick(EBrick_Type brick_type, int level_x, int level_y)
    Brick_Rect.bottom = Brick_Rect.top + AsConfig::Brick_Height * AsConfig::Global_Scale;
 }
 //------------------------------------------------------------------------------------------------------------
+double AActive_Brick::Get_Brick_X_Pos(bool of_center)
+{
+   double pos = (double)(AsConfig::Level_X_Offset + Level_X * AsConfig::Cell_Width);
+
+   if (of_center)
+      pos + (double)AsConfig::Brick_Width / 2.0;
+   
+   return 0;
+}
+//------------------------------------------------------------------------------------------------------------
+double AActive_Brick::Get_Brick_Y_Pos(bool of_center)
+{
+   double pos = (double)(AsConfig::Level_Y_Offset + Level_Y * AsConfig::Cell_Height);
+
+   if (of_center)
+      pos + (double)AsConfig::Brick_Height / 2.0;
+   
+   return 0;
+}
+//------------------------------------------------------------------------------------------------------------
 
 
 
@@ -391,14 +411,37 @@ void AActive_Brick_Teleport::Act()
 
          if (Ball != 0)
          {
-            Ball->Get_Center(ball_x, ball_y);
+            switch (Relese_Direction)
+            {
+            case EDT_Left:
+               ball_x = Get_Brick_X_Pos(false) - ABall::Radius;
+	            ball_y = Get_Brick_Y_Pos(true);
+               break;
+
+            case EDT_Up:
+               ball_x = Get_Brick_X_Pos(true);
+	            ball_y = Get_Brick_Y_Pos(false)- ABall::Radius;
+               break;
+
+            case EDT_Right:
+               ball_x = Get_Brick_X_Pos(false) + (double)AsConfig::Brick_Width + ABall::Radius;
+	            ball_y = Get_Brick_Y_Pos(true);
+               break;
+
+            case EDT_Down:
+               ball_x = Get_Brick_X_Pos(false);
+	            ball_y = Get_Brick_Y_Pos(true) + (double)AsConfig::Brick_Height + ABall::Radius;
+               break;
+
+            default:
+               AsConfig::Throw();
+               break;
+            }
+
             Ball->Set_State(EBS_Normal, ball_x, ball_y);
             Ball->Ball_Speed = 0.5;
          }
          break;
-
-      //case ETS_Done:
-      //   break;
       }
    }
 }
@@ -456,13 +499,12 @@ void AActive_Brick_Teleport::Set_Ball(ABall *ball)
 	double ball_x, ball_y;
 
 	//Ставим мячик в центр кирпича
-	ball_x = (double)(AsConfig::Level_X_Offset + Level_X * AsConfig::Cell_Width) + (double)AsConfig::Brick_Width / 2.0;
-	ball_y = (double)(AsConfig::Level_Y_Offset + Level_Y * AsConfig::Cell_Height) + (double)AsConfig::Brick_Height / 2.0;
+	ball_x = Get_Brick_X_Pos(true);
+	ball_y = Get_Brick_Y_Pos(true);
 
    if (ball != 0)
       ball->Set_State(EBS_Teleporting, ball_x, ball_y);
   
    Ball = ball;
-	
 }
 //------------------------------------------------------------------------------------------------------------

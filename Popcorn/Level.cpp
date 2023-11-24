@@ -102,21 +102,21 @@ bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 				else
 					ball->Reflect(false);
 
-				On_Hit(j, i, ball);
+				On_Hit(j, i, ball, true);
 				return true;
 			}
 			else
 				if (got_horizontal_hit)
 				{
 					ball->Reflect(false);
-					On_Hit(j, i, ball);
+					On_Hit(j, i, ball, false);
 					return true;
 				}
 				else
 					if (got_vertical_hit)
 					{
 						ball->Reflect(true);
-						On_Hit(j, i, ball);
+						On_Hit(j, i, ball, true);
 						return true;
 					}
 		}
@@ -237,7 +237,7 @@ bool AsLevel::Get_Next_Falling_Letter(int &index, AFalling_Letter **falling_lett
 	return false;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsLevel::On_Hit(int brick_x, int brick_y, ABall *ball)
+void AsLevel::On_Hit(int brick_x, int brick_y, ABall *ball, int vertical_hit)
 {
 	EBrick_Type brick_type;
 
@@ -251,7 +251,7 @@ void AsLevel::On_Hit(int brick_x, int brick_y, ABall *ball)
 	else if (Add_Falling_Letter(brick_x, brick_y, brick_type) )
 		Current_Level[brick_y][brick_x] = EBT_None;
 	else
-		Create_Active_Brick(brick_x, brick_y, brick_type, ball);
+		Create_Active_Brick(brick_x, brick_y, brick_type, ball, vertical_hit);
 
 	Redraw_Brick(brick_x, brick_y);
 }
@@ -303,11 +303,10 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
 	return false;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball)
+void AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball, bool vertical_hit)
 {//Создаём активный кирпич, если можем
 
    AActive_Brick *active_brick = 0;
-	AActive_Brick_Teleport *destinatio_teleport = 0;
 
 	if (Active_Bricks_Count >= AsConfig::Max_Active_Bricks_Count)
 		return; //Активных кирпичей слишком много
@@ -343,18 +342,92 @@ void AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_ty
 		break;
 
 	case EBT_Teleport:
-		destinatio_teleport = Select_Destinatio_Teleport();
-		active_brick = new AActive_Brick_Teleport(brick_x, brick_y, ball, destinatio_teleport);
+		return Add_Active_Brick_Teleport(brick_x, brick_y, ball, vertical_hit);
 		break;
 
 	default:
 		AsConfig::Throw();
 	}
   
-  if (destinatio_teleport != 0)
-	  Add_New_Active_Brick(destinatio_teleport);
-
   Add_New_Active_Brick(active_brick);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsLevel::Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall *ball, bool vertical_hit)
+{
+	bool got_direction;
+	EDirection_Type direction;
+	double pre_teleport_x_pos, pre_teleport_y_pos;
+	double curr_ball_x_pos, curr_ball_y_pos;
+	AActive_Brick_Teleport *source_teleport, *destinatio_teleport;
+
+	ball->Get_Center(pre_teleport_x_pos, pre_teleport_y_pos); // Позиция мячика перед входом в телепорт
+
+	destinatio_teleport = Select_Destinatio_Teleport(brick_x, brick_y);
+	source_teleport = new AActive_Brick_Teleport(brick_x, brick_y, ball, destinatio_teleport);
+
+	// После создания телепорта, мячик стал в его центре
+	ball->Get_Center(curr_ball_x_pos, curr_ball_y_pos);
+
+	// Определяем направление, откуда прилетел мячик
+	if (vertical_hit)
+	{
+		if(pre_teleport_y_pos < curr_ball_y_pos)
+			direction = EDT_Down;
+		else
+			direction = EDT_Up;
+	}
+	else
+	{
+		if(pre_teleport_y_pos < curr_ball_y_pos)
+			direction = EDT_Right;
+		else
+			direction = EDT_Left;
+	}
+
+	// Перебираем все направления в поисках свободного.
+	got_direction = false;
+
+	for (int i = 0; i < 4; i++)
+	{
+		switch (direction)
+		{
+		case EDT_Left:
+			if (brick_x > 0 && Current_Level[brick_y][brick_x - 1] == EBT_None)
+				got_direction = true;
+			break;
+
+		case EDT_Up:
+			if (brick_y > 0 && Current_Level[brick_y - 1][brick_x] == EBT_None)
+				got_direction = true;
+			break;
+
+		case EDT_Right:
+			if (brick_x < AsConfig::Level_Width - 1 && Current_Level[brick_y][brick_x + 1] == EBT_None)
+				got_direction = true;
+			break;
+
+		case EDT_Down:
+			if (brick_y < AsConfig::Level_Width - 1 && Current_Level[brick_y + 1][brick_x] == EBT_None)
+				got_direction = true;
+			break;
+
+		default:
+			AsConfig::Throw();
+		}
+
+		if (! got_direction)
+			break;
+
+		direction = (EDirection_Type)(direction - 1);
+
+		if (direction < 0)
+			direction = EDT_Down;
+	}
+	
+	destinatio_teleport->Relese_Direction = direction;
+
+	Add_New_Active_Brick(source_teleport);
+	Add_New_Active_Brick(destinatio_teleport);	
 }
 //------------------------------------------------------------------------------------------------------------
 void AsLevel::Add_New_Active_Brick(AActive_Brick *active_brick)
@@ -371,11 +444,30 @@ void AsLevel::Add_New_Active_Brick(AActive_Brick *active_brick)
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-AActive_Brick_Teleport *AsLevel::Select_Destinatio_Teleport()
+AActive_Brick_Teleport *AsLevel::Select_Destinatio_Teleport(int source_x, int source_y)
 {
+	int dest_index;
+
 	AActive_Brick_Teleport *destinatio_teleport;
 
-	destinatio_teleport = new AActive_Brick_Teleport(Teleport_Bricks_Pos[0].X, Teleport_Bricks_Pos[0].Y, 0, 0);
+	if (Teleport_Bricks_Count < 2)
+	{
+		AsConfig::Throw();
+		return 0;
+	}
+
+	dest_index = AsConfig::Rand(Teleport_Bricks_Count);
+
+	if (Teleport_Bricks_Pos[dest_index].X == source_x && Teleport_Bricks_Pos[dest_index].Y == source_y)
+	{//Если случайно выбрали текщий телепорт - переходим к следующему
+
+		++dest_index;
+
+		if (dest_index >= Teleport_Bricks_Count)
+			dest_index = 0; // Переходим на начало масства, если вышли за его пределы
+	}
+
+	destinatio_teleport = new AActive_Brick_Teleport(Teleport_Bricks_Pos[dest_index].X, Teleport_Bricks_Pos[dest_index].Y, 0, 0);
 
 	return destinatio_teleport;
 }
@@ -534,4 +626,5 @@ void AsLevel::Act_Objects(AGraphics_Object **objects_array, int objects_max_coun
 	}
 }
 //------------------------------------------------------------------------------------------------------------
+//38 минута Level.cpp
 

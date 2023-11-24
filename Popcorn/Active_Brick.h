@@ -19,7 +19,14 @@ enum EBrick_Type
    EBT_Ad
 };
 //------------------------------------------------------------------------------------------------------------
-
+enum EDirection_Type
+{
+	EDT_Left,
+	EDT_Up,
+	EDT_Right,
+	EDT_Down
+};
+//------------------------------------------------------------------------------------------------------------
 
 
 
@@ -45,6 +52,9 @@ class AActive_Brick: public AGraphics_Object
 protected:
    virtual ~AActive_Brick();
    AActive_Brick(EBrick_Type brick_type, int level_x, int level_y);
+
+   double Get_Brick_X_Pos(bool of_center);
+   double Get_Brick_Y_Pos(bool of_center);
 
    EBrick_Type Brick_Type;
    int Level_X, Level_Y;
@@ -164,6 +174,8 @@ public:
    virtual bool Is_Finished();
 
    static void Draw_In_Level(HDC hdc, RECT &brick_rect, int step = 0);
+
+   EDirection_Type Relese_Direction;
 
 private:
    void Set_Ball(ABall *ball);

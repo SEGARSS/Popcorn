@@ -10,6 +10,7 @@ struct SPoint
 //------------------------------------------------------------------------------------------------------------
 
 
+
 //AsLevel
 //------------------------------------------------------------------------------------------------------------
 class AsLevel: public AHit_Checker
@@ -30,12 +31,13 @@ public:
 	static char Test_Level[AsConfig::Level_Height][AsConfig::Level_Width];
 
 private:
-	void On_Hit(int brick_x, int brick_y, ABall *ball);
+	void On_Hit(int brick_x, int brick_y, ABall *ball, int vertical_hit);
 	void Redraw_Brick(int brick_x, int brick_y);
 	bool Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_type);
-	void Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball);
+	void Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_type, ABall *ball, bool vertical_hit);
+	void Add_Active_Brick_Teleport(int brick_x, int brick_y, ABall *ball, bool vertical_hit);
 	void Add_New_Active_Brick(AActive_Brick *active_brick);
-	AActive_Brick_Teleport *Select_Destinatio_Teleport();
+	AActive_Brick_Teleport *Select_Destinatio_Teleport(int source_x, int source_y);
 	bool Check_Vertical_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos);
 	bool Check_Horizontal_Hit(double next_x_pos, double next_y_pos, int level_x, int level_y, ABall *ball, double &reflection_pos);
 	void Draw_Brick(HDC hdc, RECT &brick_rect, EBrick_Type brick_type);
