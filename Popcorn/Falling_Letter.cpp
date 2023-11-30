@@ -46,16 +46,21 @@ void AFalling_Letter::Act()
    InvalidateRect(AsConfig::Hwnd, &Letter_Cell, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------
-void AFalling_Letter::Draw(HDC hdc, RECT &paint_area)
+void AFalling_Letter::Clear(HDC hdc, RECT &paint_area)
 {
    RECT intersectRect;
 
-   //1. Очищаем фон.
-   if (IntersectRect(&intersectRect, &paint_area, &Prev_Letter_Cell) )
-   {
-      AsConfig::BG_Color.Select(hdc);
-      Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
-   }
+   //1. Стираем предыдущее изображение.
+   if (! IntersectRect(&intersectRect, &paint_area, &Prev_Letter_Cell) )
+      return;
+   
+	AsConfig::BG_Color.Select(hdc);
+	Rectangle(hdc, Prev_Letter_Cell.left, Prev_Letter_Cell.top, Prev_Letter_Cell.right, Prev_Letter_Cell.bottom);
+}
+//------------------------------------------------------------------------------------------------------------
+void AFalling_Letter::Draw(HDC hdc, RECT &paint_area)
+{
+   RECT intersectRect;
 
    if (Falling_Letter_State == EFLS_Finalizing)
    {
