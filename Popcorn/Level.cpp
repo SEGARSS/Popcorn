@@ -9,7 +9,7 @@ char AsLevel::Level_01[AsConfig::Level_Height][AsConfig::Level_Width] =
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	1, 1, 1, 1, 1, 1, 1, 1, 0, 10,10,0,
+	1, 1, 1, 1, 2, 2, 2, 2, 0, 10,10,0,
 	2, 2, 2, 2, 2, 2, 2, 2, 0, 10,10,0,
 	2, 2, 2, 2, 2, 2, 2, 2, 0, 10,10,0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -47,7 +47,7 @@ AsLevel::~AsLevel()
 //------------------------------------------------------------------------------------------------------------
 AsLevel::AsLevel()
 : Level_Rect{}, Active_Bricks_Count(0), Falling_Letters_Count(0), Teleport_Bricks_Count(0), Teleport_Bricks_Pos(0),
-  Parachute_Color(AsConfig::Red_Color, AsConfig::Blue_Color, AsConfig::Global_Scale)
+  Parachute_Color(AsConfig::Red_Color, AsConfig::Blue_Color, AsConfig::Global_Scale), Advertisement(0)
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -198,12 +198,17 @@ void AsLevel::Set_Current_Level(char level[AsConfig::Level_Height][AsConfig::Lev
 			}
 		}
 	}
+
+	Advertisement = new AAdvertisement(5, 6, 2, 3);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsLevel::Act()
 {
 	Act_Objects( (AGraphics_Object **)&Active_Bricks, Active_Bricks_Count, AsConfig::Max_Active_Bricks_Count);
 	Act_Objects( (AGraphics_Object **)&Falling_Letters, Falling_Letters_Count, AsConfig::Max_Falling_Letters_Count);
+
+	if (Advertisement != 0)
+		Advertisement->Act();
 }
 //------------------------------------------------------------------------------------------------------------
 void AsLevel::Draw(HDC hdc, RECT &paint_area)
@@ -233,6 +238,9 @@ void AsLevel::Draw(HDC hdc, RECT &paint_area)
 	}
 
 	Draw_Objects(hdc, paint_area, (AGraphics_Object **)&Falling_Letters, AsConfig::Max_Falling_Letters_Count);
+
+	if (Advertisement != 0)
+		Advertisement->Draw(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsLevel::Get_Next_Falling_Letter(int &index, AFalling_Letter **falling_letter)

@@ -198,6 +198,27 @@ private:
 
 
 
+//AAdvertisement
+//------------------------------------------------------------------------------------------------------------
+class AAdvertisement: public AGraphics_Object
+{
+public:
+	AAdvertisement(int level_x, int level_y, int width, int height);
+
+	virtual void Act();
+	virtual void Clear(HDC hdc, RECT &paint_area);
+	virtual void Draw(HDC hdc, RECT &paint_area);
+	virtual bool Is_Finished();
+private:
+	int Level_X, Level_Y;
+	int Width, Height;
+	RECT Ad_Rect;
+};
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
 //AActive_Brick_Ad
 //------------------------------------------------------------------------------------------------------------
 class AActive_Brick_Ad: public AActive_Brick
