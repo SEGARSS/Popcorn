@@ -220,8 +220,15 @@ private:
 	int Width, Height;
 	RECT Ad_Rect;
 	HRGN Empty_Region;
+	int Ball_X, Ball_Y;
+	int Ball_Width, Ball_Height;
+	int Ball_Y_Offset, Ball_Y_Shift;
 
 	HRGN *Brick_Regions;
+
+	static const int Ball_Size = 12;
+	static const int High_Ball_Threshold = 12 * AsConfig::Global_Scale;
+	static const int Low_Ball_Threshold = -3 * AsConfig::Global_Scale;
 };
 //------------------------------------------------------------------------------------------------------------
 

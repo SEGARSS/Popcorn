@@ -547,17 +547,24 @@ AAdvertisement::~AAdvertisement()
 }
 //------------------------------------------------------------------------------------------------------------
 AAdvertisement::AAdvertisement(int level_x, int level_y, int width, int height)
-: Level_X(level_x), Level_Y(level_y), Width(width), Height(height), Empty_Region(0), Brick_Regions(0)
+: Level_X(level_x), Level_Y(level_y), Width(width), Height(height), Empty_Region(0), Ball_X(0), Ball_Y(0),
+  Ball_Width(Ball_Size * AsConfig::Global_Scale), Ball_Height(Ball_Size * AsConfig::Global_Scale), Ball_Y_Offset(0),
+  Ball_Y_Shift(1), Brick_Regions(0)
 {
+   int const scale = AsConfig::Global_Scale;
+
    Empty_Region = CreateRectRgn (0, 0, 0, 0);
 
    Brick_Regions = new HRGN[Width * Height];
    memset(Brick_Regions, 0, sizeof(HRGN) * Width * Height);
 
-   Ad_Rect.left = (AsConfig::Level_X_Offset + Level_X * AsConfig::Cell_Width) * AsConfig::Global_Scale;
-   Ad_Rect.top = (AsConfig::Level_Y_Offset + Level_Y * AsConfig::Cell_Height) * AsConfig::Global_Scale;
-   Ad_Rect.right = Ad_Rect.left + ( (Width - 1) * AsConfig::Cell_Width + AsConfig::Brick_Width) * AsConfig::Global_Scale;
-   Ad_Rect.bottom = Ad_Rect.top + ( (Height - 1) * AsConfig::Cell_Height + AsConfig::Brick_Height) * AsConfig::Global_Scale;
+   Ad_Rect.left = (AsConfig::Level_X_Offset + Level_X * AsConfig::Cell_Width) * scale;
+   Ad_Rect.top = (AsConfig::Level_Y_Offset + Level_Y * AsConfig::Cell_Height) * scale;
+   Ad_Rect.right = Ad_Rect.left + ( (Width - 1) * AsConfig::Cell_Width + AsConfig::Brick_Width) * scale;
+   Ad_Rect.bottom = Ad_Rect.top + ( (Height - 1) * AsConfig::Cell_Height + AsConfig::Brick_Height) * scale;
+
+   Ball_X = Ad_Rect.left + 9 * scale + Ball_Width / 2 + 1;
+   Ball_Y = Ad_Rect.top + 2 * scale + Ball_Height / 2;
 
    for (int i = 0; i < Height; i++)
       for (int j = 0; j < Width; j++)
@@ -570,6 +577,10 @@ void AAdvertisement::Act()
    int cell_height = AsConfig::Cell_Height * AsConfig::Global_Scale;
    RECT rect;
 
+   //if (AsConfig::Current_Timer_Tick % 3 != 0)
+   //   return;
+
+   //1. Заказываем перерисовку фрагментов, над которыми пропали кирпичи
    for (int i = 0; i < Height; i++)
       for (int j = 0; j < Width; j++)
          if (Brick_Regions[i * Width + j] != 0)
@@ -581,6 +592,11 @@ void AAdvertisement::Act()
 
             InvalidateRect(AsConfig::Hwnd, &rect, FALSE);
          }
+   //2. Смещаем шарик.
+   Ball_Y_Offset += Ball_Y_Shift;
+
+   if (Ball_Y_Offset >= High_Ball_Threshold || Ball_Y_Offset <= Low_Ball_Threshold)
+      Ball_Y_Shift = -Ball_Y_Shift;
 }
 //------------------------------------------------------------------------------------------------------------
 void AAdvertisement::Clear(HDC hdc, RECT &paint_area)
@@ -592,7 +608,6 @@ void AAdvertisement::Draw(HDC hdc, RECT &paint_area)
    
    int x, y;
    const int scale = AsConfig::Global_Scale;
-   int circle_size = 12 * scale ;
    HRGN region;
    RECT intersection_rect;
    POINT table_points[4] = 
@@ -655,15 +670,15 @@ void AAdvertisement::Draw(HDC hdc, RECT &paint_area)
 
    // 5. Шарик
    // 5.1. Красный элипс 12х12
-   x = Ad_Rect.left + 9 * scale + 1;
-   y = Ad_Rect.top + 2 * scale;
+   x = Ball_X - Ball_Width / 2;
+   y = Ball_Y - Ball_Height / 2 - Ball_Y_Offset;
 
    AsConfig::Red_Color.Select(hdc);
-   Ellipse(hdc, x, y, x + circle_size, y + circle_size);
+   Ellipse(hdc, x, y, x + Ball_Width, y + Ball_Height);
 
    // 6.1. Блик сверху
    AsConfig::Letter_Color.Select(hdc);
-   Arc(hdc, x + scale + 1, y + scale + 1, x + circle_size - scale, y + circle_size - scale, x + 4 * scale, y + scale, x + scale, y + 3 * scale);
+   Arc(hdc, x + scale + 1, y + scale + 1, x + Ball_Width - scale, y + Ball_Height - scale, x + 4 * scale, y + scale, x + scale, y + 3 * scale);
 
    // 6.2. Летает вверх\вниз (по затухающей траектории)
    // 6.3. Сплющиваеться вниз до 16х9   
@@ -778,3 +793,4 @@ void AActive_Brick_Ad::Draw_In_Level(HDC hdc, RECT &brick_rect)
    
 }
 //------------------------------------------------------------------------------------------------------------
+//19 минута, 48 видео
