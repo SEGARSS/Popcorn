@@ -5,6 +5,7 @@
 AColor::AColor()
 : R(0), G(0), B(0), Pen(0), Brush(0)
 {
+
 }
 //------------------------------------------------------------------------------------------------------------
 AColor::AColor(unsigned char r, unsigned char g, unsigned char b)
@@ -77,6 +78,7 @@ const AColor AsConfig::Advertisement_Red_Table(AsConfig::Red_Color, 2 * AsConfig
 HWND AsConfig::Hwnd;
 
 const double AsConfig::Moving_Step_Size = 1.0 / AsConfig::Global_Scale;
+const double AsConfig::Start_Ball_Y_Pos = 184.0;
 //------------------------------------------------------------------------------------------------------------
 int AsConfig::Rand(int range)//Вычисляет псевдо случайные числа [0, .. range - 1]
 {

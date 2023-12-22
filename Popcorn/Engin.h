@@ -38,15 +38,19 @@ public:
 	int On_Timer();
 
 private:
+	void Restart_Level();
+	void Play_Level();
 	void Act();
 	void On_Falling_Letter(AFalling_Letter *falling_letter);
 
 	EGame_State Game_State;
 
-	ABall Ball;
+	//ABall Ball;
 	AsLevel Level;
 	AsPlatform Platform;
 	AsBorder Border;
+
+	ABall Balls[AsConfig::Max_Balls_Count];
 };
 //------------------------------------------------------------------------------------------------------------
 //Отлажен
