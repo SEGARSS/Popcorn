@@ -202,13 +202,13 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
 
    case ELT_T:
       break;
-
-
+   
+   
    //case ELT_L:
    //case ELT_P:
    //case ELT_Plus:
    //case ELT_MAX:
-
+   
    default:
       AsConfig::Throw();
       break;
