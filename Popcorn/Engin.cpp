@@ -122,17 +122,18 @@ void AsEngine::Restart_Level()
 
 	Game_State = EGS_Play_Level;
 
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < AsConfig::Max_Balls_Count; i++)
 		Balls[i].Set_State(EBS_On_Platform, Platform.X_Pos + Platform.Width / 2, AsConfig::Start_Ball_Y_Pos);
 
-	for (; i < AsConfig::Max_Balls_Count; i++)
-		Balls[i].Set_State(EBS_Disabled);
+	//for (; i < AsConfig::Max_Balls_Count; i++)
+	//	Balls[i].Set_State(EBS_Disabled);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Play_Level()
 {
    int active_balls_count = 0;
    int lost_balls_count = 0;
+   double ball_x, ball_y;
 
 	for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
 	{
@@ -148,6 +149,12 @@ void AsEngine::Play_Level()
 		}
 
       Balls[i].Move();
+
+      //Balls[i].Get_Center(ball_x, ball_y);
+
+      //if (ball_x >= Platform.X_Pos && ball_x <= Platform.X_Pos + Platform.Width)
+      //   if (ball_y >= AsConfig::Platform_Y_Pos + 1 && ball_y <= AsConfig::Platform_Y_Pos + 6)
+      //      int yy = 0;
 	}
 
    if (active_balls_count == lost_balls_count)
@@ -201,6 +208,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
    //case ELT_P:
    //case ELT_Plus:
    //case ELT_MAX:
+
    default:
       AsConfig::Throw();
       break;
@@ -209,6 +217,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
    falling_letter->Finalize();
 }
 //------------------------------------------------------------------------------------------------------------
+/*Продолжить. 50 видео, 12 мин. 54 сек.*/
 
 
 
