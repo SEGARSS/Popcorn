@@ -52,29 +52,30 @@ void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
       Balls[i].Draw(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
-int AsEngine::On_Key_Down(EKey_Type key_type)
+int AsEngine::On_Key(EKey_Type key_type, bool key_down)
 {
    switch (key_type)
 	{
 	case EKT_Left:
-      Platform.Move(true);
+      Platform.Move(true, key_down);
 		break;
 
 
 	case EKT_Right:
-      Platform.Move(false);
+      Platform.Move(false, key_down);
 		break;
 
 
 	case EKT_Space:
-		if (Platform.Get_State() == EPS_Ready)
-		{
-         for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
-            if (Balls[i].Get_State() == EBS_On_Platform)
-			      Balls[i].Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2, AsConfig::Start_Ball_Y_Pos);
+		if (key_down)
+			if (Platform.Get_State() == EPS_Ready)
+			{
+				for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+					if (Balls[i].Get_State() == EBS_On_Platform)
+						Balls[i].Set_State(EBS_Normal, Platform.Get_Middle_Pos(), AsConfig::Start_Ball_Y_Pos);
 
-			Platform.Set_State(EPS_Normal);
-		}
+				Platform.Set_State(EPS_Normal);
+			}
 		break;
 	}
 	return 0;
@@ -123,7 +124,7 @@ void AsEngine::Restart_Level()
 	Game_State = EGS_Play_Level;
 
 	for (i = 0; i < AsConfig::Max_Balls_Count; i++)
-		Balls[i].Set_State(EBS_On_Platform, Platform.X_Pos + Platform.Width / 2, AsConfig::Start_Ball_Y_Pos);
+		Balls[i].Set_State(EBS_On_Platform, Platform.Get_Middle_Pos(), AsConfig::Start_Ball_Y_Pos);
 
 	//for (; i < AsConfig::Max_Balls_Count; i++)
 	//	Balls[i].Set_State(EBS_Disabled);
@@ -133,8 +134,24 @@ void AsEngine::Play_Level()
 {
    int active_balls_count = 0;
    int lost_balls_count = 0;
+   double max_speed;
+   double rest_distance;
    double ball_x, ball_y;
 
+   //1. Смещаем платформу
+   max_speed = fabs(Platform.Speed);
+
+   rest_distance = max_speed;
+
+   while (rest_distance > 0.0)
+   {
+      Platform.Advance(max_speed);
+      rest_distance -= AsConfig::Moving_Step_Size;
+   }
+
+   Platform.Redraw_Platform();
+
+   //2. Смещаем мячики
 	for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
 	{
       if(Balls[i].Get_State() == EBS_Disabled)
@@ -150,11 +167,11 @@ void AsEngine::Play_Level()
 
       Balls[i].Move();
 
-      //Balls[i].Get_Center(ball_x, ball_y);
+      Balls[i].Get_Center(ball_x, ball_y);
 
-      //if (ball_x >= Platform.X_Pos && ball_x <= Platform.X_Pos + Platform.Width)
-      //   if (ball_y >= AsConfig::Platform_Y_Pos + 1 && ball_y <= AsConfig::Platform_Y_Pos + 6)
-      //      int yy = 0;
+      if (ball_x >= Platform.X_Pos && ball_x <= Platform.X_Pos + Platform.Width)
+         if (ball_y >= AsConfig::Platform_Y_Pos + 1 && ball_y <= AsConfig::Platform_Y_Pos + 6)
+            int yy = 0;
 	}
 
    if (active_balls_count == lost_balls_count)

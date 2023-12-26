@@ -220,7 +220,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
       // Выводим фон
       back_color->Select(hdc);
 
-      offset = 3.0 * (1.0 - fabs(xform.eM22)) * (double)AsConfig::Global_Scale;
+      offset = 3.0 * (1.0 - fabs(xform.eM22)) * AsConfig::D_Global_Scale;
       back_part_offset = (int)round(offset);
 
       if (y_ratio < 0.0)
