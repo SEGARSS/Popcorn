@@ -1,5 +1,21 @@
 ﻿#include"Platform.h"
 
+
+//AMover
+//------------------------------------------------------------------------------------------------------------
+AMover::~AMover()
+{
+}
+//------------------------------------------------------------------------------------------------------------
+AMover::AMover()
+: Speed(0.0)
+{
+}
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
 //AsPlatform
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::~AsPlatform()
@@ -56,6 +72,18 @@ _on_hit:
    if (ball->Get_State() == EBS_On_Parachute)
       ball->Set_State(EBS_Off_Parachute);
    return true;
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Advance(double max_speed)
+{
+   double max_platform_x = AsConfig::Max_X_Pos - Width + 1;
+	X_Pos += Speed / max_speed * AsConfig::Moving_Step_Size;
+
+	if (X_Pos <= AsConfig::Border_X_Offset)
+		X_Pos = AsConfig::Border_X_Offset;
+
+	if (X_Pos >= max_platform_x)
+		X_Pos = max_platform_x;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act()
@@ -202,18 +230,6 @@ bool AsPlatform::Hit_By(AFalling_Letter *falling_letter)
       return true;
    else
       return false;
-}
-//------------------------------------------------------------------------------------------------------------
-void AsPlatform::Advance(double max_speed)
-{
-   double max_platform_x = AsConfig::Max_X_Pos - Width + 1;
-	X_Pos += Speed / max_speed * AsConfig::Moving_Step_Size;
-
-	if (X_Pos <= AsConfig::Border_X_Offset)
-		X_Pos = AsConfig::Border_X_Offset;
-
-	if (X_Pos >= max_platform_x)
-		X_Pos = max_platform_x;
 }
 //------------------------------------------------------------------------------------------------------------
 double AsPlatform::Get_Middle_Pos()

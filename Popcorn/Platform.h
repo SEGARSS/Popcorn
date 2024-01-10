@@ -22,13 +22,25 @@ enum EPlatform_Moving_State
    EPMS_Moving_Right
 };
 //------------------------------------------------------------------------------------------------------------
-class AsPlatform: public AHit_Checker
+class AMover
+{
+public:
+   virtual ~AMover();
+   AMover();
+
+   virtual void Advance(double max_speed) = 0;
+
+   double Speed;
+};
+//------------------------------------------------------------------------------------------------------------
+class AsPlatform: public AHit_Checker, public AMover
 {
 public:
    ~AsPlatform();
    AsPlatform();
 
    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball);
+   virtual void Advance(double max_speed);
 
    void Act();
    EPlatform_State Get_State();
@@ -37,11 +49,9 @@ public:
    void Draw(HDC hdc, RECT &paint_area);
    void Move(bool to_left, bool key_down);
    bool Hit_By(AFalling_Letter *falling_letter);
-   void Advance(double max_speed);
    double Get_Middle_Pos();
 
    int Width;
-   double Speed;
    double X_Pos;
 
 private:
