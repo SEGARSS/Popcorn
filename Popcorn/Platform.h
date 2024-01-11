@@ -26,11 +26,9 @@ class AMover
 {
 public:
    virtual ~AMover();
-   AMover();
 
    virtual void Advance(double max_speed) = 0;
-
-   double Speed;
+   virtual double Get_Speed() = 0;
 };
 //------------------------------------------------------------------------------------------------------------
 class AsPlatform: public AHit_Checker, public AMover
@@ -41,6 +39,7 @@ public:
 
    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball);
    virtual void Advance(double max_speed);
+   virtual double Get_Speed();
 
    void Act();
    EPlatform_State Get_State();
@@ -69,7 +68,7 @@ private:
    EPlatform_Moving_State Platform_Moving_State;
    int Inner_Width;
    int Rolling_Step;
-   
+   double Speed;
 
    int Normal_Platform_Imege_Width;
    int Normal_Platform_Imege_Height;

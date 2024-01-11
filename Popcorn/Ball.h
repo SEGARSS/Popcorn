@@ -43,7 +43,7 @@ public:
 
 	void Draw(HDC hdc, RECT &paint_area);
 	void Draw_Teleporting(HDC hdc, int step);
-	void Move();
+	void Advance(double max_speed);
 	void Set_For_Test();
 	bool Is_Test_Finished();
 	EBall_State Get_State();
@@ -69,7 +69,7 @@ private:
 	void Clear_Parachute(HDC hdc);
 
 	EBall_State Ball_State, Prev_Ball_State;
-	double Rest_Distance;
+	//double Rest_Distance;
 	double Ball_Direction;
 
 	bool Testing_Is_Active;

@@ -69,6 +69,7 @@ public:
    static const int Hits_Per_Letter = 1; // Верочятность выбить букву = 1.0 / Hit_Per_Letter
    static const int Max_Falling_Letters_Count = 40;
    static const int Max_Balls_Count = 40;
+   static const int Max_Movers_Count = 10;
 };
 //------------------------------------------------------------------------------------------------------------
 //Отлажен
