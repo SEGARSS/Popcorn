@@ -1,16 +1,6 @@
 ﻿#include"Platform.h"
 
 
-//AMover
-//------------------------------------------------------------------------------------------------------------
-AMover::~AMover()
-{
-}
-//------------------------------------------------------------------------------------------------------------
-
-
-
-
 //AsPlatform
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::~AsPlatform()
@@ -67,6 +57,15 @@ _on_hit:
    if (ball->Get_State() == EBS_On_Parachute)
       ball->Set_State(EBS_Off_Parachute);
    return true;
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Begin_Movement()
+{
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Finish_Movement()
+{
+   Redraw_Platform();
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Advance(double max_speed)
@@ -439,7 +438,7 @@ bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double 
    distance = sqrt(dx * dx + dy * dy);
    two_radiuses = platform_ball_radius + ball->Radius;
 
-   if (fabs(distance - two_radiuses) < AsConfig::Moving_Step_Size)
+   if (distance + AsConfig::Moving_Step_Size < two_radiuses)
    {
       // Мячик коснулся бокового шарика
       beta = atan2(-dy, dx);

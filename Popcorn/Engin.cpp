@@ -2,6 +2,18 @@
 
 //AsBall_Set
 //------------------------------------------------------------------------------------------------------------
+void AsBall_Set::Begin_Movement()
+{
+   for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+      Balls[i].Begin_Movement();
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBall_Set::Finish_Movement()
+{
+   for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+      Balls[i].Finish_Movement();
+}
+//------------------------------------------------------------------------------------------------------------
 void AsBall_Set::Advance(double max_speed)
 {
    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
@@ -10,12 +22,14 @@ void AsBall_Set::Advance(double max_speed)
 //------------------------------------------------------------------------------------------------------------
 double AsBall_Set::Get_Speed()
 {
-   double max_speed = 0.0;
+   double curr_speed, max_speed = 0.0;
 
    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
    {
-      if (Balls[i].Ball_Speed > max_speed)
-         max_speed = Balls[i].Ball_Speed;
+      curr_speed = Balls[i].Get_Speed();
+
+      if (curr_speed > max_speed)
+         max_speed = curr_speed;
    }
 
    return max_speed;
@@ -70,6 +84,16 @@ bool AsBall_Set::All_Balls_AreLost()
       return false;
 }
 //------------------------------------------------------------------------------------------------------------
+void AsBall_Set::Set_For_Test()
+{
+   Balls[0].Set_For_Test(); // В повторяющихся тестах учавствует только 0-й мячик.
+}
+//------------------------------------------------------------------------------------------------------------
+bool AsBall_Set::Is_Test_Finished()
+{
+   return Balls[0].Is_Test_Finished(); // В повторяющихся тестах учавствует только 0-й мячик.
+}
+//------------------------------------------------------------------------------------------------------------
 
 
 
@@ -77,7 +101,7 @@ bool AsBall_Set::All_Balls_AreLost()
 //AsEngine
 //------------------------------------------------------------------------------------------------------------
 AsEngine::AsEngine()
-: Game_State (EGS_Lost_Ball) 
+: Game_State (EGS_Lost_Ball), Rest_Distance(0.0) 
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -114,6 +138,7 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
 
    memset(Movers, 0, sizeof(Movers) );
    Movers[0] = &Platform;
+   Movers[1] = &Ball_Set;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
@@ -159,7 +184,7 @@ int AsEngine::On_Timer() // Смещение по таймеру
    switch (Game_State)
    {
    case EGS_Test_Ball:
-      Ball_Set.Balls[0].Set_For_Test(); // В повторяющихся тестах участвует только 0-й мячик
+      Ball_Set.Set_For_Test();
       Game_State = EGS_Play_Level;
       break;
 
@@ -193,10 +218,6 @@ int AsEngine::On_Timer() // Смещение по таймеру
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Play_Level()
 {
-   int active_balls_count = 0;
-   int lost_balls_count = 0;
-   //double ball_x, ball_y;
-
    Advance_Mover();
 
 	if (Ball_Set.All_Balls_AreLost() )
@@ -206,23 +227,15 @@ void AsEngine::Play_Level()
 		Platform.Set_State(EPS_Meltdown);
 	}	
 
-	//Balls[i].Get_Center(ball_x, ball_y);
-
-	//if (ball_x >= Platform.X_Pos && ball_x <= Platform.X_Pos + Platform.Width)
-	//   if (ball_y >= AsConfig::Platform_Y_Pos + 1 && ball_y <= AsConfig::Platform_Y_Pos + 6)
-	//      int yy = 0;
-
-
-   if (active_balls_count == 1)
-	   if (Ball_Set.Balls[0].Is_Test_Finished()) // В повторяющихся тестах участвует только 0-й мячик
-		   Game_State = EGS_Test_Ball;
+   if (Ball_Set.Is_Test_Finished() ) 
+	   Game_State = EGS_Test_Ball;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Advance_Mover()
 {
    double curr_speed;
    double max_speed = 0.0;
-   double rest_distance;
+   //double ball_x, ball_y;
    
 
    //1. Получаем максимальную скорость.
@@ -230,6 +243,8 @@ void AsEngine::Advance_Mover()
    {
       if (Movers[i] != 0)
       {
+         Movers[i]->Begin_Movement();
+
          curr_speed = fabs(Movers[i]->Get_Speed() );
 
 			if (curr_speed > max_speed)
@@ -238,19 +253,31 @@ void AsEngine::Advance_Mover()
    }
 
    //2. Смещаем все движущиеся объекты.
-   rest_distance = max_speed;
+   Rest_Distance += max_speed;
 
-   while (rest_distance > 0.0)
+   while (Rest_Distance > 0.0)
    {
       for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
          if (Movers[i] != 0)
             Movers[i]->Advance(max_speed);
 
       /*Platform.Advance(max_speed);*/
-      rest_distance -= AsConfig::Moving_Step_Size;
+      Rest_Distance -= AsConfig::Moving_Step_Size;
    }
 
-   Platform.Redraw_Platform();
+  // for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
+  // {
+		//Ball_Set.Balls[i].Get_Center(ball_x, ball_y);
+
+		//if (ball_x >= Platform.X_Pos + 1 && ball_x <= Platform.X_Pos + Platform.Width - 1)
+		//	if (ball_y >= AsConfig::Platform_Y_Pos + 1 && ball_y <= AsConfig::Platform_Y_Pos + 5)
+		//		int yy = 0;
+  // }
+
+   //3. Заканчивает все движения в кадре.
+   for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
+      if (Movers[i] != 0)
+         Movers[i]->Finish_Movement();
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Act()

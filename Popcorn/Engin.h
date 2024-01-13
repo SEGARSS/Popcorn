@@ -30,6 +30,8 @@ const int Timer_ID = WM_USER + 1;
 class AsBall_Set: public AMover
 {
 public:
+	virtual void Begin_Movement();
+   virtual void Finish_Movement();
 	virtual void Advance(double max_speed);
 	virtual double Get_Speed();
 
@@ -37,7 +39,10 @@ public:
 	void Release_From_Platform(double platform_x_pos);
 	void Set_On_Platform(double platform_x_pos);
 	bool All_Balls_AreLost();
+	void Set_For_Test();
+	bool Is_Test_Finished();
 
+private:
 	ABall Balls[AsConfig::Max_Balls_Count];
 };
 //------------------------------------------------------------------------------------------------------------
@@ -64,6 +69,7 @@ private:
 	AsPlatform Platform;
 	AsBorder Border;
 	AsBall_Set Ball_Set;
+	double Rest_Distance;
 
 	AMover *Movers[AsConfig::Max_Movers_Count];
 };
