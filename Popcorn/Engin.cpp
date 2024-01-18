@@ -50,13 +50,10 @@ void AsBall_Set::Release_From_Platform(double platform_x_pos)
 //------------------------------------------------------------------------------------------------------------
 void AsBall_Set::Set_On_Platform(double platform_x_pos)
 {
-   int i;
+   Balls[0].Set_State(EBS_On_Platform, platform_x_pos, AsConfig::Start_Ball_Y_Pos);
 
-   for (i = 0; i < AsConfig::Max_Balls_Count; i++)
-		Balls[i].Set_State(EBS_On_Platform, platform_x_pos, AsConfig::Start_Ball_Y_Pos);
-
-	//for (; i < AsConfig::Max_Balls_Count; i++)
-	//	Balls[i].Set_State(EBS_Disabled);
+	for (int i = 1; i < AsConfig::Max_Balls_Count; i++)
+		Balls[i].Set_State(EBS_Disabled);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsBall_Set::All_Balls_AreLost()
@@ -92,6 +89,70 @@ void AsBall_Set::Set_For_Test()
 bool AsBall_Set::Is_Test_Finished()
 {
    return Balls[0].Is_Test_Finished(); // В повторяющихся тестах учавствует только 0-й мячик.
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBall_Set::Triple_Balls()
+{//"Растроить" самый дальний летящий от платформы мячик
+   
+   ABall *curr_ball;
+   ABall *further_ball = 0;
+   ABall *left_candidate = 0, *right_candidate = 0;
+   double curr_ball_x, curr_ball_y;
+   double further_ball_x, further_ball_y;
+
+   // 1. Выбираем самый дальний по оси Y мячик.
+   for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+   {
+      curr_ball = &Balls[i];
+
+      if (curr_ball->Get_Speed() != EBS_Normal)
+         continue;
+
+      if (further_ball == 0)
+         further_ball = curr_ball;
+      else
+      {
+         curr_ball->Get_Center(curr_ball_x, curr_ball_y);
+         further_ball->Get_Center(further_ball_x, further_ball_y);
+
+         if (curr_ball_y < further_ball_y)
+            further_ball = curr_ball;
+      }
+   }
+
+   // 2. Если есть "нормальный" мячик, то размножаем его.
+   if (further_ball == 0)
+      return;
+
+   for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+   {
+      curr_ball = &Balls[i];
+
+      if (curr_ball->Get_State() == EBS_Disabled)
+      {
+         if (left_candidate == 0)
+            left_candidate = curr_ball;
+         else
+            if (right_candidate == 0)
+            {
+               right_candidate = curr_ball;
+               break; // Оба кандидата найдены.
+            }
+      }
+   }
+
+   // 3. Разводим боковые мячики в стороны.
+   if (left_candidate != 0)
+   {
+      *left_candidate = *further_ball;
+      left_candidate->Set_Direction(left_candidate->Get_Direction() + M_PI / 8.0);
+   }
+
+   if (right_candidate != 0)
+   {
+      *right_candidate = *further_ball;
+      right_candidate->Set_Direction(right_candidate->Get_Direction() - M_PI / 8.0);
+   }
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -218,7 +279,7 @@ int AsEngine::On_Timer() // Смещение по таймеру
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Play_Level()
 {
-   Advance_Mover();
+   Advance_Movers();
 
 	if (Ball_Set.All_Balls_AreLost() )
 	{
@@ -231,7 +292,7 @@ void AsEngine::Play_Level()
 	   Game_State = EGS_Test_Ball;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsEngine::Advance_Mover()
+void AsEngine::Advance_Movers()
 {
    double curr_speed;
    double max_speed = 0.0;
@@ -311,6 +372,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
 
 
    case ELT_T:
+      Ball_Set.Triple_Balls();
       break;
    
    
