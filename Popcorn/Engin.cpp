@@ -95,18 +95,18 @@ void AsBall_Set::Triple_Balls()
 {//"Растроить" самый дальний летящий от платформы мячик
    
    ABall *curr_ball;
-   ABall *further_ball = 0;
-   ABall *left_candidate = 0, *right_candidate = 0;
-   double curr_ball_x, curr_ball_y;
-   double further_ball_x, further_ball_y;
+	ABall *further_ball = 0;
+	ABall *left_candidate = 0, *right_candidate = 0;
+	double curr_ball_x, curr_ball_y;
+	double further_ball_x, further_ball_y;
 
    // 1. Выбираем самый дальний по оси Y мячик.
    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
    {
       curr_ball = &Balls[i];
 
-      if (curr_ball->Get_Speed() != EBS_Normal)
-         continue;
+      if (curr_ball->Get_State() != EBS_Normal)
+			continue;
 
       if (further_ball == 0)
          further_ball = curr_ball;
@@ -128,17 +128,19 @@ void AsBall_Set::Triple_Balls()
    {
       curr_ball = &Balls[i];
 
-      if (curr_ball->Get_State() == EBS_Disabled)
-      {
-         if (left_candidate == 0)
-            left_candidate = curr_ball;
-         else
-            if (right_candidate == 0)
-            {
-               right_candidate = curr_ball;
-               break; // Оба кандидата найдены.
-            }
-      }
+		switch (curr_ball->Get_State() )
+		{
+		case EBS_Disabled:
+		case EBS_Lost:
+			if (left_candidate == 0)
+				left_candidate = curr_ball;
+			else
+				if (right_candidate == 0)
+				{
+					right_candidate = curr_ball;
+					break; // Оба кандидата найдены.
+				}
+		}
    }
 
    // 3. Разводим боковые мячики в стороны.
@@ -153,6 +155,11 @@ void AsBall_Set::Triple_Balls()
       *right_candidate = *further_ball;
       right_candidate->Set_Direction(right_candidate->Get_Direction() - M_PI / 8.0);
    }
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBall_Set::Inverse_Balls()
+{
+
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -363,7 +370,11 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
    switch (falling_letter->Letter_Type)
    {
    //case ELT_O:
-   //case ELT_I:
+   
+   case ELT_I:
+      Ball_Set.Inverse_Balls();
+      break;
+   
    //case ELT_C:
    //case ELT_M:
    //case ELT_G:
