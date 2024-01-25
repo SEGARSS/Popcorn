@@ -5,6 +5,7 @@
 #include"Border.h"
 #include "Level.h"
 #include"Platform.h"
+#include "Ball_Set.h"
 
 
 //AsEngine
@@ -27,27 +28,6 @@ enum EGame_State
 //------------------------------------------------------------------------------------------------------------
 const int Timer_ID = WM_USER + 1;
 //------------------------------------------------------------------------------------------------------------
-class AsBall_Set: public AMover
-{
-public:
-	virtual void Begin_Movement();
-   virtual void Finish_Movement();
-	virtual void Advance(double max_speed);
-	virtual double Get_Speed();
-
-	void Draw(HDC hdc, RECT &paint_area);
-	void Release_From_Platform(double platform_x_pos);
-	void Set_On_Platform(double platform_x_pos);
-	bool All_Balls_AreLost();
-	void Set_For_Test();
-	bool Is_Test_Finished();
-	void Triple_Balls();
-	void Inverse_Balls();
-
-private:
-	ABall Balls[AsConfig::Max_Balls_Count];
-};
-//------------------------------------------------------------------------------------------------------------
 class AsEngine
 {
 public:
@@ -65,14 +45,15 @@ private:
 	void On_Falling_Letter(AFalling_Letter *falling_letter);
 
 	EGame_State Game_State;
+	double Rest_Distance;
+	int Life_Count;
 
 	//ABall Ball;
 	AsLevel Level;
 	AsPlatform Platform;
 	AsBorder Border;
 	AsBall_Set Ball_Set;
-	double Rest_Distance;
-
+	
 	AMover *Movers[AsConfig::Max_Movers_Count];
 };
 //------------------------------------------------------------------------------------------------------------

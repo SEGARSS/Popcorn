@@ -62,7 +62,8 @@ public:
    virtual void Finish_Movement();
 	virtual void Advance(double max_speed);
 	virtual double Get_Speed();
-
+	
+	void Set_Speed(double new_speed);
 	void Draw(HDC hdc, RECT &paint_area);
 	void Draw_Teleporting(HDC hdc, int step);
 	void Set_For_Test();
