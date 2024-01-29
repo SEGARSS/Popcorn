@@ -216,28 +216,31 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
       Ball_Set.Reset_Speed();
       break;
 
-
    //case ELT_M: // "Монстры"
-
 
    case ELT_G: // "Жизнь"
       if (Life_Count < AsConfig::Max_Life_Count)
          ++Life_Count; //!!! Отобразить на индикаторе!
       break;
 
-
    //case ELT_K: // "Клей"
+   
    //case ELT_W: // "Шире"
-
 
    case ELT_T: // "Три"
       Ball_Set.Triple_Balls();
       break;
    
-   
    //case ELT_L: // "Лазер"
-   //case ELT_P: // "Пол"
+
+   case ELT_P: // "Пол"
+      AsConfig::Level_Has_Floor = true;
+      Border.Redraw_Floor();
+      //!!! Отобразить на индикаторе!
+      break;
+
    //case ELT_Plus: // "Переход на следующий уровень"
+   
    //case ELT_MAX:
    
    default:
