@@ -35,6 +35,16 @@ AMover::~AMover()
 
 
 
+//AGraphics_Object
+//------------------------------------------------------------------------------------------------------------
+AGraphics_Object::~AGraphics_Object()
+{
+}
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
 //ABall
 //------------------------------------------------------------------------------------------------------------
 const double ABall::Radius = 2.0 - 0.5 / AsConfig::Global_Scale;
@@ -55,6 +65,9 @@ void ABall::Begin_Movement()
 //------------------------------------------------------------------------------------------------------------
 void ABall::Finish_Movement()
 {
+	if (Ball_State == EBS_Disabled || Ball_State == EBS_Lost)
+		return;
+
 	Redraw_Ball();
 
 	if (Ball_State == EBS_On_Parachute)
@@ -107,9 +120,27 @@ double ABall::Get_Speed()
 	return Ball_Speed;
 }
 //------------------------------------------------------------------------------------------------------------
-void ABall::Set_Speed(double new_speed)
+void ABall::Act()
 {
-	Ball_Speed = new_speed;
+	// Заглушка. Не используеться, т.к. мячик сам ничего не делает (не анимируеться)
+}
+//------------------------------------------------------------------------------------------------------------
+void ABall::Clear(HDC hdc, RECT &paint_area)
+{
+	RECT intersection_rect;
+
+	if (Ball_State == EBS_Disabled)
+		return;
+
+	if ( (Ball_State == EBS_Teleporting || Ball_State == EBS_Lost) && Ball_State == Prev_Ball_State)
+		return;
+
+	// Очищаем фон
+	if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect) )
+	{
+		AsConfig::BG_Color.Select(hdc);
+		Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Draw(HDC hdc, RECT &paint_area)
@@ -121,13 +152,6 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
 
 	if ( (Ball_State == EBS_Teleporting || Ball_State == EBS_Lost) && Ball_State == Prev_Ball_State)
 		return;
-
-	// 1. Очищаем фон
-	if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect) )
-	{
-		AsConfig::BG_Color.Select(hdc);
-		Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
-	}
 
 	switch (Ball_State)
 	{
@@ -149,12 +173,22 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
 		return;
 	}
 
-	// 2. Рисуем шарик
+	// Рисуем шарик
 	if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect) )
 	{
 		AsConfig::White_Color.Select(hdc);
 		Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
 	}
+}
+//------------------------------------------------------------------------------------------------------------
+bool ABall::Is_Finished()
+{
+	return false; // Заглушка. Не используеться, т.к. мячик сам ничего не делает (не анимируеться)
+}
+//------------------------------------------------------------------------------------------------------------
+void ABall::Set_Speed(double new_speed)
+{
+	Ball_Speed = new_speed;
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Draw_Teleporting(HDC hdc, int step)

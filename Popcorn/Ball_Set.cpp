@@ -35,10 +35,26 @@ double AsBall_Set::Get_Speed()
    return max_speed;
 }
 //------------------------------------------------------------------------------------------------------------
+void AsBall_Set::Act()
+{
+   // Заглушка, т.к. метод не используеться.
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBall_Set::Clear(HDC hdc, RECT &paint_area)
+{
+   for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+      Balls[i].Clear(hdc, paint_area);
+}
+//------------------------------------------------------------------------------------------------------------
 void AsBall_Set::Draw(HDC hdc, RECT &paint_area)
 {
    for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
       Balls[i].Draw(hdc, paint_area);
+}
+//------------------------------------------------------------------------------------------------------------
+bool AsBall_Set::Is_Finished()
+{
+   return false; // Надо сделать.
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBall_Set::Release_From_Platform(double platform_x_pos)

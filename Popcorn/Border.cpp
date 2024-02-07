@@ -10,25 +10,6 @@ AsBorder::AsBorder()
 	Floor_Rect.bottom = AsConfig::Max_Y_Pos * AsConfig::Global_Scale;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рамку
-{
-   //1.Линия слева
-   for (int i = 0; i < 50; i++)
-		Draw_Element(hdc, paint_area, 2, 1 + i * 4, false);
-
-   //2.Линия справа
-   for (int i = 0; i < 50; i++)
-		Draw_Element(hdc, paint_area, AsConfig::Max_X_Pos + 1, 1 + i * 4, false);
-
-   //3.Линия сверху
-   for (int i = 0; i < 50; i++)
-		Draw_Element(hdc, paint_area, 3 + i * 4, 0, true);
-
-	//4.По (если есть)
-	if (AsConfig::Level_Has_Floor)
-		Draw_Floor(hdc, paint_area);
-}
-//------------------------------------------------------------------------------------------------------------
 void AsBorder::Redraw_Floor()
 {
 	InvalidateRect(AsConfig::Hwnd, &Floor_Rect, FALSE);
@@ -72,6 +53,50 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 		ball->Set_State(EBS_Lost);
 
 	return got_hit;
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBorder::Act()
+{
+	// Заглушка, т.к. метод не используеться.
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBorder::Clear(HDC hdc, RECT &paint_area)
+{
+	RECT intersection_rect;
+
+	if (! AsConfig::Level_Has_Floor)
+		return;
+
+	if (! IntersectRect(&intersection_rect, &paint_area, &Floor_Rect) )
+		return;
+
+	AsConfig::BG_Color.Select(hdc);
+
+	Rectangle(hdc, Floor_Rect.left, Floor_Rect.top, Floor_Rect.right - 1, Floor_Rect.bottom - 1);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рамку
+{
+   //1.Линия слева
+   for (int i = 0; i < 50; i++)
+		Draw_Element(hdc, paint_area, 2, 1 + i * 4, false);
+
+   //2.Линия справа
+   for (int i = 0; i < 50; i++)
+		Draw_Element(hdc, paint_area, AsConfig::Max_X_Pos + 1, 1 + i * 4, false);
+
+   //3.Линия сверху
+   for (int i = 0; i < 50; i++)
+		Draw_Element(hdc, paint_area, 3 + i * 4, 0, true);
+
+	//4.По (если есть)
+	if (AsConfig::Level_Has_Floor)
+		Draw_Floor(hdc, paint_area);
+}
+//------------------------------------------------------------------------------------------------------------
+bool AsBorder::Is_Finished()
+{
+	return false; // Заглушка. Не используеться, т.к. мячик сам ничего не делает (не анимируеться)
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Draw_Element(HDC hdc, RECT &paint_area, int x, int y, bool top_border)// Рисует элемент рамки уровня

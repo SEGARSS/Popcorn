@@ -32,21 +32,6 @@ enum EDirection_Type
 
 
 
-//AGraphics_Object
-//------------------------------------------------------------------------------------------------------------
-class AGraphics_Object
-{
-public:
-	virtual ~AGraphics_Object();
-
-	virtual void Act() = 0;
-	virtual void Clear(HDC hdc, RECT &paint_area) = 0;
-	virtual void Draw(HDC hdc, RECT &paint_area) = 0;
-	virtual bool Is_Finished() = 0;
-};
-//------------------------------------------------------------------------------------------------------------
-
-
 
 //AActive_Brick
 //------------------------------------------------------------------------------------------------------------

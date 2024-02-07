@@ -48,13 +48,13 @@ private:
 	double Rest_Distance;
 	int Life_Count;
 
-	//ABall Ball;
 	AsLevel Level;
 	AsPlatform Platform;
 	AsBorder Border;
 	AsBall_Set Ball_Set;
 	
-	AMover *Movers[AsConfig::Max_Movers_Count];
+	AMover *Movers[AsConfig::Max_Movers_Count]; // UNO; Движущиеся в данный момент объекты
+	AGraphics_Object *Modules[AsConfig::Max_Modules_Count]; // UNO; Главные графические объекты (модули) игры
 };
 //------------------------------------------------------------------------------------------------------------
 //Отлажен

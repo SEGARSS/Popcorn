@@ -18,28 +18,33 @@ enum EPlatform_State
 //------------------------------------------------------------------------------------------------------------
 enum EPlatform_Moving_State
 {
+   EPMS_Stopping,
    EPMS_Stop,
    EPMS_Moving_Left,
    EPMS_Moving_Right
 };
 //------------------------------------------------------------------------------------------------------------
-class AsPlatform: public AHit_Checker, public AMover
+class AsPlatform: public AHit_Checker, public AMover, public AGraphics_Object
 {
 public:
    ~AsPlatform();
    AsPlatform();
 
    virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball);
+
    virtual void Begin_Movement();
    virtual void Finish_Movement();
    virtual void Advance(double max_speed);
    virtual double Get_Speed();
 
-   void Act();
+   virtual void Act();
+	virtual void Clear(HDC hdc, RECT &paint_area);
+	virtual void Draw(HDC hdc, RECT &paint_area);
+	virtual bool Is_Finished();
+
    EPlatform_State Get_State();
    void Set_State(EPlatform_State new_state);
    void Redraw_Platform();
-   void Draw(HDC hdc, RECT &paint_area);
    void Move(bool to_left, bool key_down);
    bool Hit_By(AFalling_Letter *falling_letter);
    double Get_Middle_Pos();
@@ -48,7 +53,6 @@ public:
    double X_Pos;
 
 private:
-   void Circle_BG(HDC hdc);
    void Draw_Circle_Highlight(HDC hdc, int x, int y);
    void Draw_Normal_State(HDC hdc, RECT &paint_area);
    void Draw_Meltdown_State(HDC hdc, RECT &paint_area);
@@ -60,6 +64,7 @@ private:
 
    EPlatform_State Platform_State;
    EPlatform_Moving_State Platform_Moving_State;
+   bool Left_Key_Down, Right_Key_Down;
    int Inner_Width;
    int Rolling_Step;
    double Speed;
