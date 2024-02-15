@@ -13,7 +13,10 @@ enum EPlatform_State
    EPS_Pre_Meltdown,
    EPS_Meltdown,
    EPS_Roll_In,
-   EPS_Expand_Roll_In
+   EPS_Expand_Roll_In,
+   EPS_Glue_Init,
+   EPS_Glue,
+   EPS_Glue_Finalize
 };
 //------------------------------------------------------------------------------------------------------------
 enum EPlatform_Moving_State
@@ -44,7 +47,7 @@ public:
 
    EPlatform_State Get_State();
    void Set_State(EPlatform_State new_state);
-   void Redraw_Platform();
+   void Redraw_Platform(bool update_rect = true);
    void Move(bool to_left, bool key_down);
    bool Hit_By(AFalling_Letter *falling_letter);
    double Get_Middle_Pos();
@@ -58,6 +61,8 @@ private:
    void Draw_Meltdown_State(HDC hdc, RECT &paint_area);
    void Draw_Roll_In_State(HDC hdc, RECT &paint_area);
    void Draw_Expanding_Roll_In_State(HDC hdc, RECT &paint_area);
+   void Draw_Glue_State(HDC hdc, RECT &paint_area);
+   void Draw_Glue_Spot(HDC hdc, int x_offset, int width, int height);
    bool Reflect_On_Circle(double next_x_pos, double next_y_pos, double platform_ball_x_offset, ABall* ball);
    bool Get_Platform_Image_Stroke_Color(int x, int y, const AColor **color, int &stroke_len);
    void Get_Normal_Platform_Imege(HDC hdc);
@@ -68,6 +73,8 @@ private:
    int Inner_Width;
    int Rolling_Step;
    double Speed;
+   double Glue_Spot_Height_Ratio;
+
 
    int Normal_Platform_Imege_Width;
    int Normal_Platform_Imege_Height;
@@ -81,6 +88,7 @@ private:
 
    AColor Highlight_Color, Platform_Cercle_Color, Platform_Inner_Color;
 
+   static const double Max_Glue_Spot_Height_Ratio;
    static const int Height = 7;
    static const int Circle_Size = 7;
    static const int Normal_Platform_Inner_Width = Normal_Width - Circle_Size;
