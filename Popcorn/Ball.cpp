@@ -381,6 +381,11 @@ void ABall::Set_On_Parachute(int brick_x, int brick_y)
 	Redraw_Parachute();
 }
 //------------------------------------------------------------------------------------------------------------
+void ABall::Forced_Advance(double direction, double max_speed)
+{
+
+}
+//------------------------------------------------------------------------------------------------------------
 void ABall::Add_Hit_Checker(AHit_Checker *hit_checker)
 {
 	if (Hit_Checkers_Count >= sizeof(Hit_Checkers) / sizeof(Hit_Checkers[0]) )

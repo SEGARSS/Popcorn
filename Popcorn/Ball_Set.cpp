@@ -64,6 +64,23 @@ void AsBall_Set::Release_From_Platform(double platform_x_pos)
 			Balls[i].Set_State(EBS_Normal, platform_x_pos, AsConfig::Start_Ball_Y_Pos);
 }
 //------------------------------------------------------------------------------------------------------------
+void AsBall_Set::Release_Next_Ball()
+{
+   double ball_x, ball_y;
+   ABall *curr_ball;
+
+   for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+   {
+      curr_ball = &Balls[i];
+		if (curr_ball->Get_State() == EBS_On_Platform)
+      {
+         curr_ball->Get_Center(ball_x, ball_y);
+			curr_ball->Set_State(EBS_Normal, ball_x, ball_y);
+         break;
+      }
+   }
+}
+//------------------------------------------------------------------------------------------------------------
 void AsBall_Set::Set_On_Platform(double platform_x_pos)
 {
    int i;
@@ -213,6 +230,19 @@ void AsBall_Set::Reset_Speed()
 
       if (curr_ball->Get_State() == EBS_Normal)
          curr_ball->Set_Speed(AsConfig::Normal_Ball_Speed);
+   }
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBall_Set::On_Platform_Advance(double direction, double max_speed)
+{
+   ABall *curr_ball;
+
+   for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
+   {
+      curr_ball = &Balls[i];
+
+		if (curr_ball->Get_State() == EBS_On_Platform)
+			curr_ball->Forced_Advance(direction, max_speed);
    }
 }
 //------------------------------------------------------------------------------------------------------------

@@ -11,8 +11,8 @@ AsPlatform::~AsPlatform()
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
 : X_Pos(AsConfig::Border_X_Offset), Platform_State(EPS_Missing), Platform_Moving_State(EPMS_Stop), Left_Key_Down(false), 
-  Right_Key_Down(false), Inner_Width(Normal_Platform_Inner_Width), Rolling_Step(0.0), Speed(0), Glue_Spot_Height_Ratio(0.0), 
-  Normal_Platform_Imege_Width(0), Normal_Platform_Imege_Height(0), Normal_Platform_Imege(0), Width(Normal_Width), 
+  Right_Key_Down(false), Inner_Width(Normal_Platform_Inner_Width), Rolling_Step(0.0), Speed(0), Glue_Spot_Height_Ratio(0.0),
+  Ball_Set(0), Normal_Platform_Imege_Width(0), Normal_Platform_Imege_Height(0), Normal_Platform_Imege(0), Width(Normal_Width), 
   Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Color(255, 255, 255), Platform_Cercle_Color(151, 0 , 0), Platform_Inner_Color(0, 128, 192)
 {
    X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
@@ -24,10 +24,11 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
    double inner_top_y, inner_low_y;
    double reflection_pos;
    double inner_y;
+   double ball_x, ball_y;
 	if (next_y_pos + ball->Radius < AsConfig::Platform_Y_Pos)
 		return false;
 
-   inner_top_y = (double)(AsConfig::Platform_Y_Pos - 1);
+   inner_top_y = (double)(AsConfig::Platform_Y_Pos + 1);
    inner_low_y = (double)(AsConfig::Platform_Y_Pos + Height - 1);
    inner_left_x = (double)(X_Pos + Circle_Size - 1);
    inner_right_x = (double)(X_Pos + Width - (Circle_Size - 1) );
@@ -57,6 +58,13 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall* ball)
 _on_hit:
    if (ball->Get_State() == EBS_On_Parachute)
       ball->Set_State(EBS_Off_Parachute);
+
+   if (Platform_State == EPS_Glue)
+   {
+      ball->Get_Center(ball_x, ball_y);
+      ball->Set_State(EBS_On_Platform, ball_x, ball_y);
+   }
+
    return true;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -99,6 +107,16 @@ void AsPlatform::Advance(double max_speed)
 		X_Pos = max_platform_x;
       Speed = 0.0;
       Platform_Moving_State == EPMS_Stopping;
+   }
+
+   //Смещаем преклеинные шарики
+   if (Platform_State == EPS_Ready || Platform_State == EPS_Glue)
+   {
+      if (Platform_Moving_State == EPMS_Moving_Left)
+         Ball_Set->On_Platform_Advance(M_PI, max_speed);
+      else
+         if (Platform_Moving_State == EPMS_Moving_Right)
+             Ball_Set->On_Platform_Advance(0.0, max_speed);
    }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -201,6 +219,11 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
 bool AsPlatform::Is_Finished()
 {
    return false; // Заглушка. Не используеться метод.
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Init(AsBall_Set *ball_set)
+{
+   Ball_Set = ball_set;
 }
 //------------------------------------------------------------------------------------------------------------
 EPlatform_State AsPlatform::Get_State()
@@ -306,6 +329,25 @@ void AsPlatform::Move(bool to_left, bool key_down)
 	{
       Platform_Moving_State = EPMS_Moving_Right;
       Speed = X_Step;
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::On_Space_Key(bool key_down)
+{
+	if (! key_down)
+      return;
+
+	switch (Get_State() )
+	{
+   case EPS_Ready:
+		Ball_Set->Release_From_Platform(Get_Middle_Pos() );
+		Set_State(EPS_Normal);
+      break;
+
+
+   case EPS_Glue:
+      Ball_Set->Release_Next_Ball();
+      break;
 	}
 }
 //------------------------------------------------------------------------------------------------------------

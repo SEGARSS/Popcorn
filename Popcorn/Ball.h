@@ -98,6 +98,7 @@ public:
 	bool Is_Moving_Up();
 	bool Is_Moving_Left();
 	void Set_On_Parachute(int brick_x, int brick_y);
+	void Forced_Advance(double direction, double max_speed);
 
 	static void Add_Hit_Checker(AHit_Checker *hit_checker);
 
