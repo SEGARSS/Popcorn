@@ -113,10 +113,10 @@ void AsPlatform::Advance(double max_speed)
    if (Platform_State == EPS_Ready || Platform_State == EPS_Glue)
    {
       if (Platform_Moving_State == EPMS_Moving_Left)
-         Ball_Set->On_Platform_Advance(M_PI, max_speed);
+         Ball_Set->On_Platform_Advance(M_PI, fabs(Speed), max_speed);
       else
          if (Platform_Moving_State == EPMS_Moving_Right)
-             Ball_Set->On_Platform_Advance(0.0, max_speed);
+             Ball_Set->On_Platform_Advance(0.0, fabs(Speed), max_speed);
    }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -261,7 +261,10 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
 
    case EPS_Glue_Init:
-      Glue_Spot_Height_Ratio = 0.3;
+      if (Platform_State == EPS_Glue || Platform_State == EPS_Glue_Finalize)
+         return;
+      else
+         Glue_Spot_Height_Ratio = 0.3;
       break;
 
 
