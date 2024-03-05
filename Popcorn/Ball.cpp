@@ -52,8 +52,9 @@ int ABall::Hit_Checkers_Count = 0;
 AHit_Checker *ABall::Hit_Checkers[] = {};
 //------------------------------------------------------------------------------------------------------------
 ABall::ABall()
-: Ball_State(EBS_Disabled), Prev_Ball_State(EBS_Disabled), Center_X_Pos(0.0), Center_Y_Pos(0.0), Ball_Speed(0.0), Prev_Ball_Speed(0.0),
-  Ball_Direction(0.0), Prev_Ball_Direction(0.0), Testing_Is_Active(false), Test_Iteration(0), Ball_Rect{}, Prev_Ball_Rect{}
+: Ball_State(EBS_Disabled), Prev_Ball_State(EBS_Disabled), Release_Timer_Tick(0), Center_X_Pos(0.0), Center_Y_Pos(0.0), 
+  Ball_Speed(0.0), Prev_Ball_Speed(0.0), Ball_Direction(0.0), Prev_Ball_Direction(M_PI_4), Testing_Is_Active(false), 
+  Test_Iteration(0), Ball_Rect{}, Prev_Ball_Rect{}
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -286,6 +287,7 @@ void ABall::Set_State(EBall_State new_state, double x_pos, double y_pos)
 		//Rest_Distance = 0.0;
 		Prev_Ball_Direction = Ball_Direction;
 		//Ball_Direction = M_PI_4;
+		Release_Timer_Tick = AsConfig::Current_Timer_Tick + On_Platform_Timeout;
 		Redraw_Ball();
 		break;
 
@@ -420,7 +422,12 @@ void ABall::Release()
 
 	Set_State(EBS_Normal, Center_X_Pos, Center_Y_Pos);
 	Ball_Speed = Prev_Ball_Speed;
+
+	if (Ball_Speed < AsConfig::Normal_Ball_Speed)
+		Ball_Speed = AsConfig::Normal_Ball_Speed;
+
 	Ball_Direction = Prev_Ball_Direction;
+	Release_Timer_Tick = 0;
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Add_Hit_Checker(AHit_Checker *hit_checker)

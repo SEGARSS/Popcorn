@@ -101,6 +101,8 @@ public:
 	void Forced_Advance(double direction, double speed, double max_speed);
 	void Release();
 
+	int Release_Timer_Tick; //Значение счётчика времени, после которого надо отпустить приклеенный мячик
+
 	static void Add_Hit_Checker(AHit_Checker *hit_checker);
 
 	static const double Radius;
@@ -126,6 +128,7 @@ private:
 	RECT Parachute_Rect, Prev_Parachute_Rect;
 
 	static const int Parachute_Size = 15;
+	static const int On_Platform_Timeout = 10 * AsConfig::FPS; // Время нахождения на платформе
 	static int Hit_Checkers_Count;
 	static AHit_Checker *Hit_Checkers[3];
 };

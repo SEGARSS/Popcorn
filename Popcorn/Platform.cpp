@@ -3,6 +3,7 @@
 
 //AsPlatform
 const double AsPlatform::Max_Glue_Spot_Height_Ratio = 1.0;
+const double AsPlatform::Min_Glue_Spot_Height_Ratio = 0.4;
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::~AsPlatform()
 {
@@ -138,14 +139,21 @@ void AsPlatform::Act()
 
    case EPS_Glue_Init:
       if (Glue_Spot_Height_Ratio < Max_Glue_Spot_Height_Ratio)
-      {
          Glue_Spot_Height_Ratio += 0.05;
-         Redraw_Platform(false);
-      }
       else
          Platform_State = EPS_Glue;
 
-      break;
+      Redraw_Platform(false);
+		break;
+
+	case EPS_Glue_Finalize:
+      if (Glue_Spot_Height_Ratio > Min_Glue_Spot_Height_Ratio)
+			Glue_Spot_Height_Ratio -= 0.05;
+		else
+			Platform_State = EPS_Normal;
+
+      Redraw_Platform(false);
+		break;
    }
 }
 //------------------------------------------------------------------------------------------------------------
@@ -264,12 +272,20 @@ void AsPlatform::Set_State(EPlatform_State new_state)
       if (Platform_State == EPS_Glue || Platform_State == EPS_Glue_Finalize)
          return;
       else
-         Glue_Spot_Height_Ratio = 0.3;
+         Glue_Spot_Height_Ratio = Min_Glue_Spot_Height_Ratio;
       break;
 
 
-   //case EPS_Glue: //!!!
-   //case EPS_Glue_Finalize: //!!!
+   case EPS_Glue:
+      AsConfig::Throw();//Такое состояние мы не устанавливаем через Set_State().
+      break;
+
+
+   case EPS_Glue_Finalize:
+      while (Ball_Set->Release_Next_Ball() )
+      {
+      }
+      break;
    } 
    
    Platform_State = new_state;
