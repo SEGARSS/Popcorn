@@ -92,8 +92,7 @@ private:
 
    AColor Highlight_Color, Platform_Cercle_Color, Platform_Inner_Color;
 
-   static const double Max_Glue_Spot_Height_Ratio;
-   static const double Min_Glue_Spot_Height_Ratio;
+   static const double Max_Glue_Spot_Height_Ratio, Min_Glue_Spot_Height_Ratio, Glue_Spot_Height_Ratio_Step;
    static const int Height = 7;
    static const int Circle_Size = 7;
    static const int Normal_Platform_Inner_Width = Normal_Width - Circle_Size;

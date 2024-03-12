@@ -42,8 +42,8 @@ void AFalling_Letter::Act()
       Next_Rotation_Tick += Tick_Per_Step;
    }
 
-   InvalidateRect(AsConfig::Hwnd, &Prev_Letter_Cell, FALSE);
-   InvalidateRect(AsConfig::Hwnd, &Letter_Cell, FALSE);
+   AsConfig::Ivalidate_Rect(Prev_Letter_Cell);
+   AsConfig::Ivalidate_Rect(Letter_Cell);
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Clear(HDC hdc, RECT &paint_area)
@@ -95,8 +95,8 @@ void AFalling_Letter::Get_Letter_Cell(RECT &rect)
 void AFalling_Letter::Finalize()
 {
    Falling_Letter_State = EFLS_Finalizing;
-   InvalidateRect(AsConfig::Hwnd, &Prev_Letter_Cell, FALSE);
-   InvalidateRect(AsConfig::Hwnd, &Letter_Cell, FALSE);
+   AsConfig::Ivalidate_Rect(Prev_Letter_Cell);
+   AsConfig::Ivalidate_Rect(Letter_Cell);
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Test_Draw_All_Steps(HDC hdc)

@@ -249,6 +249,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
 
    case ELT_T: // "Три"
       Ball_Set.Triple_Balls();
+      Platform.Set_State(EPS_Normal);
       break;
    
    //case ELT_L: // "Лазер"
