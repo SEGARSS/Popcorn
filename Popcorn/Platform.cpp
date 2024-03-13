@@ -12,7 +12,7 @@ AsPlatform::~AsPlatform()
 }
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
-: X_Pos(AsConfig::Border_X_Offset), Platform_State(EPS_Missing), Platform_Moving_State(EPMS_Stop), Left_Key_Down(false), 
+: X_Pos(AsConfig::Border_X_Offset), Platform_State(EPS_Missing), Platform_Substate_Glue(EPSG_Unknown), Platform_Moving_State(EPMS_Stop), Left_Key_Down(false), 
   Right_Key_Down(false), Inner_Width(Normal_Platform_Inner_Width), Rolling_Step(0.0), Speed(0), Glue_Spot_Height_Ratio(0.0),
   Ball_Set(0), Normal_Platform_Imege_Width(0), Normal_Platform_Imege_Height(0), Normal_Platform_Imege(0), Width(Normal_Width), 
   Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Color(255, 255, 255), Platform_Cercle_Color(151, 0 , 0), Platform_Inner_Color(0, 128, 192)
@@ -138,24 +138,29 @@ void AsPlatform::Act()
       break;
 
 
-   case EPS_Glue_Init:
-      if (Glue_Spot_Height_Ratio < Max_Glue_Spot_Height_Ratio)
-         Glue_Spot_Height_Ratio += Glue_Spot_Height_Ratio_Step;
-      else
-         Platform_State = EPS_Glue;
+	case EPS_Glue:
+		switch (Platform_Substate_Glue)
+		{
+      case EPSG_Init:
+			if (Glue_Spot_Height_Ratio < Max_Glue_Spot_Height_Ratio)
+				Glue_Spot_Height_Ratio += Glue_Spot_Height_Ratio_Step;
+			else
+				Platform_State = EPS_Glue;
 
-      Redraw_Platform(false);
-		break;
+			Redraw_Platform(false);
+			break;
 
-	case EPS_Glue_Finalize:
-      if (Glue_Spot_Height_Ratio > Min_Glue_Spot_Height_Ratio)
-			Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
-		else
-			Platform_State = EPS_Normal;
+		case EPSG_Finalize:
+			if (Glue_Spot_Height_Ratio > Min_Glue_Spot_Height_Ratio)
+				Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
+			else
+				Platform_State = EPS_Normal;
 
-      Redraw_Platform(false);
-		break;
-   }
+			Redraw_Platform(false);
+			break;
+		}
+      break;
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Clear(HDC hdc, RECT &paint_area)
@@ -249,6 +254,12 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
    switch (new_state)
    {
+   case EPS_Normal:
+      if (Platform_State == EPS_Glue_Init || Platform_State == EPS_Glue)
+         return Set_State(EPS_Glue_Finalize);
+      break;
+
+
    case EPS_Pre_Meltdown:
       Speed = 0.0;
       break;
