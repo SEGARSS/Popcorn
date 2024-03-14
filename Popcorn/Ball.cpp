@@ -111,7 +111,7 @@ void ABall::Advance(double max_speed) // Смещение шарика
 
 			if (prev_hits_cout >= max_hits_cout)
 			{
-				Ball_Direction += M_PI / 8.0;
+				Ball_Direction += AsConfig::Min_Ball_Angle;
 				prev_hits_cout = 0;
 			}
 		}
@@ -344,11 +344,33 @@ void ABall::Set_Direction(double new_direction)
 {
 	const double pi_2 = 2.0 * M_PI;
 
+	// 1. Переводим угол в диапазон [0....pi_2]
 	while (new_direction > pi_2)
 		new_direction -= pi_2;
 
 	while (new_direction < 0.0)
 		new_direction += pi_2;
+
+	Ball_Direction = new_direction;
+
+	// 2. Не позволим приближатья к горизонтальной оси ближе, чем на угол AsConfig::Min_Ball_Angle
+	// 2.1. Слева
+	// 2.1.1. Сверху
+	if  (new_direction < AsConfig::Min_Ball_Angle)
+		new_direction = AsConfig::Min_Ball_Angle;
+
+	// 2.1.2. Снизу
+	if (new_direction > pi_2 - AsConfig::Min_Ball_Angle)
+		new_direction = pi_2 - AsConfig::Min_Ball_Angle;
+
+	// 2.2. Справа
+	// 2.2.1. Сверху
+	if  (new_direction > M_PI - AsConfig::Min_Ball_Angle && new_direction < M_PI)
+		new_direction =  M_PI - AsConfig::Min_Ball_Angle;
+
+	// 2.2.2. Снизу
+	if (new_direction >= M_PI && new_direction < M_PI + AsConfig::Min_Ball_Angle)
+		new_direction = M_PI + AsConfig::Min_Ball_Angle;
 
 	Ball_Direction = new_direction;
 }

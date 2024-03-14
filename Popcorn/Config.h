@@ -52,6 +52,7 @@ public:
    static const double Start_Ball_Y_Pos;
    static const double Ball_Accelerate;
    static const double Normal_Ball_Speed;
+   static const double Min_Ball_Angle;
 
    static const int Global_Scale = 3;         // Ширина окна
    static const int Border_X_Offset = 6;

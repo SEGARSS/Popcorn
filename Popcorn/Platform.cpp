@@ -61,7 +61,7 @@ _on_hit:
    if (ball->Get_State() == EBS_On_Parachute)
       ball->Set_State(EBS_Off_Parachute);
 
-   if (Platform_State == EPS_Glue)
+   if (Platform_State == EPS_Glue && Platform_Substate_Glue == EPSG_Active)
    {
       ball->Get_Center(ball_x, ball_y);
       ball->Set_State(EBS_On_Platform, ball_x, ball_y);
@@ -112,7 +112,7 @@ void AsPlatform::Advance(double max_speed)
    }
 
    //Смещаем преклеинные шарики
-   if (Platform_State == EPS_Ready || Platform_State == EPS_Glue)
+   if (Platform_State == EPS_Ready || (Platform_State == EPS_Glue && Platform_Substate_Glue == EPSG_Active) )
    {
       if (Platform_Moving_State == EPMS_Moving_Left)
          Ball_Set->On_Platform_Advance(M_PI, fabs(Speed), max_speed);
@@ -141,11 +141,11 @@ void AsPlatform::Act()
 	case EPS_Glue:
 		switch (Platform_Substate_Glue)
 		{
-      case EPSG_Init:
+		case EPSG_Init:
 			if (Glue_Spot_Height_Ratio < Max_Glue_Spot_Height_Ratio)
 				Glue_Spot_Height_Ratio += Glue_Spot_Height_Ratio_Step;
 			else
-				Platform_State = EPS_Glue;
+				Platform_Substate_Glue = EPSG_Active;
 
 			Redraw_Platform(false);
 			break;
@@ -154,12 +154,15 @@ void AsPlatform::Act()
 			if (Glue_Spot_Height_Ratio > Min_Glue_Spot_Height_Ratio)
 				Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
 			else
+         {
 				Platform_State = EPS_Normal;
+            Platform_Substate_Glue = EPSG_Unknown;
+         }
 
 			Redraw_Platform(false);
 			break;
 		}
-      break;
+		break;
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -177,9 +180,7 @@ void AsPlatform::Clear(HDC hdc, RECT &paint_area)
    case EPS_Pre_Meltdown:
    case EPS_Roll_In:
    case EPS_Expand_Roll_In:
-   case EPS_Glue_Init:
    case EPS_Glue:
-   case EPS_Glue_Finalize:
       //Очищаем фоном прежнее место
       AsConfig::BG_Color.Select(hdc);
       Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
@@ -222,9 +223,7 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
       break;
 
 
-   case EPS_Glue_Init:
    case EPS_Glue:
-   case EPS_Glue_Finalize:
       Draw_Glue_State(hdc, paint_area);
       break;
    }
@@ -254,10 +253,18 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
    switch (new_state)
    {
-   case EPS_Normal:
-      if (Platform_State == EPS_Glue_Init || Platform_State == EPS_Glue)
-         return Set_State(EPS_Glue_Finalize);
-      break;
+	case EPS_Normal:
+		if (Platform_State == EPS_Glue)
+		{
+			Platform_Substate_Glue = EPSG_Finalize;
+
+			while (Ball_Set->Release_Next_Ball())
+			{
+			}
+
+         return;
+		}
+		break;
 
 
    case EPS_Pre_Meltdown:
@@ -280,22 +287,13 @@ void AsPlatform::Set_State(EPlatform_State new_state)
       break;
 
 
-   case EPS_Glue_Init:
-      if (Platform_State == EPS_Glue || Platform_State == EPS_Glue_Finalize)
+   case EPS_Glue:
+      if (Platform_Substate_Glue == EPSG_Finalize)
          return;
       else
-         Glue_Spot_Height_Ratio = Min_Glue_Spot_Height_Ratio;
-      break;
-
-
-   case EPS_Glue:
-      AsConfig::Throw();//Такое состояние мы не устанавливаем через Set_State().
-      break;
-
-
-   case EPS_Glue_Finalize:
-      while (Ball_Set->Release_Next_Ball() )
       {
+         Platform_Substate_Glue = EPSG_Init;
+         Glue_Spot_Height_Ratio = Min_Glue_Spot_Height_Ratio;
       }
       break;
    } 
@@ -331,7 +329,7 @@ void AsPlatform::Redraw_Platform(bool update_rect)
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Move(bool to_left, bool key_down)
 {
-	if (! (Platform_State == EPS_Normal || Platform_State == EPS_Glue_Init || Platform_State == EPS_Glue || Platform_State == EPS_Glue_Finalize) )
+	if (! (Platform_State == EPS_Normal || Platform_State == EPS_Glue) )
 		return;
 
    if (to_left)

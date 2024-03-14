@@ -245,14 +245,14 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
       break;
 
    case ELT_K: // "Клей"
-      Platform.Set_State(EPS_Glue_Init);
+      Platform.Set_State(EPS_Glue);
       break;
    
    //case ELT_W: // "Шире"
 
    case ELT_T: // "Три"
-      Ball_Set.Triple_Balls();
       Platform.Set_State(EPS_Normal);
+      Ball_Set.Triple_Balls();      
       break;
    
    //case ELT_L: // "Лазер"
