@@ -12,7 +12,8 @@ AsPlatform::~AsPlatform()
 }
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
-: X_Pos(AsConfig::Border_X_Offset), Platform_State(EPS_Missing), Platform_Substate_Glue(EPSG_Unknown), Platform_Moving_State(EPMS_Stop), Left_Key_Down(false), 
+: X_Pos(AsConfig::Border_X_Offset), Platform_State(EPS_Missing), Platform_Substate_Meltdown(EPSM_Unknown),
+  Platform_Substate_Glue(EPSG_Unknown), Platform_Moving_State(EPMS_Stop), Left_Key_Down(false), 
   Right_Key_Down(false), Inner_Width(Normal_Platform_Inner_Width), Rolling_Step(0.0), Speed(0), Glue_Spot_Height_Ratio(0.0),
   Ball_Set(0), Normal_Platform_Imege_Width(0), Normal_Platform_Imege_Height(0), Normal_Platform_Imege(0), Width(Normal_Width), 
   Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Color(255, 255, 255), Platform_Cercle_Color(151, 0 , 0), Platform_Inner_Color(0, 128, 192)
@@ -132,6 +133,10 @@ void AsPlatform::Act()
    switch (Platform_State)
    {
    case EPS_Meltdown:
+      Act_For_Meltdown_State();
+      break;
+
+
    case EPS_Roll_In:
    case EPS_Expand_Roll_In:
       Redraw_Platform();
@@ -139,29 +144,7 @@ void AsPlatform::Act()
 
 
 	case EPS_Glue:
-		switch (Platform_Substate_Glue)
-		{
-		case EPSG_Init:
-			if (Glue_Spot_Height_Ratio < Max_Glue_Spot_Height_Ratio)
-				Glue_Spot_Height_Ratio += Glue_Spot_Height_Ratio_Step;
-			else
-				Platform_Substate_Glue = EPSG_Active;
-
-			Redraw_Platform(false);
-			break;
-
-		case EPSG_Finalize:
-			if (Glue_Spot_Height_Ratio > Min_Glue_Spot_Height_Ratio)
-				Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
-			else
-         {
-				Platform_State = EPS_Normal;
-            Platform_Substate_Glue = EPSG_Unknown;
-         }
-
-			Redraw_Platform(false);
-			break;
-		}
+      Act_For_Glue_State();
 		break;
 	}
 }
@@ -395,6 +378,39 @@ bool AsPlatform::Hit_By(AFalling_Letter *falling_letter)
 double AsPlatform::Get_Middle_Pos()
 {
    return X_Pos + (double)Width / 2.0;
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Act_For_Meltdown_State()
+{
+   if (Platform_Substate_Meltdown == EPSM_Active)
+      Redraw_Platform();
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Act_For_Glue_State()
+{
+	switch (Platform_Substate_Glue)
+	{
+	case EPSG_Init:
+		if (Glue_Spot_Height_Ratio < Max_Glue_Spot_Height_Ratio)
+			Glue_Spot_Height_Ratio += Glue_Spot_Height_Ratio_Step;
+		else
+			Platform_Substate_Glue = EPSG_Active;
+
+		Redraw_Platform(false);
+		break;
+
+	case EPSG_Finalize:
+		if (Glue_Spot_Height_Ratio > Min_Glue_Spot_Height_Ratio)
+			Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
+		else
+		{
+			Platform_State = EPS_Normal;
+			Platform_Substate_Glue = EPSG_Unknown;
+		}
+
+		Redraw_Platform(false);
+		break;
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Circle_Highlight(HDC hdc, int x, int y)//Юлики на мячике
