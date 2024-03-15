@@ -13,7 +13,7 @@ AsPlatform::~AsPlatform()
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
 : X_Pos(AsConfig::Border_X_Offset), Platform_State(EPS_Missing), Platform_Substate_Meltdown(EPSM_Unknown),
-  Platform_Substate_Glue(EPSG_Unknown), Platform_Moving_State(EPMS_Stop), Left_Key_Down(false), 
+  Platform_Substate_Rolling(EPSR_Unknown), Platform_Substate_Glue(EPSG_Unknown), Platform_Moving_State(EPMS_Stop), Left_Key_Down(false), 
   Right_Key_Down(false), Inner_Width(Normal_Platform_Inner_Width), Rolling_Step(0.0), Speed(0), Glue_Spot_Height_Ratio(0.0),
   Ball_Set(0), Normal_Platform_Imege_Width(0), Normal_Platform_Imege_Height(0), Normal_Platform_Imege(0), Width(Normal_Width), 
   Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Color(255, 255, 255), Platform_Cercle_Color(151, 0 , 0), Platform_Inner_Color(0, 128, 192)
@@ -136,12 +136,9 @@ void AsPlatform::Act()
       Act_For_Meltdown_State();
       break;
 
-
-   case EPS_Roll_In:
-   case EPS_Expand_Roll_In:
-      Redraw_Platform();
+   case EPS_Rolling:
+      Act_For_Rolling_State();
       break;
-
 
 	case EPS_Glue:
       Act_For_Glue_State();
@@ -160,9 +157,7 @@ void AsPlatform::Clear(HDC hdc, RECT &paint_area)
    {
    case EPS_Ready:
    case EPS_Normal:
-   case EPS_Pre_Meltdown:
-   case EPS_Roll_In:
-   case EPS_Expand_Roll_In:
+   case EPS_Rolling:
    case EPS_Glue:
       //Очищаем фоном прежнее место
       AsConfig::BG_Color.Select(hdc);
@@ -185,14 +180,15 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
       break;
 
 
-   case EPS_Pre_Meltdown:
-      Draw_Normal_State(hdc, paint_area);
-      Set_State(EPS_Meltdown);
-      break;
+   //case EPS_Pre_Meltdown:
+   //   Draw_Normal_State(hdc, paint_area);
+   //   Set_State(EPS_Meltdown);
+   //   break;
 
 
    case EPS_Meltdown:
-      Draw_Meltdown_State(hdc, paint_area);
+      if (Platform_Substate_Meltdown == EPSM_Active)
+         Draw_Meltdown_State(hdc, paint_area);
       break;
 
 
@@ -250,17 +246,20 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 		break;
 
 
-   case EPS_Pre_Meltdown:
-      Speed = 0.0;
-      break;
+   //case EPS_Pre_Meltdown:
+   //   Speed = 0.0;
+   //   break;
 
 
    case EPS_Meltdown:
+      Speed = 0.0;
+      Platform_Substate_Meltdown = EPSM_Init;
+
       len = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
+
       for (int i = 0; i < len; i++)
-      {
          Meltdown_Platform_Y_Pos[i] = Platform_Rect.top;
-      }
+ 
       break;
 
 
@@ -382,8 +381,21 @@ double AsPlatform::Get_Middle_Pos()
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act_For_Meltdown_State()
 {
-   if (Platform_Substate_Meltdown == EPSM_Active)
+   switch (Platform_Substate_Meltdown)
+   {
+   case EPSM_Init:
+      Platform_Substate_Meltdown = EPSM_Active;
+      break;
+
+   case EPSM_Active:
       Redraw_Platform();
+      break;
+   }
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Act_For_Rolling_State()
+{
+   Redraw_Platform();
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act_For_Glue_State()

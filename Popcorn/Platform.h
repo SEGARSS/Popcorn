@@ -12,8 +12,7 @@ enum EPlatform_State
    EPS_Ready,
    EPS_Normal,
    EPS_Meltdown,
-   EPS_Roll_In,
-   EPS_Expand_Roll_In,
+   EPS_Rolling,   
    EPS_Glue
 };
 //------------------------------------------------------------------------------------------------------------
@@ -23,6 +22,14 @@ enum EPlatform_Substate_Meltdown
       
    EPSM_Init,
    EPSM_Active
+};
+//------------------------------------------------------------------------------------------------------------
+enum EPlatform_Substate_Rolling
+{
+   EPSR_Unknown,
+
+   EPSR_Roll_In,
+   EPSR_Expand_Roll_In
 };
 //------------------------------------------------------------------------------------------------------------
 enum EPlatform_Substate_Glue
@@ -74,6 +81,7 @@ public:
 
 private:
    void Act_For_Meltdown_State();
+   void Act_For_Rolling_State();
    void Act_For_Glue_State();
    void Draw_Circle_Highlight(HDC hdc, int x, int y);
    void Draw_Normal_State(HDC hdc, RECT &paint_area);
@@ -88,6 +96,7 @@ private:
 
    EPlatform_State Platform_State;
    EPlatform_Substate_Meltdown Platform_Substate_Meltdown;
+   EPlatform_Substate_Rolling Platform_Substate_Rolling;
    EPlatform_Substate_Glue Platform_Substate_Glue;
    EPlatform_Moving_State Platform_Moving_State;
    bool Left_Key_Down, Right_Key_Down;
