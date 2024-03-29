@@ -117,9 +117,9 @@ private:
    AsBall_Set *Ball_Set;
 
 
-   int Normal_Platform_Imege_Width;
+   int Normal_Platform_Image_Width;
    int Normal_Platform_Imege_Height;
-   int *Normal_Platform_Imege; // Пиксели изображения платформы на фоне
+   int *Normal_Platform_Image; // Пиксели изображения платформы на фоне
 
    static const int Normal_Width = 28;
 
@@ -127,7 +127,7 @@ private:
 
    RECT Platform_Rect, Prev_Platform_Rect;
 
-   AColor Highlight_Color, Platform_Cercle_Color, Platform_Inner_Color;
+   AColor Highlight_Color, Platform_Circle_Color, Platform_Inner_Color;
 
    static const double Max_Glue_Spot_Height_Ratio, Min_Glue_Spot_Height_Ratio, Glue_Spot_Height_Ratio_Step;
    static const int Height = 7;

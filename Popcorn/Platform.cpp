@@ -8,16 +8,16 @@ const double AsPlatform::Glue_Spot_Height_Ratio_Step = 0.05;
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::~AsPlatform()
 {
-   delete[] Normal_Platform_Imege;
+   delete[] Normal_Platform_Image;
 }
 //------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
 : X_Pos(AsConfig::Border_X_Offset), Platform_State(EPS_Regular), Platform_Substate_Regular(EPlatform_Substate_Regular::Missing), 
   Platform_Substate_Meltdown(EPSM_Unknown), Platform_Substate_Rolling(EPSR_Unknown), Platform_Substate_Glue(EPSG_Unknown), 
   Platform_Moving_State(EPMS_Stop), Left_Key_Down(false), Right_Key_Down(false), Inner_Width(Normal_Platform_Inner_Width), 
-  Rolling_Step(0.0), Speed(0), Glue_Spot_Height_Ratio(0.0), Ball_Set(0), Normal_Platform_Imege_Width(0), 
-  Normal_Platform_Imege_Height(0), Normal_Platform_Imege(0), Width(Normal_Width), Platform_Rect{}, Prev_Platform_Rect{}, 
-  Highlight_Color(255, 255, 255), Platform_Cercle_Color(151, 0 , 0), Platform_Inner_Color(0, 128, 192)
+  Rolling_Step(0.0), Speed(0), Glue_Spot_Height_Ratio(0.0), Ball_Set(0), Normal_Platform_Image_Width(0), 
+  Normal_Platform_Imege_Height(0), Normal_Platform_Image(0), Width(Normal_Width), Platform_Rect{}, Prev_Platform_Rect{}, 
+  Highlight_Color(255, 255, 255), Platform_Circle_Color(151, 0 , 0), Platform_Inner_Color(0, 128, 192)
 {
    X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
 }
@@ -431,7 +431,7 @@ void AsPlatform::Act_For_Rolling_State()
 		if (Inner_Width >= Normal_Platform_Inner_Width)
 		{
 			Inner_Width = Normal_Platform_Inner_Width;
-			Platform_State = EPS_Ready;
+         Set_State(EPlatform_Substate_Regular::Ready);
          Platform_Substate_Rolling = EPSR_Unknown;
 			Redraw_Platform();
 		}
@@ -459,7 +459,7 @@ void AsPlatform::Act_For_Glue_State()
 			Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
 		else
 		{
-			Platform_State = EPS_Normal;
+         Set_State(EPlatform_Substate_Regular::Normal);
 			Platform_Substate_Glue = EPSG_Unknown;
 		}
 
@@ -487,7 +487,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //Рисуем п�
    RECT inner_rect, rect;
 
    //1.Рисуем боковые шарики
-   Platform_Cercle_Color.Select(hdc);
+   Platform_Circle_Color.Select(hdc);
 
    rect.left = (int)(x * d_scale);
    rect.top = y * scale;
@@ -517,7 +517,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //Рисуем п�
 
    AsConfig::Round_Rect(hdc, inner_rect, 3);
 
-   if (Normal_Platform_Imege == 0 && Platform_State == EPS_Ready)
+   if (Normal_Platform_Image == 0 && Has_State(EPlatform_Substate_Regular::Ready) );
       Get_Normal_Platform_Imege(hdc);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -530,11 +530,11 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area) //Рисуем �
    int max_platform_y;
    const AColor *color;
   
-   Normal_Platform_Imege_Width = Width * AsConfig::Global_Scale;
+   Normal_Platform_Image_Width = Width * AsConfig::Global_Scale;
 
    max_platform_y = (AsConfig::Max_Y_Pos + 1) * AsConfig::Global_Scale;
 
-   for (int i = 0; i < Normal_Platform_Imege_Width; i++)
+   for (int i = 0; i < Normal_Platform_Image_Width; i++)
    {
       if (Meltdown_Platform_Y_Pos[i] > max_platform_y)
          continue;
@@ -549,7 +549,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area) //Рисуем �
 
       MoveToEx(hdc, x, y, 0);
 
-      //Рисуем последовательность вертикальных штрихов разного цвета (согласно прообразу, сохранённому в Normal_Platform_Imege)
+      //Рисуем последовательность вертикальных штрихов разного цвета (согласно прообразу, сохранённому в Normal_Platform_Image)
       while (Get_Platform_Image_Stroke_Color(i, j, &color, stroke_len) )
       {
          color->Select_Pen(hdc);
@@ -569,7 +569,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area) //Рисуем �
    }
 
    if (moved_colums_count == 0)
-      Platform_State = EPS_Missing;
+      Set_State(EPlatform_Substate_Regular::Missing);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Rolling_State(HDC hdc, RECT &paint_area)
@@ -596,7 +596,7 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area)//Рисуем в�
    XFORM xform, old_xform;
    
    //1.Шарик.
-   Platform_Cercle_Color.Select(hdc);
+   Platform_Circle_Color.Select(hdc);
 
    Ellipse(hdc, x, y, x + roller_size - 1, y + roller_size - 1);
 
@@ -718,7 +718,7 @@ bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double 
 bool AsPlatform::Get_Platform_Image_Stroke_Color(int x, int y, const AColor **color, int &stroke_len)
 {//Вычисляем длинну оредного вертикального штриха
 
-   int offset = y * Normal_Platform_Imege_Width + x; // Позиция в массиве Normal_Platform_Imege, соответствующая смещению (х, у)
+   int offset = y * Normal_Platform_Image_Width + x; // Позиция в массиве Normal_Platform_Image, соответствующая смещению (х, у)
    int color_value;
    stroke_len = 0;
 
@@ -729,23 +729,23 @@ bool AsPlatform::Get_Platform_Image_Stroke_Color(int x, int y, const AColor **co
    {
       if (i == y)
       {
-         color_value = Normal_Platform_Imege[offset];
+         color_value = Normal_Platform_Image[offset];
          stroke_len = 1;
       }
       else
       {
-         if (color_value == Normal_Platform_Imege[offset])
+         if (color_value == Normal_Platform_Image[offset])
             ++stroke_len;
          else
             break;
-      }
-      offset += Normal_Platform_Imege_Width; //Переходим на строку ниже
+      }         
+      offset += Normal_Platform_Image_Width; //Переходим на строку ниже
    }
 
    if (color_value == Highlight_Color.Get_RGB() )
       *color = &Highlight_Color;
-   else if (color_value == Platform_Cercle_Color.Get_RGB() )
-      *color = &Platform_Cercle_Color;
+   else if (color_value == Platform_Circle_Color.Get_RGB() )
+      *color = &Platform_Circle_Color;
    else if (color_value == Platform_Inner_Color.Get_RGB() )
       *color = &Platform_Inner_Color;
    else if (color_value == AsConfig::BG_Color.Get_RGB() )
@@ -761,14 +761,14 @@ void AsPlatform::Get_Normal_Platform_Imege(HDC hdc)
    int y = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
    int offset = 0;
 
-	Normal_Platform_Imege_Width = Width * AsConfig::Global_Scale;
+	Normal_Platform_Image_Width = Width * AsConfig::Global_Scale;
 	Normal_Platform_Imege_Height = Height * AsConfig::Global_Scale;
 
-	Normal_Platform_Imege = new int[Normal_Platform_Imege_Width * Normal_Platform_Imege_Height];
+	Normal_Platform_Image = new int[Normal_Platform_Image_Width * Normal_Platform_Imege_Height];
 
 	for (int i = 0; i < Normal_Platform_Imege_Height; i++)
-		for (int j = 0; j < Normal_Platform_Imege_Width; j++)
-			Normal_Platform_Imege[offset++] = GetPixel(hdc, x + j, y + i);
+		for (int j = 0; j < Normal_Platform_Image_Width; j++)
+			Normal_Platform_Image[offset++] = GetPixel(hdc, x + j, y + i);
 }
 //------------------------------------------------------------------------------------------------------------
 
