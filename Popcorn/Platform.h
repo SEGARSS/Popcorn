@@ -77,6 +77,8 @@ public:
    void Init(AsBall_Set *ball_set);
    EPlatform_State Get_State();
    void Set_State(EPlatform_State new_state);
+   void Set_State(EPlatform_Substate_Regular new_regular_state);
+   bool Has_State(EPlatform_Substate_Regular regular_state);
    void Redraw_Platform(bool update_rect = true);
    void Move(bool to_left, bool key_down);
    void On_Space_Key(bool key_down);

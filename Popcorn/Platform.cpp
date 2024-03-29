@@ -225,17 +225,8 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
    switch (new_state)
    {
-	case EPS_Normal:
-		if (Platform_State == EPS_Glue)
-		{
-			Platform_Substate_Glue = EPSG_Finalize;
-
-			while (Ball_Set->Release_Next_Ball())
-			{
-			}
-
-         return;
-		}
+   case EPS_Regular:
+      AsConfig::Throw(); // Cocnjzybt EPS_Regular устанавливется неявно при вызове Set_State(EPlatform_Substate_Regular new_regular_state)
 		break;
 
 
@@ -272,6 +263,40 @@ void AsPlatform::Set_State(EPlatform_State new_state)
    Platform_State = new_state;
 }
 //------------------------------------------------------------------------------------------------------------
+void AsPlatform::Set_State(EPlatform_Substate_Regular new_regular_state)
+{
+   if (Platform_State == EPS_Regular && Platform_Substate_Regular == new_regular_state)
+      return;
+
+	if (new_regular_state == EPlatform_Substate_Regular::Normal)
+	{
+		if (Platform_State == EPS_Glue)
+		{
+			Platform_Substate_Glue = EPSG_Finalize;
+
+			while (Ball_Set->Release_Next_Ball())
+			{
+			}
+
+			return;
+		}
+	}
+
+   Platform_State = EPS_Regular;
+   Platform_Substate_Regular = new_regular_state;
+}
+//------------------------------------------------------------------------------------------------------------
+bool AsPlatform::Has_State(EPlatform_Substate_Regular regular_state)
+{
+   if (Platform_State != EPS_Regular)
+      return false;
+
+   if (Platform_Substate_Regular == regular_state)
+      return true;
+   else
+      return false;
+}
+//------------------------------------------------------------------------------------------------------------
 void AsPlatform::Redraw_Platform(bool update_rect)
 {
    int platform_width;
@@ -300,7 +325,7 @@ void AsPlatform::Redraw_Platform(bool update_rect)
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Move(bool to_left, bool key_down)
 {
-	if (! (Platform_State == EPS_Normal || Platform_State == EPS_Glue) )
+	if (! Has_State(EPlatform_Substate_Regular::Normal) || Platform_State == EPS_Glue)
 		return;
 
    if (to_left)
@@ -337,18 +362,14 @@ void AsPlatform::On_Space_Key(bool key_down)
 	if (! key_down)
       return;
 
-	switch (Get_State() )
-	{
-   case EPS_Ready:
-		Ball_Set->Release_From_Platform(Get_Middle_Pos() );
-		Set_State(EPS_Normal);
-      break;
-
-
-   case EPS_Glue:
-      Ball_Set->Release_Next_Ball();
-      break;
-	}
+   if (Has_State(EPlatform_Substate_Regular::Ready) )
+   {
+      Ball_Set->Release_From_Platform(Get_Middle_Pos() );
+		Set_State(EPlatform_Substate_Regular::Normal);
+   }
+   else
+      if (Platform_State == EPS_Glue)
+         Ball_Set->Release_Next_Ball();
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Hit_By(AFalling_Letter *falling_letter)
