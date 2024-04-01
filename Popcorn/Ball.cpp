@@ -467,14 +467,14 @@ void ABall::Redraw_Ball()
 	Ball_Rect.right = (int)((Center_X_Pos + Radius) * AsConfig::D_Global_Scale);
 	Ball_Rect.bottom = (int)((Center_Y_Pos + Radius) * AsConfig::D_Global_Scale);
 
-	AsConfig::Ivalidate_Rect(Prev_Ball_Rect);
-	AsConfig::Ivalidate_Rect(Ball_Rect);
+	AsConfig::Invalidate_Rect(Prev_Ball_Rect);
+	AsConfig::Invalidate_Rect(Ball_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Redraw_Parachute()
 {
-	AsConfig::Ivalidate_Rect(Prev_Parachute_Rect);
-	AsConfig::Ivalidate_Rect(Parachute_Rect);
+	AsConfig::Invalidate_Rect(Prev_Parachute_Rect);
+	AsConfig::Invalidate_Rect(Parachute_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)

@@ -95,7 +95,7 @@ void AsConfig::Round_Rect(HDC hdc, RECT &rect, int corner_radius)
 	RoundRect(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1, radius, radius);
 }
 //------------------------------------------------------------------------------------------------------------
-void AsConfig::Ivalidate_Rect(RECT &rect)
+void AsConfig::Invalidate_Rect(RECT &rect)
 {
 	InvalidateRect(Hwnd, &rect, FALSE);
 }
