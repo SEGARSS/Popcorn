@@ -111,7 +111,7 @@ int AsEngine::On_Timer() // Смещение по таймеру
       if (Platform.Has_State(EPlatform_Substate_Regular::Missing) )
       {
          Game_State = EGS_Restart_Level;
-         Platform.Set_State(EPS_Rolling); 
+         Platform.Set_State(EPlatform_State::Rolling); 
       }
       break;
 
@@ -138,7 +138,7 @@ void AsEngine::Play_Level()
 	{
 		Game_State = EGS_Lost_Ball;
 		Level.Stop();
-		Platform.Set_State(EPS_Meltdown);
+		Platform.Set_State(EPlatform_State::Meltdown);
 	}
    else
       Ball_Set.Accelerate();
@@ -245,7 +245,7 @@ void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)
       break;
 
    case ELT_K: // "Клей"
-      Platform.Set_State(EPS_Glue);
+      Platform.Set_State(EPlatform_State::Glue);
       break;
    
    //case ELT_W: // "Шире"
