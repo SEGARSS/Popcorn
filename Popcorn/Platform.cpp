@@ -5,7 +5,7 @@
 AsPlatform_State::AsPlatform_State()
 : Current_State(EPlatform_State::Regular), Regular(EPlatform_Substate_Regular::Missing), 
   Meltdown(EPlatform_Substate_Meltdown::Unknown), Rolling(EPlatform_Substate_Rolling::Unknown), 
-  Glue(EPlatform_Substate_Glue::Unknown), Moving(EPlatform_Moving_State::Stop)
+  Glue(EPlatform_Substate_Glue::Unknown),Expanding(EPlatform_Substate_Expanding::Unknown), Moving(EPlatform_Moving_State::Stop)
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -219,6 +219,10 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area)
 
 	case EPlatform_State::Glue:
 		Draw_Glue_State(hdc, paint_area);
+		break;
+
+	case EPlatform_State::Expanding:
+		Draw_Expanding_State(hdc, paint_area);
 		break;
 	}
 }
@@ -711,6 +715,46 @@ void AsPlatform::Draw_Glue_Spot(HDC hdc, int x_offset, int width, int height)
 	spot_rect.bottom = platform_top + spot_height - AsConfig::Global_Scale;
 
 	Chord(hdc, spot_rect.left, spot_rect.top, spot_rect.right - 1, spot_rect.bottom - 1,  spot_rect.left, platform_top - 1, spot_rect.right - 1, platform_top - 1);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Expanding_State(HDC hdc, RECT &paint_area)
+{// Рисуем расширяющуюся платформу
+
+	double x = X_Pos;
+	int y = AsConfig::Platform_Y_Pos;
+	const int scale = AsConfig::Global_Scale;
+	const double d_scale = AsConfig::D_Global_Scale;
+	RECT inner_rect, rect;
+
+	// 1. Рисуем боковые шарики
+	Platform_Circle_Color.Select(hdc);
+
+	rect.left = (int)(x * d_scale);
+	rect.top = y * scale;
+	rect.right = (int)( (x + (double)Circle_Size) * d_scale);
+	rect.bottom = (y + Circle_Size) * scale;
+
+	Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+
+	rect.left = (int)( (x + Inner_Width) * d_scale);
+	rect.top = y * scale;
+	rect.right = (int)( (x + (double)Circle_Size + Inner_Width) * d_scale);
+	rect.bottom = (y + Circle_Size) * scale;
+
+	Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+
+	// 2. Рисуем блик
+	Draw_Circle_Highlight(hdc, (int)(x * d_scale), y * scale);
+
+	// 3. Рисуем среднюю часть
+	Platform_Inner_Color.Select(hdc);
+
+	inner_rect.left = (int)( (x + 4) * d_scale);
+	inner_rect.top = (y + 1) * scale;
+	inner_rect.right = (int)( (x + 4 + Inner_Width - 1) * d_scale);
+	inner_rect.bottom = (y + 1 + 5) * scale;
+
+	AsConfig::Round_Rect(hdc, inner_rect, 3);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double platform_ball_x_offset, ABall *ball)
