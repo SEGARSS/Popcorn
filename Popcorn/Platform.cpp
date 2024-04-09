@@ -169,6 +169,10 @@ void AsPlatform::Act()
 	case EPlatform_State::Glue:
 		Act_For_Glue_State();
 		break;
+
+	case EPlatform_State::Expanding:
+		Act_For_Expanding_State();
+		break;
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -190,6 +194,7 @@ void AsPlatform::Clear(HDC hdc, RECT &paint_area)
 
 	case EPlatform_State::Rolling:
 	case EPlatform_State::Glue:
+	case EPlatform_State::Expanding:
 		// Очищаем фоном прежнее место
 		AsConfig::BG_Color.Select(hdc);
 		Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
@@ -295,7 +300,7 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 		else
 		{
 			Platform_State.Expanding = EPlatform_Substate_Expanding::Init;
-			Expanding_Platform_Width = Max_Expanding_Platform_Width;
+			Expanding_Platform_Width = Min_Expanding_Platform_Width;
 		}
 		break;
 	}
@@ -349,13 +354,15 @@ void AsPlatform::Redraw_Platform(bool update_rect)
 		Prev_Platform_Rect = Platform_Rect;
 
 		if (Platform_State == EPlatform_State::Rolling && Platform_State.Rolling == EPlatform_Substate_Rolling::Roll_In)
-			platform_width = Circle_Size;
+			platform_width = Circle_Size * AsConfig::Global_Scale;
+		else if (Platform_State == EPlatform_State::Expanding)
+			platform_width = (int)(Expanding_Platform_Width * AsConfig::D_Global_Scale);
 		else
-			platform_width = Width;
+			platform_width = Width * AsConfig::Global_Scale;
 
 		Platform_Rect.left = (int)(X_Pos * AsConfig::D_Global_Scale);
 		Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-		Platform_Rect.right = Platform_Rect.left + platform_width * AsConfig::Global_Scale;
+		Platform_Rect.right = Platform_Rect.left + platform_width;
 		Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;
 
 		if (Platform_State == EPlatform_State::Meltdown)
@@ -498,6 +505,10 @@ void AsPlatform::Act_For_Glue_State()
 		break;
 
 
+	case EPlatform_Substate_Glue::Active:
+		break;
+
+
 	case EPlatform_Substate_Glue::Finalize:
 		if (Glue_Spot_Height_Ratio > Min_Glue_Spot_Height_Ratio)
 			Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
@@ -509,6 +520,46 @@ void AsPlatform::Act_For_Glue_State()
 
 		Redraw_Platform(false);
 		break;
+
+		
+	default:
+		AsConfig::Throw();
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Act_For_Expanding_State()
+{
+	switch (Platform_State.Expanding)
+	{
+	case EPlatform_Substate_Expanding::Init:
+		if (Expanding_Platform_Width < Max_Expanding_Platform_Width)
+			Expanding_Platform_Width += Expanding_Platform_Width_Step;
+		else
+			Platform_State.Expanding = EPlatform_Substate_Expanding::Active;
+
+		Redraw_Platform();
+		break;
+
+
+	case EPlatform_Substate_Expanding::Active:
+		break;
+
+
+	case EPlatform_Substate_Expanding::Finalize:
+		if (Expanding_Platform_Width > Min_Expanding_Platform_Width)
+			Expanding_Platform_Width -= Expanding_Platform_Width_Step;
+		else
+		{
+			Set_State(EPlatform_Substate_Regular::Normal);
+			Platform_State.Expanding = EPlatform_Substate_Expanding::Unknown;
+		}
+
+		Redraw_Platform();
+		break;
+
+		
+	default:
+		AsConfig::Throw();
 	}
 }
 //------------------------------------------------------------------------------------------------------------
