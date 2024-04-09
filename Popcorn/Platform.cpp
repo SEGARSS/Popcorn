@@ -537,7 +537,7 @@ void AsPlatform::Act_For_Expanding_State()
 		else
 			Platform_State.Expanding = EPlatform_Substate_Expanding::Active;
 
-		Redraw_Platform();
+		Redraw_Platform(); // Норм
 		break;
 
 
