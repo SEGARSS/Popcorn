@@ -107,7 +107,7 @@ public:
 	void Set_State(EPlatform_State new_state);
 	void Set_State(EPlatform_Substate_Regular new_regular_state);
 	bool Has_State(EPlatform_Substate_Regular regular_state);
-	void Redraw_Platform(bool update_rect = true);
+	void Redraw_Platform();
 	void Move(bool to_left, bool key_down);
 	void On_Space_Key(bool key_down);
 	bool Hit_By(AFalling_Letter *falling_letter);
@@ -139,6 +139,7 @@ private:
 	bool Left_Key_Down, Right_Key_Down;
 	int Inner_Width;
 	int Rolling_Step;
+	int Last_Redraw_Timer_Tick;
 	double Speed;
 	double Glue_Spot_Height_Ratio;
 	double Expanding_Platform_Width;
