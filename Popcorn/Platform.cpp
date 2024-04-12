@@ -39,11 +39,11 @@ AsPlatform::~AsPlatform()
 AsPlatform::AsPlatform()
 : X_Pos(AsConfig::Border_X_Offset), Left_Key_Down(false), Right_Key_Down(false), Inner_Width(Normal_Platform_Inner_Width), 
   Rolling_Step(0), Last_Redraw_Timer_Tick(0), Speed(0.0), Glue_Spot_Height_Ratio(0.0), Expanding_Platform_Width(0.0), Ball_Set(0), 
-  Normal_Platform_Image_Width(0), Normal_Platform_Image_Height(0), Normal_Platform_Image(0), Width(Normal_Width), Platform_Rect{}, 
-  Prev_Platform_Rect{}, Highlight_Color(255, 255, 255), Platform_Circle_Color(151, 0, 0), Platform_Inner_Color(0, 128, 192), 
-  Truss_Color(Platform_Inner_Color, AsConfig::Global_Scale)
+  Normal_Platform_Image_Width(0), Normal_Platform_Image_Height(0), Normal_Platform_Image(0), Platform_Rect{}, Prev_Platform_Rect{}, 
+  Highlight_Color(255, 255, 255), Platform_Circle_Color(151, 0, 0), Platform_Inner_Color(0, 128, 192), Truss_Color(Platform_Inner_Color, 
+  AsConfig::Global_Scale)
 {
-	X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
+	X_Pos = (AsConfig::Max_X_Pos - Normal_Width) / 2;
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
@@ -60,14 +60,14 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 	inner_top_y = (double)(AsConfig::Platform_Y_Pos + 1);
 	inner_low_y = (double)(AsConfig::Platform_Y_Pos + Height - 1);
 	inner_left_x = (double)(X_Pos + Circle_Size - 1);
-	inner_right_x = (double)(X_Pos + Width - (Circle_Size - 1) );
+	inner_right_x = (double)(X_Pos + Get_Current_Width() - (Circle_Size - 1) );
 
 
 	// 1. Проверяем отражение от боковых шариков
 	if (Reflect_On_Circle(next_x_pos, next_y_pos, 0.0, ball) )
 		goto _on_hit;  // От левого
 
-	if (Reflect_On_Circle(next_x_pos, next_y_pos, Width - Circle_Size, ball) )
+	if (Reflect_On_Circle(next_x_pos, next_y_pos, Get_Current_Width() - Circle_Size, ball) )
 		goto _on_hit;  // От правого
 
 	// 2. Проверяем отражение от центральной части платформы
@@ -114,26 +114,16 @@ void AsPlatform::Finish_Movement()
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Advance(double max_speed)
 {
-	double max_platform_x, next_step;
+	double next_step;
 
 	if (Platform_State.Moving == EPlatform_Moving_State::Stopping || Platform_State.Moving == EPlatform_Moving_State::Stop)
 		return;
 
-	max_platform_x = AsConfig::Max_X_Pos - Width + 1;
 	next_step = Speed / max_speed * AsConfig::Moving_Step_Size;
-
 	X_Pos += next_step;
 
-	if (X_Pos <= AsConfig::Border_X_Offset)
+	if (Correct_Platform_Pos() )
 	{
-		X_Pos = AsConfig::Border_X_Offset;
-		Speed = 0.0;
-		Platform_State.Moving = EPlatform_Moving_State::Stopping;
-	}
-
-	if (X_Pos >= max_platform_x)
-	{
-		X_Pos = max_platform_x;
 		Speed = 0.0;
 		Platform_State.Moving = EPlatform_Moving_State::Stopping;
 	}
@@ -285,6 +275,11 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
 
 	case EPlatform_State::Glue:
+		if (Platform_State != EPlatform_State::Regular)
+		{
+			Platform_State.Set_Next_State();
+		}
+
 		if (Platform_State.Glue == EPlatform_Substate_Glue::Finalize)
 			return;
 		else
@@ -345,29 +340,15 @@ bool AsPlatform::Has_State(EPlatform_Substate_Regular regular_state)
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Redraw_Platform()
 {
-	double platform_width;
-
-	//if (Platform_State.Moving != EPMS_Stop)
-	//	int yy = 0;
-
 	if (Last_Redraw_Timer_Tick != AsConfig::Current_Timer_Tick)
 	{
 		Prev_Platform_Rect = Platform_Rect;
 		Last_Redraw_Timer_Tick = AsConfig::Current_Timer_Tick;
 	}
 
-	//Prev_Platform_Rect = Platform_Rect;
-
-	if (Platform_State == EPlatform_State::Rolling && Platform_State.Rolling == EPlatform_Substate_Rolling::Roll_In)
-		platform_width = (double)Circle_Size;
-	else if (Platform_State == EPlatform_State::Expanding)
-		platform_width = Expanding_Platform_Width;
-	else
-		platform_width = (double)Width;
-
 	Platform_Rect.left = (int)(X_Pos * AsConfig::D_Global_Scale);
 	Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-	Platform_Rect.right = (int)((X_Pos + platform_width) * AsConfig::Global_Scale);
+	Platform_Rect.right = (int)( (X_Pos + Get_Current_Width() ) * AsConfig::Global_Scale);
 	Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;
 
 	if (Platform_State == EPlatform_State::Meltdown)
@@ -442,7 +423,7 @@ bool AsPlatform::Hit_By(AFalling_Letter *falling_letter)
 //------------------------------------------------------------------------------------------------------------
 double AsPlatform::Get_Middle_Pos()
 {
-	return X_Pos + (double)Width / 2.0;
+	return X_Pos + Get_Current_Width() / 2.0;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act_For_Meltdown_State()
@@ -533,6 +514,26 @@ void AsPlatform::Act_For_Glue_State()
 	}
 }
 //------------------------------------------------------------------------------------------------------------
+bool AsPlatform::Correct_Platform_Pos()
+{
+	bool got_correction = false;
+	double max_platform_x = AsConfig::Max_X_Pos - Get_Current_Width() + 1;
+
+	if (X_Pos <= AsConfig::Border_X_Offset)
+	{
+		X_Pos = AsConfig::Border_X_Offset;
+		got_correction = true;
+	}
+
+	if (X_Pos >= max_platform_x)
+	{
+		X_Pos = max_platform_x;
+		got_correction = true;
+	}
+
+	return got_correction;
+}
+//------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act_For_Expanding_State()
 {
 	switch (Platform_State.Expanding)
@@ -542,6 +543,7 @@ void AsPlatform::Act_For_Expanding_State()
 		{
 			Expanding_Platform_Width += Expanding_Platform_Width_Step;
 			X_Pos -= Expanding_Platform_Width_Step / 2.0;
+			Correct_Platform_Pos();
 		}
 		else
 			Platform_State.Expanding = EPlatform_Substate_Expanding::Active;
@@ -559,6 +561,7 @@ void AsPlatform::Act_For_Expanding_State()
 		{
 			Expanding_Platform_Width -= Expanding_Platform_Width_Step;
 			X_Pos += Expanding_Platform_Width_Step / 2.0;
+			Correct_Platform_Pos();
 		}
 		else
 		{
@@ -625,23 +628,6 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area)
 
 	if (Normal_Platform_Image == 0 && Has_State(EPlatform_Substate_Regular::Ready) )
 		Get_Normal_Platform_Image(hdc);
-}
-//------------------------------------------------------------------------------------------------------------
-void AsPlatform::Get_Normal_Platform_Image(HDC hdc)
-{
-	int i, j;
-	int x = (int)(X_Pos * AsConfig::D_Global_Scale);
-	int y = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-	int offset = 0;
-
-	Normal_Platform_Image_Width = Width * AsConfig::Global_Scale;
-	Normal_Platform_Image_Height = Height * AsConfig::Global_Scale;
-
-	Normal_Platform_Image = new int[Normal_Platform_Image_Width * Normal_Platform_Image_Height];
-
-	for (i = 0; i < Normal_Platform_Image_Height; i++)
-		for (j = 0; j < Normal_Platform_Image_Width; j++)
-			Normal_Platform_Image[offset++] = GetPixel(hdc, x + j, y + i);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
@@ -914,7 +900,7 @@ void AsPlatform::Draw_Expanding_Truss(HDC hdc, RECT &inner_rect, bool is_left)
 	const int scale = AsConfig::Global_Scale;
 	
 	expanding_ratio = (Max_Expanding_Platform_Width - Expanding_Platform_Width) / (Max_Expanding_Platform_Width - Min_Expanding_Platform_Width);
-	truss_x_offset = 6.0 * expanding_ratio * AsConfig::D_Global_Scale;
+	truss_x_offset = (int)(6.0 * expanding_ratio * AsConfig::D_Global_Scale);
 
 	truss_x = inner_rect.left + 1;
 
@@ -1028,5 +1014,34 @@ bool AsPlatform::Get_Platform_Image_Stroke_Color(int x, int y, const AColor **co
 		AsConfig::Throw();
 
 	return true;
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Get_Normal_Platform_Image(HDC hdc)
+{
+	int i, j;
+	int x = (int)(X_Pos * AsConfig::D_Global_Scale);
+	int y = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+	int offset = 0;
+
+	Normal_Platform_Image_Width = Normal_Width * AsConfig::Global_Scale;
+	Normal_Platform_Image_Height = Height * AsConfig::Global_Scale;
+
+	Normal_Platform_Image = new int[Normal_Platform_Image_Width * Normal_Platform_Image_Height];
+
+	for (i = 0; i < Normal_Platform_Image_Height; i++)
+		for (j = 0; j < Normal_Platform_Image_Width; j++)
+			Normal_Platform_Image[offset++] = GetPixel(hdc, x + j, y + i);
+}
+//------------------------------------------------------------------------------------------------------------
+double AsPlatform::Get_Current_Width()
+{
+	double platform_width;
+
+	if (Platform_State == EPlatform_State::Rolling && Platform_State.Rolling == EPlatform_Substate_Rolling::Roll_In)
+		return (double)Circle_Size;
+	else if (Platform_State == EPlatform_State::Expanding)
+		return Expanding_Platform_Width;
+	else
+		return (double)Normal_Width;
 }
 //------------------------------------------------------------------------------------------------------------
