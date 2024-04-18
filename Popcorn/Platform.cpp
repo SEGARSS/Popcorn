@@ -85,7 +85,7 @@ AsPlatform::AsPlatform()
   Rolling_Step(0), Laser_Transformation_Step(0), Last_Redraw_Timer_Tick(0), Speed(0.0), Glue_Spot_Height_Ratio(0.0), 
   Expanding_Platform_Width(0.0), Ball_Set(0), Normal_Platform_Image_Width(0), Normal_Platform_Image_Height(0), Normal_Platform_Image(0), 
   Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Color(255, 255, 255), Platform_Circle_Color(151, 0, 0), 
-  Platform_Inner_Color(0, 128, 192), Truss_Color(Platform_Inner_Color, AsConfig::Global_Scale)
+  Platform_Inner_Color(0, 128, 192), Truss_Color(Platform_Inner_Color, AsConfig::Global_Scale), Gun_Color (Highlight_Color, AsConfig::Global_Scale)
 {
 	X_Pos = (AsConfig::Max_X_Pos - Normal_Width) / 2;
 }
@@ -1053,86 +1053,138 @@ void AsPlatform::Draw_Expanding_Truss(HDC hdc, RECT &inner_rect, bool is_left)
 void AsPlatform::Draw_Laser_State(HDC hdc, RECT &paint_area)
 {// Рисуем лазерную платформу
 
-	int x, y;
-	const int scale = AsConfig::Global_Scale;
 	HRGN region;
 
 	region = CreateRectRgnIndirect(&Platform_Rect);
 	SelectClipRgn(hdc, region);
 
 	// 1. Левое крыло
-	Platform_Circle_Color.Select_Pen(hdc);
-	x = (int)(X_Pos * AsConfig::D_Global_Scale);
-	y = (AsConfig::Platform_Y_Pos + 1) * scale;
-	Ellipse(hdc, x, y, x + 7 * scale - 1, y + 12 * scale - 1);
-
-	// 1.1. Перемычка
-	x += 5 * scale;
-	y += 1 * scale;
-	Rectangle(hdc, x, y, x + 6 * scale - 1, y + 5 * scale - 1);
+	Draw_Laser_Wing(hdc, true);
 
 	// 2. Правое крыло
-	Platform_Circle_Color.Select_Pen(hdc);
-	x = (int)(X_Pos * AsConfig::D_Global_Scale) + Normal_Width * scale - 1;
-	y = (AsConfig::Platform_Y_Pos + 1) * scale;
-	Ellipse(hdc, x, y, x - (7 * scale - 1), y + 12 * scale - 1);
-
-	// 2.1. Перемычка
-	x -= 5 * scale;
-	y += 1 * scale;
-	Rectangle(hdc, x, y, x - (6 * scale - 1), y + 5 * scale - 1);
+	Draw_Laser_Wing(hdc, false);
 
 	// 3. Центральная часть
 	// 3.1. Левая нога
-	Platform_Inner_Color.Select_Pen(hdc);
+	Draw_Laser_Leg(hdc, true);
 
-	x = (int)( (X_Pos + 6.0) * AsConfig::D_Global_Scale);
+	// 3.2. Правая нога
+	Draw_Laser_Leg(hdc, false);
+
+	// 3.3. Кабина
+	Draw_Laser_Cabin(hdc);
+
+	SelectClipRgn(hdc, 0);
+	DeleteObject(region);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
+{ //Рисуем крыло лазерной платформы
+
+	int x, y;
+	int x_offset;
+	const int scale = AsConfig::Global_Scale;
+
+	Platform_Circle_Color.Select(hdc);
+
+	x_offset = 7 * scale - 1;
+
+	if (is_left)
+		x = (int)(X_Pos * AsConfig::D_Global_Scale);
+	else
+	{
+		x = (int)(X_Pos * AsConfig::D_Global_Scale) + Normal_Width * scale - 1;
+		x_offset = -x_offset;
+	}
+
+	y = (AsConfig::Platform_Y_Pos + 1) * scale;
+	Ellipse(hdc, x, y, x + x_offset, y + 12 * scale - 1);
+
+	// 1. Перемычка
+	x_offset = 6 * scale - 1;
+
+	if (is_left)
+		x += 5 * scale;
+	else
+	{
+		x -= 5 * scale;
+		x_offset = -x_offset;
+	}
+
+	y += 1 * scale;
+	Rectangle(hdc, x, y, x + x_offset, y + 5 * scale - 1);
+
+	// 2. Пушка слева
+	Gun_Color.Select(hdc);
+
+	if (is_left)
+		x = (int)( (X_Pos + 3.0) * AsConfig::D_Global_Scale);
+	else
+		x = (int)(X_Pos * AsConfig::D_Global_Scale) + (Normal_Width - 4) * scale;
+
+	y = AsConfig::Platform_Y_Pos * scale;
+
+	MoveToEx(hdc, x + 1, y + 1, 0);
+	LineTo(hdc, x + 1 , y + 3 * scale + 1);
+
+	// 3. Левый хвост от пушки
+	Ellipse(hdc, x - scale, y + 5 * scale + 1, x + 2 * scale - 1, y + 11 * scale);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Laser_Leg(HDC hdc, bool is_left)
+{//Рисуем "ногу" лазерной платформы
+
+	int x, y;
+	int x_scale;
+	const int scale = AsConfig::Global_Scale;
+
+	Platform_Inner_Color.Select(hdc);
+
+	if (is_left)
+	{
+		x = (int)( (X_Pos + 6.0) * AsConfig::D_Global_Scale);
+		x_scale = scale;
+	}
+	else
+	{
+		x = (int)(X_Pos * AsConfig::D_Global_Scale) + (Normal_Width - 6) * scale - 1;
+		x_scale = -scale;
+	}
+
 	y = (AsConfig::Platform_Y_Pos + 3) * scale;
-	//Rectangle(hdc, x, y, x + 2 * scale - 1, y + 4 * scale - 1);
 
 	POINT left_leg_points[7] = 
    {
-		{ x, y }, { x + 2 * scale, y - 2 * scale }, { x + 4 * scale, y - 2 * scale }, { x + 4 * scale, y }, 
-		{ x + 2 * scale, y + 2 * scale }, { x + 2 * scale, y + 4 * scale }, { x, y + 4 * scale }
+		{ x, y }, { x + 2 * x_scale, y - 2 * scale }, { x + 4 * x_scale, y - 2 * scale }, { x + 4 * x_scale, y }, 
+		{ x + 2 * x_scale, y + 2 * scale }, { x + 2 * x_scale, y + 4 * scale }, { x, y + 4 * scale }
    };
 
 	Polygon(hdc, left_leg_points, 7);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Laser_Cabin(HDC hdc)
+{// Рисуем кабину для лазерной платформы
 
-	// 3.2. Правая нога
-	x = (int)(X_Pos * AsConfig::D_Global_Scale) + (Normal_Width - 6) * scale - 1;
-	y = (AsConfig::Platform_Y_Pos + 3) * scale;
-	//Rectangle(hdc, x, y, x - (2 * scale - 1), y + 4 * scale - 1);
+	int x, y;
+	const int scale = AsConfig::Global_Scale;
 
-	POINT right_leg_points[7] = 
-   {
-		{ x, y }, { x - 2 * scale, y - 2 * scale }, { x - 4 * scale, y - 2 * scale }, { x - 4 * scale, y }, 
-		{ x - 2 * scale, y + 2 * scale }, { x - 2 * scale, y + 4 * scale }, { x, y + 4 * scale }
-   };
-
-	Polygon(hdc, right_leg_points, 7);
-
-	// 3.3. Кабина
-	// 3.3.1. Внешняя часть
+	// 1. Внешняя часть
 	Platform_Inner_Color.Select(hdc);
 
 	x = (int)( (X_Pos + 9.0) * AsConfig::D_Global_Scale);
 	y = (AsConfig::Platform_Y_Pos - 1) * scale;
 	Ellipse(hdc, x, y, x + 10 * scale - 1, y + 8 * scale - 1);
 
-	// 3.3.2. Среднее кольцо
+	// 2. Среднее кольцо
 	AsConfig::BG_Color.Select(hdc);
 	x += scale;
 	Ellipse(hdc, x, y, x + 8 * scale - 1, y + 6 * scale - 1);
 
-	// 3.3.2. Внутренне кольцо
+	// 3. Внутренне кольцо
 	AsConfig::White_Color.Select(hdc);
 	x += scale;
 	y += scale;
 	Ellipse(hdc, x, y, x + 6 * scale - 1, y + 4 * scale - 1);
-
-
-	SelectClipRgn(hdc, 0);
-	DeleteObject(region);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double platform_ball_x_offset, ABall *ball)
