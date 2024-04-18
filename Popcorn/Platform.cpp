@@ -1114,7 +1114,7 @@ void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
 	y += 1 * scale;
 	Rectangle(hdc, x, y, x + x_offset, y + 5 * scale - 1);
 
-	// 2. Пушка слева
+	// 2. Пушка
 	Gun_Color.Select(hdc);
 
 	if (is_left)
@@ -1127,7 +1127,7 @@ void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
 	MoveToEx(hdc, x + 1, y + 1, 0);
 	LineTo(hdc, x + 1 , y + 3 * scale + 1);
 
-	// 3. Левый хвост от пушки
+	// 3. хвост от пушки
 	Ellipse(hdc, x - scale, y + 5 * scale + 1, x + 2 * scale - 1, y + 11 * scale);
 }
 //------------------------------------------------------------------------------------------------------------
