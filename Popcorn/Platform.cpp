@@ -1061,15 +1061,75 @@ void AsPlatform::Draw_Laser_State(HDC hdc, RECT &paint_area)
 	SelectClipRgn(hdc, region);
 
 	// 1. Левое крыло
-	Platform_Circle_Color.Select(hdc);
+	Platform_Circle_Color.Select_Pen(hdc);
 	x = (int)(X_Pos * AsConfig::D_Global_Scale);
-	y = AsConfig::Platform_Y_Pos * scale;
+	y = (AsConfig::Platform_Y_Pos + 1) * scale;
 	Ellipse(hdc, x, y, x + 7 * scale - 1, y + 12 * scale - 1);
 
 	// 1.1. Перемычка
-	x += 3 * scale;
-	y += 2 * scale;
-	Rectangle(hdc, x, y, x + 8 * scale - 1, y + 5 * scale - 1);
+	x += 5 * scale;
+	y += 1 * scale;
+	Rectangle(hdc, x, y, x + 6 * scale - 1, y + 5 * scale - 1);
+
+	// 2. Правое крыло
+	Platform_Circle_Color.Select_Pen(hdc);
+	x = (int)(X_Pos * AsConfig::D_Global_Scale) + Normal_Width * scale - 1;
+	y = (AsConfig::Platform_Y_Pos + 1) * scale;
+	Ellipse(hdc, x, y, x - (7 * scale - 1), y + 12 * scale - 1);
+
+	// 2.1. Перемычка
+	x -= 5 * scale;
+	y += 1 * scale;
+	Rectangle(hdc, x, y, x - (6 * scale - 1), y + 5 * scale - 1);
+
+	// 3. Центральная часть
+	// 3.1. Левая нога
+	Platform_Inner_Color.Select_Pen(hdc);
+
+	x = (int)( (X_Pos + 6.0) * AsConfig::D_Global_Scale);
+	y = (AsConfig::Platform_Y_Pos + 3) * scale;
+	//Rectangle(hdc, x, y, x + 2 * scale - 1, y + 4 * scale - 1);
+
+	POINT left_leg_points[7] = 
+   {
+		{ x, y }, { x + 2 * scale, y - 2 * scale }, { x + 4 * scale, y - 2 * scale }, { x + 4 * scale, y }, 
+		{ x + 2 * scale, y + 2 * scale }, { x + 2 * scale, y + 4 * scale }, { x, y + 4 * scale }
+   };
+
+	Polygon(hdc, left_leg_points, 7);
+
+	// 3.2. Правая нога
+	x = (int)(X_Pos * AsConfig::D_Global_Scale) + (Normal_Width - 6) * scale - 1;
+	y = (AsConfig::Platform_Y_Pos + 3) * scale;
+	//Rectangle(hdc, x, y, x - (2 * scale - 1), y + 4 * scale - 1);
+
+	POINT right_leg_points[7] = 
+   {
+		{ x, y }, { x - 2 * scale, y - 2 * scale }, { x - 4 * scale, y - 2 * scale }, { x - 4 * scale, y }, 
+		{ x - 2 * scale, y + 2 * scale }, { x - 2 * scale, y + 4 * scale }, { x, y + 4 * scale }
+   };
+
+	Polygon(hdc, right_leg_points, 7);
+
+	// 3.3. Кабина
+	// 3.3.1. Внешняя часть
+	Platform_Inner_Color.Select(hdc);
+
+	x = (int)( (X_Pos + 9.0) * AsConfig::D_Global_Scale);
+	y = (AsConfig::Platform_Y_Pos - 1) * scale;
+	Ellipse(hdc, x, y, x + 10 * scale - 1, y + 8 * scale - 1);
+
+	// 3.3.2. Среднее кольцо
+	AsConfig::BG_Color.Select(hdc);
+	x += scale;
+	Ellipse(hdc, x, y, x + 8 * scale - 1, y + 6 * scale - 1);
+
+	// 3.3.2. Внутренне кольцо
+	AsConfig::White_Color.Select(hdc);
+	x += scale;
+	y += scale;
+	Ellipse(hdc, x, y, x + 6 * scale - 1, y + 4 * scale - 1);
+
 
 	SelectClipRgn(hdc, 0);
 	DeleteObject(region);
