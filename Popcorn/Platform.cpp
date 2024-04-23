@@ -509,7 +509,7 @@ void AsPlatform::On_Space_Key(bool key_down)
 		if (Platform_State == EPlatform_State::Glue)
 			Ball_Set->Release_Next_Ball();
 		else if (Platform_State == EPlatform_State::Laser)
-			AsConfig::Throw(); //!!!
+			AsConfig::Throw(); //!!! Надо сделать!
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Hit_By(AFalling_Letter *falling_letter)
@@ -557,7 +557,7 @@ void AsPlatform::Act_For_Rolling_State()
 
 		if (X_Pos <= Roll_In_Platform_End_X_Pos)
 		{
-			X_Pos += Rolling_Platform_Speed;
+			X_Pos = Roll_In_Platform_End_X_Pos;
 			Platform_State.Rolling = EPlatform_Substate_Rolling::Expand_Roll_In;
 			Inner_Width = 1;
 		}
@@ -1063,7 +1063,7 @@ void AsPlatform::Draw_Laser_State(HDC hdc, RECT &paint_area)
 
 	// 2. Правое крыло
 	Draw_Laser_Wing(hdc, false);
-
+/*
 	// 3. Центральная часть
 	// 3.1. Левая нога
 	Draw_Laser_Leg(hdc, true);
@@ -1073,7 +1073,7 @@ void AsPlatform::Draw_Laser_State(HDC hdc, RECT &paint_area)
 
 	// 3.3. Кабина
 	Draw_Laser_Cabin(hdc);
-
+*/
 	SelectClipRgn(hdc, 0);
 	DeleteObject(region);
 }
@@ -1083,9 +1083,13 @@ void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
 
 	int x, y;
 	int x_offset;
+	int height;
+	double ratio = (double)Laser_Transformation_Step / (double)Max_Laser_Transformation_Step;
 	const int scale = AsConfig::Global_Scale;
 
-	Platform_Circle_Color.Select(hdc);
+	// 1. Само крыло
+AsConfig::BG_Color.Select(hdc);
+	Platform_Circle_Color.Select_Pen(hdc);
 
 	x_offset = 7 * scale - 1;
 
@@ -1098,9 +1102,15 @@ void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
 	}
 
 	y = (AsConfig::Platform_Y_Pos + 1) * scale;
-	Ellipse(hdc, x, y, x + x_offset, y + 12 * scale - 1);
 
-	// 1. Перемычка
+	// Размер: 7 х 7 -> 7 х 12
+	height = (7.0 + 5.0 * ratio) * AsConfig::D_Global_Scale;
+
+	Ellipse(hdc, x, y, x + x_offset, y + height - 1);
+
+	// 2. Перемычка
+	// Позиция: (3 : 6) -> (5 : 2)
+	// Размер: 1 x 1 -> 6 x 5
 	x_offset = 6 * scale - 1;
 
 	if (is_left)
@@ -1113,8 +1123,8 @@ void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
 
 	y += 1 * scale;
 	Rectangle(hdc, x, y, x + x_offset, y + 5 * scale - 1);
-
-	// 2. Пушка
+/*
+	// 3. Пушка
 	Gun_Color.Select(hdc);
 
 	if (is_left)
@@ -1127,8 +1137,9 @@ void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
 	MoveToEx(hdc, x + 1, y + 1, 0);
 	LineTo(hdc, x + 1 , y + 3 * scale + 1);
 
-	// 3. хвост от пушки
+	// 4. хвост от пушки
 	Ellipse(hdc, x - scale, y + 5 * scale + 1, x + 2 * scale - 1, y + 11 * scale);
+*/
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Laser_Leg(HDC hdc, bool is_left)

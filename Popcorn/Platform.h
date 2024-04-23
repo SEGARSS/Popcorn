@@ -183,7 +183,7 @@ private:
 
 	static const double Max_Glue_Spot_Height_Ratio, Min_Glue_Spot_Height_Ratio, Glue_Spot_Height_Ratio_Step;
 	static const double Max_Expanding_Platform_Width, Min_Expanding_Platform_Width, Expanding_Platform_Width_Step;
-	static const int Max_Laser_Transformation_Step = 8;
+	static const int Max_Laser_Transformation_Step = 80;
 	static const int Height = 7;
 	static const int Circle_Size = 7;
 	static const int Normal_Platform_Inner_Width = Normal_Width - Circle_Size;
@@ -191,7 +191,7 @@ private:
 	static const int Meltdown_Speed = 3;
 	static const int Max_Rolling_Step = 16;
 	static const int Roll_In_Platform_End_X_Pos = 99;
-	static const int Rolling_Platform_Speed = 3;
+	static const int Rolling_Platform_Speed = 13;
 	static const int X_Step = 6;
 };
 //------------------------------------------------------------------------------------------------------------
