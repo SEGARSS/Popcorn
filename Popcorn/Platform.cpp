@@ -1083,63 +1083,56 @@ void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
 
 	int x, y;
 	int x_offset;
-	int height;
+	int width, height;
+	int half_max_step = Max_Laser_Transformation_Step / 2;
 	double ratio = (double)Laser_Transformation_Step / (double)Max_Laser_Transformation_Step;
 	const int scale = AsConfig::Global_Scale;
+
+	y = AsConfig::Platform_Y_Pos;
+	x = (int)X_Pos;
+
+	if (! is_left)
+		x += Normal_Width - Circle_Size;
+	
 
 	// 1. Само крыло
 AsConfig::BG_Color.Select(hdc);
 	Platform_Circle_Color.Select_Pen(hdc);
 
-	x_offset = 7 * scale - 1;
-
-	if (is_left)
-		x = (int)(X_Pos * AsConfig::D_Global_Scale);
-	else
-	{
-		x = (int)(X_Pos * AsConfig::D_Global_Scale) + Normal_Width * scale - 1;
-		x_offset = -x_offset;
-	}
-
-	y = (AsConfig::Platform_Y_Pos + 1) * scale;
-
-	// Размер: 7 х 7 -> 7 х 12
-	height = (7.0 + 5.0 * ratio) * AsConfig::D_Global_Scale;
-
-	Ellipse(hdc, x, y, x + x_offset, y + height - 1);
+	Draw_Expanding_Figure(hdc, false, x, y, 7, 7, ratio, x, y + 1, 7, 12);
 
 	// 2. Перемычка
 	// Позиция: (3 : 6) -> (5 : 2)
 	// Размер: 1 x 1 -> 6 x 5
-	x_offset = 6 * scale - 1;
-
 	if (is_left)
-		x += 5 * scale;
+		x_offset = 5;
 	else
-	{
-		x -= 5 * scale;
-		x_offset = -x_offset;
-	}
+		x_offset = -4;
 
-	y += 1 * scale;
-	Rectangle(hdc, x, y, x + x_offset, y + 5 * scale - 1);
-/*
+	Draw_Expanding_Figure(hdc, true, x + 3, y + 6, 1, 1, ratio, x + x_offset, y + 2, 6, 5);
+
 	// 3. Пушка
-	Gun_Color.Select(hdc);
+	if (Laser_Transformation_Step >= half_max_step)
+	{
+		ratio = (double)(Laser_Transformation_Step - half_max_step) / (double)half_max_step;
 
-	if (is_left)
-		x = (int)( (X_Pos + 3.0) * AsConfig::D_Global_Scale);
-	else
-		x = (int)(X_Pos * AsConfig::D_Global_Scale) + (Normal_Width - 4) * scale;
+		Gun_Color.Select(hdc);
 
-	y = AsConfig::Platform_Y_Pos * scale;
+		if (is_left)
+			x = (int)(X_Pos + 3.0);
+		else
+			x = (int)X_Pos + (Normal_Width - 4);
 
-	MoveToEx(hdc, x + 1, y + 1, 0);
-	LineTo(hdc, x + 1 , y + 3 * scale + 1);
+		//y = AsConfig::Platform_Y_Pos * scale;
+		height = (int)(3.0 * (1.0 - ratio) * AsConfig::D_Global_Scale);
 
-	// 4. хвост от пушки
-	Ellipse(hdc, x - scale, y + 5 * scale + 1, x + 2 * scale - 1, y + 11 * scale);
-*/
+		MoveToEx(hdc, x * scale + 1, y * scale + 3 * scale + 1, 0);
+		LineTo(hdc, x * scale + 1, y * scale + height + 1);
+
+		// 4. хвост от пушки
+		//Ellipse(hdc, x * scale - scale, y * scale + 5 * scale + 1, x * scale + 2 * scale - 1, y * scale + 11 * scale);
+		Draw_Expanding_Figure(hdc, false, x, y + 5, 0, 0, ratio, x - 1, y + 5, 3, 4);
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Laser_Leg(HDC hdc, bool is_left)
@@ -1196,6 +1189,30 @@ void AsPlatform::Draw_Laser_Cabin(HDC hdc)
 	x += scale;
 	y += scale;
 	Ellipse(hdc, x, y, x + 6 * scale - 1, y + 4 * scale - 1);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Expanding_Figure(HDC hdc, bool is_rectangle, int start_x, int start_y, int start_width, int start_height, double ratio, int end_x, int end_y, int end_width, int end_height)
+{
+	int x, y;
+	int delta;
+	int width, height;
+
+	delta = end_x - start_x;
+	x = (int)( ( (double)start_x + (double)delta * ratio) * AsConfig::D_Global_Scale);
+
+	delta = end_y - start_y;
+	y = (int)( ( (double)start_y + (double)delta * ratio) * AsConfig::D_Global_Scale);
+
+	delta = end_width - start_width;
+	width = (int)( ( (double)start_width + (double)delta * ratio) * AsConfig::D_Global_Scale);
+
+	delta = end_height - start_height;
+	height = (int)( ( (double)start_height + (double)delta * ratio) * AsConfig::D_Global_Scale);
+
+	if (is_rectangle)
+		Rectangle(hdc, x, y, x + width - 1, y + height);
+	else
+		Ellipse(hdc, x, y, x + width - 1, y + height);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double platform_ball_x_offset, ABall *ball)
