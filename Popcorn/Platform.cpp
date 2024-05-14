@@ -1063,8 +1063,11 @@ void AsPlatform::Draw_Laser_State(HDC hdc, RECT &paint_area)
 
 	// 2. Правое крыло
 	Draw_Laser_Wing(hdc, false);
-/*
+
 	// 3. Центральная часть
+	// 3.0. Норамальная центральня часть
+	Draw_Laser_Inner_Part(hdc);
+
 	// 3.1. Левая нога
 	Draw_Laser_Leg(hdc, true);
 
@@ -1073,7 +1076,7 @@ void AsPlatform::Draw_Laser_State(HDC hdc, RECT &paint_area)
 
 	// 3.3. Кабина
 	Draw_Laser_Cabin(hdc);
-*/
+
 	SelectClipRgn(hdc, 0);
 	DeleteObject(region);
 }
@@ -1081,25 +1084,26 @@ void AsPlatform::Draw_Laser_State(HDC hdc, RECT &paint_area)
 void AsPlatform::Draw_Laser_Wing(HDC hdc, bool is_left)
 { //Рисуем крыло лазерной платформы
 
-	int x, y;
+	double x, y;
 	int x_offset;
-	int width, height;
+	double height;
 	int half_max_step = Max_Laser_Transformation_Step / 2;
 	double ratio = (double)Laser_Transformation_Step / (double)Max_Laser_Transformation_Step;
 	const int scale = AsConfig::Global_Scale;
+	const double d_scale = AsConfig::D_Global_Scale;
 
+	x = X_Pos;
 	y = AsConfig::Platform_Y_Pos;
-	x = (int)X_Pos;
 
 	if (! is_left)
 		x += Normal_Width - Circle_Size;
 	
 
 	// 1. Само крыло
-AsConfig::BG_Color.Select(hdc);
-	Platform_Circle_Color.Select_Pen(hdc);
+//AsConfig::BG_Color.Select(hdc);
+	Platform_Circle_Color.Select(hdc);
 
-	Draw_Expanding_Figure(hdc, false, x, y, 7, 7, ratio, x, y + 1, 7, 12);
+	Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x, y, 7, 7, ratio, x, y + 1, 7, 12);
 
 	// 2. Перемычка
 	// Позиция: (3 : 6) -> (5 : 2)
@@ -1109,7 +1113,7 @@ AsConfig::BG_Color.Select(hdc);
 	else
 		x_offset = -4;
 
-	Draw_Expanding_Figure(hdc, true, x + 3, y + 6, 1, 1, ratio, x + x_offset, y + 2, 6, 5);
+	Draw_Expanding_Figure(hdc, EFigure_Type::Rectangle, x + 3, y + 6, 1, 1, ratio, x + x_offset, y + 2, 6, 5);
 
 	// 3. Пушка
 	if (Laser_Transformation_Step >= half_max_step)
@@ -1119,48 +1123,63 @@ AsConfig::BG_Color.Select(hdc);
 		Gun_Color.Select(hdc);
 
 		if (is_left)
-			x = (int)(X_Pos + 3.0);
+			x = X_Pos + 3.0;
 		else
-			x = (int)X_Pos + (Normal_Width - 4);
+			x = X_Pos + (Normal_Width - 4);
 
-		//y = AsConfig::Platform_Y_Pos * scale;
-		height = (int)(3.0 * (1.0 - ratio) * AsConfig::D_Global_Scale);
+		height = 3.0 * (1.0 - ratio) * d_scale;
 
-		MoveToEx(hdc, x * scale + 1, y * scale + 3 * scale + 1, 0);
-		LineTo(hdc, x * scale + 1, y * scale + height + 1);
+		MoveToEx(hdc, (int)(x * d_scale + 1.0), (int)(y * d_scale + 3.0 * d_scale + 1.0), 0);
+		LineTo(hdc, (int)(x * d_scale + 1.0), (int)(y * d_scale + height + 1.0 ) );
 
 		// 4. хвост от пушки
-		//Ellipse(hdc, x * scale - scale, y * scale + 5 * scale + 1, x * scale + 2 * scale - 1, y * scale + 11 * scale);
-		Draw_Expanding_Figure(hdc, false, x, y + 5, 0, 0, ratio, x - 1, y + 5, 3, 4);
+		Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 1, y + 5, 0, 0, ratio, x - 1, y + 5 + 1.0 / d_scale, 3, 6);
 	}
+}
+//------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Laser_Inner_Part(HDC hdc)
+{
+	double x, y;
+	double ratio = (double)Laser_Transformation_Step / (double)Max_Laser_Transformation_Step;
+
+	// Размер: 20 x 6 -> 8 x 1
+	x = X_Pos;
+	y = AsConfig::Platform_Y_Pos;
+
+	Platform_Inner_Color.Select(hdc);
+	Draw_Expanding_Figure(hdc, EFigure_Type::Round_Rect_3x, x + 4, y + 1, 20, 5, ratio, x + 10, y + 3, 8, 1);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Laser_Leg(HDC hdc, bool is_left)
 {//Рисуем "ногу" лазерной платформы
 
-	int x, y;
-	int x_scale;
-	const int scale = AsConfig::Global_Scale;
+	double x, y;
+	double x_scale;
+	//const int scale = AsConfig::Global_Scale;
+	const double d_scale = AsConfig::D_Global_Scale;
+	double ratio = (double)Laser_Transformation_Step / (double)Max_Laser_Transformation_Step;
 
 	Platform_Inner_Color.Select(hdc);
 
 	if (is_left)
 	{
-		x = (int)( (X_Pos + 6.0) * AsConfig::D_Global_Scale);
-		x_scale = scale;
+		x = (X_Pos + 6.0) * d_scale;
+		x_scale = d_scale;
 	}
 	else
 	{
-		x = (int)(X_Pos * AsConfig::D_Global_Scale) + (Normal_Width - 6) * scale - 1;
-		x_scale = -scale;
+		x = X_Pos * d_scale + (Normal_Width - 6) * d_scale - 1.0;
+		x_scale = -d_scale;
 	}
 
-	y = (AsConfig::Platform_Y_Pos + 3) * scale;
+	y = (double)(AsConfig::Platform_Y_Pos + 3) * d_scale;
 
 	POINT left_leg_points[7] = 
    {
-		{ x, y }, { x + 2 * x_scale, y - 2 * scale }, { x + 4 * x_scale, y - 2 * scale }, { x + 4 * x_scale, y }, 
-		{ x + 2 * x_scale, y + 2 * scale }, { x + 2 * x_scale, y + 4 * scale }, { x, y + 4 * scale }
+		{ (int)x, (int)y }, { (int)(x + 2.0 * x_scale), (int)(y - 2.0 * d_scale) }, 
+		{ (int)(x + 4 * x_scale), (int)(y - 2 * d_scale) }, { (int)(x + 4 * x_scale), (int)y }, 
+		{ (int)(x + 2 * x_scale), (int)(y + 2 * d_scale) }, { (int)(x + 2 * x_scale), (int)(y + (2.0 + 2.0 * ratio) * d_scale) }, 
+		{ (int)x, (int)(y + 4.0 * ratio * d_scale) }
    };
 
 	Polygon(hdc, left_leg_points, 7);
@@ -1169,50 +1188,75 @@ void AsPlatform::Draw_Laser_Leg(HDC hdc, bool is_left)
 void AsPlatform::Draw_Laser_Cabin(HDC hdc)
 {// Рисуем кабину для лазерной платформы
 
-	int x, y;
+	double x, y;
 	const int scale = AsConfig::Global_Scale;
+	double one_pixel = 1.0 / AsConfig::Global_Scale;
+	double ratio = (double)Laser_Transformation_Step / (double)Max_Laser_Transformation_Step;
+
+	x = X_Pos;
+	y = AsConfig::Platform_Y_Pos;
 
 	// 1. Внешняя часть
+	// Размер: 2 x 1 --> 10 x 8
 	Platform_Inner_Color.Select(hdc);
-
-	x = (int)( (X_Pos + 9.0) * AsConfig::D_Global_Scale);
-	y = (AsConfig::Platform_Y_Pos - 1) * scale;
-	Ellipse(hdc, x, y, x + 10 * scale - 1, y + 8 * scale - 1);
+	Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 9, y - 1, 10, 8 - one_pixel);
 
 	// 2. Среднее кольцо
+	// Размер: 2 x 1 --> 8 x 6
 	AsConfig::BG_Color.Select(hdc);
-	x += scale;
-	Ellipse(hdc, x, y, x + 8 * scale - 1, y + 6 * scale - 1);
+	Draw_Expanding_Figure(hdc, EFigure_Type::Rectangle, x + 13, y + 1, 2, 1, ratio, x + 11, y, 6, 1);
+	Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 10, y, 8, 5 - one_pixel);
 
 	// 3. Внутренне кольцо
+	// Размер: 2 x 1 --> 6 x 4
 	AsConfig::White_Color.Select(hdc);
-	x += scale;
-	y += scale;
-	Ellipse(hdc, x, y, x + 6 * scale - 1, y + 4 * scale - 1);
+	Draw_Expanding_Figure(hdc, EFigure_Type::Ellipse, x + 13, y + 1, 2, 1, ratio, x + 11, y, 6, 4 - one_pixel);
 }
 //------------------------------------------------------------------------------------------------------------
-void AsPlatform::Draw_Expanding_Figure(HDC hdc, bool is_rectangle, int start_x, int start_y, int start_width, int start_height, double ratio, int end_x, int end_y, int end_width, int end_height)
+void AsPlatform::Draw_Expanding_Figure(HDC hdc, EFigure_Type figure_Type, double start_x, double start_y, double start_width, double start_height, double ratio, double end_x, double end_y, double end_width, double end_height)
 {
 	int x, y;
-	int delta;
-	int width, height;
+	double width, height;
+	RECT rect;
 
-	delta = end_x - start_x;
-	x = (int)( ( (double)start_x + (double)delta * ratio) * AsConfig::D_Global_Scale);
+	x = Get_Expanding_Value(start_x, end_x, ratio);
+	y = Get_Expanding_Value(start_y, end_y, ratio);
+	width = Get_Expanding_Value(start_width, end_width, ratio);
+	height = Get_Expanding_Value(start_height, end_height, ratio);
 
-	delta = end_y - start_y;
-	y = (int)( ( (double)start_y + (double)delta * ratio) * AsConfig::D_Global_Scale);
-
-	delta = end_width - start_width;
-	width = (int)( ( (double)start_width + (double)delta * ratio) * AsConfig::D_Global_Scale);
-
-	delta = end_height - start_height;
-	height = (int)( ( (double)start_height + (double)delta * ratio) * AsConfig::D_Global_Scale);
-
-	if (is_rectangle)
-		Rectangle(hdc, x, y, x + width - 1, y + height);
-	else
+	switch (figure_Type)
+	{
+	case EFigure_Type::Ellipse:
 		Ellipse(hdc, x, y, x + width - 1, y + height);
+		break;
+
+	case EFigure_Type::Rectangle:
+		Rectangle(hdc, x, y, x + width - 1, y + height);
+		break;
+
+	case EFigure_Type::Round_Rect_3x:
+		rect.left = x;
+		rect.top = y;
+		rect.right = x + width;
+		rect.bottom = y + height + 1;
+
+		AsConfig::Round_Rect(hdc, rect, 3);
+		break;
+
+	default:
+		AsConfig::Throw();
+	}		
+}
+//------------------------------------------------------------------------------------------------------------
+int AsPlatform::Get_Expanding_Value(double start, double end, double ratio)
+{
+	int value;
+	double delta;
+
+	delta = end - start;
+	value = (int)( (start + delta * ratio) * AsConfig::D_Global_Scale);
+
+	return value;
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsPlatform::Reflect_On_Circle(double next_x_pos, double next_y_pos, double platform_ball_x_offset, ABall *ball)
