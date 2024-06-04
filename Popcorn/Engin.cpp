@@ -22,7 +22,7 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    AActive_Brick_Red_Blue::Setup_Colors();
 
    Level.Init();
-   Platform.Init(&Ball_Set);
+   Platform.Init(&Ball_Set, &Laser_Beam_Set);
 
    AFalling_Letter::Init();
 
@@ -44,6 +44,7 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    memset(Movers, 0, sizeof(Movers) );
    Movers[0] = &Platform;
    Movers[1] = &Ball_Set;
+   Movers[2] = &Laser_Beam_Set;
 
    // Modules
    memset(Modules, 0, sizeof(Modules) );
@@ -51,6 +52,7 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    Modules[1] = &Border;
    Modules[2] = &Platform;
    Modules[3] = &Ball_Set;
+   Modules[4] = &Laser_Beam_Set;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)

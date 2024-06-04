@@ -2,6 +2,7 @@
 
 #include "Ball.h"
 
+// AsBall_Set
 //------------------------------------------------------------------------------------------------------------
 class AsBall_Set: public AMover, public AGraphics_Object
 {
