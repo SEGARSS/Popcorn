@@ -29,7 +29,9 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    ABall::Add_Hit_Checker(&Border);
    ABall::Add_Hit_Checker(&Level);
    ABall::Add_Hit_Checker(&Platform);
-;
+
+   ALaser_Beam::Add_Hit_Checker(&Level);
+
    Level.Set_Current_Level(AsLevel::Level_01);
 
    //Ball.Set_State(EBS_Normal, Platform.X_Pos + Platform.Width / 2);

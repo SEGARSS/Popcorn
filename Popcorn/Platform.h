@@ -180,7 +180,10 @@ public:
 	void Set_At(double x_pos, double y_pos);
 	bool Is_Active();
 
+	static void Add_Hit_Checker(AHit_Checker *hit_checker);
+
 private:
+	virtual void Disable();
 	void Redraw_Beam();
 
 	ELaser_Beam_State Laser_Beam_State;
@@ -190,6 +193,8 @@ private:
 
 	static const int Width = 1;
 	static const int Height = 3;
+	static int Hit_Checkers_Count;
+	static AHit_Checker *Hit_Checkers[3];
 };
 //------------------------------------------------------------------------------------------------------------
 

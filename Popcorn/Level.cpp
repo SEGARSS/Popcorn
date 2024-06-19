@@ -139,6 +139,28 @@ bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 	return false;
 }
 //------------------------------------------------------------------------------------------------------------
+bool AsLevel::Check_Hit(double next_x_pos, double next_y_pos)
+{// Возврат: true, если в позиции (next_x_pos, next_y_pos) луч коснётся кирпича
+
+	int level_x_index, level_y_index;
+
+	level_x_index = (int)( (next_x_pos - AsConfig::Level_X_Offset) / (double)AsConfig::Cell_Width);
+	level_y_index = (int)( (next_y_pos - AsConfig::Level_Y_Offset) / (double)AsConfig::Cell_Height);
+
+	if (level_x_index < 0 || level_x_index >= AsConfig::Level_Width)
+		return false;
+
+	if (level_y_index < 0 || level_y_index >= AsConfig::Level_Height)
+		return false;
+
+	if (Current_Level[level_y_index][level_x_index] == 0)
+		return false;
+
+	On_Hit(level_x_index, level_y_index, 0, true);
+
+	return true;
+}
+//------------------------------------------------------------------------------------------------------------
 void AsLevel::Act()
 {
 	Act_Objects( (AGraphics_Object **)&Active_Bricks, Active_Bricks_Count, AsConfig::Max_Active_Bricks_Count);
@@ -294,6 +316,13 @@ bool AsLevel::On_Hit(int brick_x, int brick_y, ABall *ball, bool vertical_hit)
 
 	brick_type = (EBrick_Type)Current_Level[brick_y][brick_x];
 
+
+	if (ball == 0 && brick_type == EBT_Parachute)
+	{
+		brick_type = EBT_Red;
+		Current_Level[brick_y][brick_x] = brick_type;
+	}
+
 	if (brick_type == EBT_Parachute)
 	{
 		ball->Set_On_Parachute(brick_x, brick_y);
@@ -345,20 +374,20 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
 			letter_y = (brick_y * AsConfig::Cell_Height + AsConfig::Level_Y_Offset) * AsConfig::Global_Scale;
 
 			//letter_type = AFalling_Letter::Get_Random_Letter_Type();
-			//switch (AsConfig::Rand(3) )
-			//{
-			//case 0:
+			switch (AsConfig::Rand(3) )
+			{
+			case 0:
 				letter_type = ELT_L;
-			//	break;
+				break;
 
-			//case 1:
-			//	letter_type = ELT_K;
-			//	break;
+			case 1:
+				letter_type = ELT_K;
+				break;
 
-			//case 2:
-			//	letter_type = ELT_W;
-			//	break;
-			//}
+			case 2:
+				letter_type = ELT_W;
+				break;
+			}
 				
 			falling_letter = new AFalling_Letter(brick_type, letter_type, letter_x, letter_y);
 			Falling_Letters[i] = falling_letter;
@@ -408,7 +437,8 @@ bool AsLevel::Create_Active_Brick(int brick_x, int brick_y, EBrick_Type brick_ty
 		break;
 
 	case EBT_Teleport:
-		Add_Active_Brick_Teleport(brick_x, brick_y, ball, vertical_hit);
+		if (ball != 0)
+			Add_Active_Brick_Teleport(brick_x, brick_y, ball, vertical_hit);
 		return false;
 
 	case EBT_Ad:
