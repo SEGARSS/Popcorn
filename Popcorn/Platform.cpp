@@ -767,7 +767,7 @@ bool AsPlatform_Laser::Act(EPlatform_State &next_state,  double x_pos)
 		{
 			Platform_State->Laser = EPlatform_Transformation::Unknown;
 			next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
-			Enable_Laser_Firing = false;
+			Enable_Laser_Firing = false;//
 		}
 
 		return true;
