@@ -2,7 +2,7 @@
 
 #include "Falling_Letter.h"
 #include "Ball_Set.h"
-#include "Laser_Beam.h"
+#include "Laser_Beam_Set.h"
 
 //------------------------------------------------------------------------------------------------------------
 enum class EPlatform_State: unsigned char
@@ -146,31 +146,6 @@ private:
 	AColor *Truss_Color;
 
 	static const double Max_Expanding_Platform_Width, Min_Expanding_Platform_Width, Expanding_Platform_Width_Step;
-};
-//------------------------------------------------------------------------------------------------------------
-
-
-// ALaser_Beam_Set
-//------------------------------------------------------------------------------------------------------------
-class AsLaser_Beam_Set: public AMover, public AGraphics_Object
-{
-public:
-	virtual void Begin_Movement();
-	virtual void Finish_Movement();
-	virtual void Advance(double max_speed);
-	virtual double Get_Speed();
-
-	virtual void Act();
-	virtual void Clear(HDC hdc, RECT &paint_area);
-	virtual void Draw(HDC hdc, RECT &paint_area);
-	virtual bool Is_Finished();
-
-	void Fire(double left_gun_x_pos, double right_gun_x_pos);
-
-private:
-	static const int Max_Laser_Beam_Count = 10;
-
-	ALaser_Beam Laser_Beams[Max_Laser_Beam_Count];
 };
 //------------------------------------------------------------------------------------------------------------
 

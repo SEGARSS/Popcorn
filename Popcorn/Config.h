@@ -8,16 +8,16 @@
 class AsConfig
 {
 public:
-   static int Rand(int range);
-	static void Round_Rect(HDC hdc, RECT &rect, int corner_radius = 2);
-   static void Invalidate_Rect(RECT &rect);
+	static int Rand(int range);
+	static void Round_Rect(HDC hdc, RECT& rect, int corner_radius = 2);
+	static void Invalidate_Rect(RECT& rect);
 	static void Throw();
 
 	static bool Level_Has_Floor;
 	static int Current_Timer_Tick;
 	static const AColor BG_Color, Red_Color, Blue_Color, White_Color, Letter_Color, Laser_Color;
-   static const AColor Unbreakable_Blue_Highlight, Unbreakable_Red_Highlight, Teleport_Portal_Color;
-   static const AColor Advertisement_Blue_Table, Advertisement_Red_Table;
+	static const AColor Unbreakable_Blue_Highlight, Unbreakable_Red_Highlight, Teleport_Portal_Color;
+	static const AColor Advertisement_Blue_Table, Advertisement_Red_Table;
 	static HWND Hwnd;
 
    static const double D_Global_Scale;
