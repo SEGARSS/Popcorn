@@ -52,6 +52,9 @@
     <Filter Include="Laser_Beam_Set">
       <UniqueIdentifier>{11ac7141-0391-43f9-a378-44070b1118c0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Platform_State">
+      <UniqueIdentifier>{1bdd59af-c76a-46e6-acd2-b58552823cd4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -101,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="Laser_Beam_Set.h">
       <Filter>Laser_Beam_Set</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform_State.h">
+      <Filter>Platform_State</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +161,9 @@
     </ClCompile>
     <ClCompile Include="Laser_Beam_Set.cpp">
       <Filter>Laser_Beam_Set</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform_State.cpp">
+      <Filter>Platform_State</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
