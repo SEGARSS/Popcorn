@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include"Config.h"
 
@@ -92,6 +92,6 @@ public:
 
 private:
 	EPlatform_State Current_State;
-	EPlatform_State Next_State; // В этом состоянии переходим из void AsPlatform::Set_State(EPlatform_Substate_Regular new_regular_state)
+	EPlatform_State Next_State; // Р’ СЌС‚РѕРј СЃРѕСЃС‚РѕСЏРЅРёРё РїРµСЂРµС…РѕРґРёРј РёР· void AsPlatform::Set_State(EPlatform_Substate_Regular new_regular_state)
 };
 //------------------------------------------------------------------------------------------------------------
