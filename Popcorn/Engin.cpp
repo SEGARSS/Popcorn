@@ -161,7 +161,7 @@ void AsEngine::Advance_Movers()
 
    //1. Получаем максимальную скорость.
 	for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
-   {
+    {
       if (Movers[i] != 0)
       {
          Movers[i]->Begin_Movement();
@@ -171,7 +171,7 @@ void AsEngine::Advance_Movers()
 			if (curr_speed > max_speed)
             max_speed = curr_speed;
       }
-   }
+    }
 
    //2. Смещаем все движущиеся объекты.
    Rest_Distance += max_speed;
