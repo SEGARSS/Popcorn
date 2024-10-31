@@ -8,7 +8,7 @@ class AsBall_Set: public AMover, public AGraphics_Object
 {
 public:
 	virtual void Begin_Movement();
-   virtual void Finish_Movement();
+    virtual void Finish_Movement();
 	virtual void Advance(double max_speed);
 	virtual double Get_Speed();
 
