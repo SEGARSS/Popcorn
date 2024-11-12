@@ -21,7 +21,7 @@ void AsPlatform_State::operator = (EPlatform_State new_state)
 	Current_State = new_state;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsPlatform_State::Set_Next_State(EPlatform_State& next_state)
+void AsPlatform_State::Set_Next_State(EPlatform_State next_state)
 {
 	if (next_state == Current_State)
 		return;
