@@ -4,10 +4,10 @@
 // AsPlatform_State
 //------------------------------------------------------------------------------------------------------------
 AsPlatform_State::AsPlatform_State()
-	: Current_State(EPlatform_State::Regular), Next_State(EPlatform_State::Unknown), Regular(EPlatform_Substate_Regular::Missing),
-	Meltdown(EPlatform_Substate_Meltdown::Unknown), Rolling(EPlatform_Substate_Rolling::Unknown),
-	Glue(EPlatform_Transformation::Unknown), Expanding(EPlatform_Transformation::Unknown),
-	Laser(EPlatform_Transformation::Unknown), Moving(EPlatform_Moving_State::Stop)
+: Current_State(EPlatform_State::Regular), Next_State(EPlatform_State::Unknown), Regular(EPlatform_Substate_Regular::Missing),
+  Meltdown(EPlatform_Substate_Meltdown::Unknown), Rolling(EPlatform_Substate_Rolling::Unknown),
+  Glue(EPlatform_Transformation::Unknown), Expanding(EPlatform_Transformation::Unknown),
+  Laser(EPlatform_Transformation::Unknown), Moving(EPlatform_Moving_State::Stop)
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ void AsPlatform_State::operator = (EPlatform_State new_state)
 	Current_State = new_state;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsPlatform_State::Set_Next_State(EPlatform_State next_state)
+void AsPlatform_State::Set_Next_State(EPlatform_State& next_state)
 {
 	if (next_state == Current_State)
 		return;
