@@ -51,6 +51,11 @@ public:
    static const int Initial_Life_Count = 5;
    static const int Max_Life_Count = 12;
    static const int Floor_Y_Pos = Max_Y_Pos - 1;
+   static const int Platfor_Normal_Width = 28;
+   static const int Platfor_Circle_Size = 7;
+   static const int Platfor_Height = 7;
+   static const int Platform_Inner_Width = Platfor_Normal_Width - Platfor_Circle_Size;
+   static const int Platfor_Expanding_Inner_Width = 12;
 };
 //------------------------------------------------------------------------------------------------------------
 //Отлажен

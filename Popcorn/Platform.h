@@ -1,32 +1,9 @@
 ﻿#pragma once
 
 #include "Falling_Letter.h"
-#include "Ball_Set.h"
 #include "Laser_Beam_Set.h"
 #include "Platform_State.h"
-
-
-//AsPlatform_Glue
-//------------------------------------------------------------------------------------------------------------
-class AsPlatform_Glue
-{
-public:
-	AsPlatform_Glue(AsPlatform_State &platform_state);
-
-	bool Act(AsBall_Set *ball_set, EPlatform_State &next_state);
-	void Draw_State(HDC hdc, double x_pos);
-	void Reset();
-
-private:
-	void Draw_Glue_Spot(HDC hdc, double x_pos, int x_offset, int width, int height);
-
-	double Glue_Spot_Height_Ratio;
-	AsPlatform_State *Platform_State;
-
-	static const double Max_Glue_Spot_Height_Ratio, Min_Glue_Spot_Height_Ratio, Glue_Spot_Height_Ratio_Step;
-};
-//------------------------------------------------------------------------------------------------------------
-
+#include "Platform_Glue.h"
 
 //AsPlatform_Expanding
 //------------------------------------------------------------------------------------------------------------
@@ -126,13 +103,7 @@ public:
 	bool Hit_By(AFalling_Letter *falling_letter);
 	double Get_Middle_Pos();
 
-	double X_Pos;
-
-	static const int Normal_Width = 28;
-	static const int Circle_Size = 7;
-	static const int Height = 7;
-	static const int Normal_Platform_Inner_Width = Normal_Width - Circle_Size;
-	static const int Expanding_Platform_Inner_Width = 12;
+	double X_Pos;	
 
 private:
 	bool Set_Transformation_State(EPlatform_State new_state, EPlatform_Transformation &transformation_state);
@@ -162,7 +133,7 @@ private:
 	int Normal_Platform_Image_Width, Normal_Platform_Image_Height;
 	int *Normal_Platform_Image;  // Пиксели изображения платформы на фоне
 
-	int Meltdown_Platform_Y_Pos[Normal_Width * AsConfig::Global_Scale];
+	int Meltdown_Platform_Y_Pos[AsConfig::Platfor_Normal_Width * AsConfig::Global_Scale];
 
 	RECT Platform_Rect, Prev_Platform_Rect;
 
