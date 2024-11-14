@@ -6,12 +6,12 @@ const double AsPlatform_Glue::Max_Glue_Spot_Height_Ratio = 1.0;
 const double AsPlatform_Glue::Min_Glue_Spot_Height_Ratio = 0.4;
 const double AsPlatform_Glue::Glue_Spot_Height_Ratio_Step = 0.05;
 //------------------------------------------------------------------------------------------------------------
-AsPlatform_Glue::AsPlatform_Glue(AsPlatform_State& platform_state)
-	: Glue_Spot_Height_Ratio(0.0), Platform_State(&platform_state)
+AsPlatform_Glue::AsPlatform_Glue(AsPlatform_State &platform_state)
+: Glue_Spot_Height_Ratio(0.0), Platform_State(&platform_state)
 {
 }
 //------------------------------------------------------------------------------------------------------------
-bool AsPlatform_Glue::Act(AsBall_Set* ball_set, EPlatform_State& next_state)
+bool AsPlatform_Glue::Act(AsBall_Set *ball_set, EPlatform_State &next_state)
 {
 	next_state = EPlatform_State::Unknown;
 
@@ -35,7 +35,7 @@ bool AsPlatform_Glue::Act(AsBall_Set* ball_set, EPlatform_State& next_state)
 		{
 			Glue_Spot_Height_Ratio -= Glue_Spot_Height_Ratio_Step;
 
-			while (ball_set->Release_Next_Ball())
+			while (ball_set->Release_Next_Ball() )
 			{
 			}
 		}
@@ -61,7 +61,7 @@ void AsPlatform_Glue::Draw_State(HDC hdc, double x_pos)
 	HRGN region;
 	RECT glue_rect;
 
-	glue_rect.left = (int)((x_pos + 5.0) * AsConfig::D_Global_Scale);
+	glue_rect.left = (int)( (x_pos + 5.0) * AsConfig::D_Global_Scale);
 	glue_rect.top = (AsConfig::Platform_Y_Pos + 1) * AsConfig::Global_Scale;
 	glue_rect.right = glue_rect.left + AsPlatform::Normal_Platform_Inner_Width * AsConfig::Global_Scale;
 	glue_rect.bottom = glue_rect.top + (AsPlatform::Height - 2) * AsConfig::Global_Scale;
@@ -93,14 +93,14 @@ void AsPlatform_Glue::Draw_Glue_Spot(HDC hdc, double x_pos, int x_offset, int wi
 
 	RECT spot_rect;
 	int platform_top = (AsConfig::Platform_Y_Pos + 1) * AsConfig::Global_Scale;
-	int spot_height = (int)((double)height * AsConfig::D_Global_Scale * Glue_Spot_Height_Ratio);
+	int spot_height = (int)( (double)height * AsConfig::D_Global_Scale * Glue_Spot_Height_Ratio);
 
 	// Рисуем полуэллипс как "пятно" клея
-	spot_rect.left = (int)((x_pos + 5.0 + (double)x_offset) * AsConfig::D_Global_Scale);
+	spot_rect.left = (int)( (x_pos + 5.0 + (double)x_offset) * AsConfig::D_Global_Scale);
 	spot_rect.top = platform_top - spot_height;
 	spot_rect.right = spot_rect.left + width * AsConfig::Global_Scale;
 	spot_rect.bottom = platform_top + spot_height - AsConfig::Global_Scale;
 
-	Chord(hdc, spot_rect.left, spot_rect.top, spot_rect.right - 1, spot_rect.bottom - 1, spot_rect.left, platform_top - 1, spot_rect.right - 1, platform_top - 1);
+	Chord(hdc, spot_rect.left, spot_rect.top, spot_rect.right - 1, spot_rect.bottom - 1,  spot_rect.left, platform_top - 1, spot_rect.right - 1, platform_top - 1);
 }
 //------------------------------------------------------------------------------------------------------------
