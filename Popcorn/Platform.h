@@ -133,7 +133,7 @@ private:
 	int Normal_Platform_Image_Width, Normal_Platform_Image_Height;
 	int *Normal_Platform_Image;  // Пиксели изображения платформы на фоне
 
-	int Meltdown_Platform_Y_Pos[AsConfig::Platfor_Normal_Width * AsConfig::Global_Scale];
+	int Meltdown_Platform_Y_Pos[AsConfig::Platform_Normal_Width * AsConfig::Global_Scale];
 
 	RECT Platform_Rect, Prev_Platform_Rect;
 

@@ -63,8 +63,8 @@ void AsPlatform_Glue::Draw_State(HDC hdc, double x_pos)
 
 	glue_rect.left = (int)( (x_pos + 5.0) * AsConfig::D_Global_Scale);
 	glue_rect.top = (AsConfig::Platform_Y_Pos + 1) * AsConfig::Global_Scale;
-	glue_rect.right = glue_rect.left + AsPlatform::Normal_Platform_Inner_Width * AsConfig::Global_Scale;
-	glue_rect.bottom = glue_rect.top + (AsPlatform::Height - 2) * AsConfig::Global_Scale;
+	glue_rect.right = glue_rect.left + AsConfig::Platform_Normal_Inner_Width * AsConfig::Global_Scale;
+	glue_rect.bottom = glue_rect.top + (AsConfig::Platform_Height - 2) * AsConfig::Global_Scale;
 
 	region = CreateRectRgnIndirect(&glue_rect);
 	SelectClipRgn(hdc, region);
