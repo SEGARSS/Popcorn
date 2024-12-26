@@ -1,75 +1,10 @@
 ﻿#pragma once
 
 #include "Falling_Letter.h"
-#include "Laser_Beam_Set.h"
 #include "Platform_State.h"
 #include "Platform_Glue.h"
-
-//AsPlatform_Expanding
-//------------------------------------------------------------------------------------------------------------
-class AsPlatform_Expanding
-{
-public:
-	~AsPlatform_Expanding();
-	AsPlatform_Expanding(AsPlatform_State &platform_state);
-
-	void Init(AColor &highlight_color, AColor &circle_color, AColor &inner_color);
-	bool Act(double &x_pos, EPlatform_State &next_state, bool &correct_pos);
-	void Draw_State(HDC hdc, double x);
-	void Draw_Circle_Highlight(HDC hdc, int x, int y);
-	void Reset();
-
-	double Expanding_Platform_Width;
-
-private:
-	void Draw_Expanding_Platform_Ball(HDC hdc, double x, bool is_left);
-	void Draw_Expanding_Truss(HDC hdc, RECT &inner_rect, bool is_left);
-
-	AsPlatform_State *Platform_State;
-	AColor *Highlight_Color, *Circle_Color, *Inner_Color;  //Используем, но не владеем UNO
-	AColor *Truss_Color;
-
-	static const double Max_Expanding_Platform_Width, Min_Expanding_Platform_Width, Expanding_Platform_Width_Step;
-};
-//------------------------------------------------------------------------------------------------------------
-
-
-//AsPlatform_Laser
-//------------------------------------------------------------------------------------------------------------
-class AsPlatform_Laser
-{
-public:
-	~AsPlatform_Laser();
-	AsPlatform_Laser(AsPlatform_State &platform_state);
-
-	void Init(AsLaser_Beam_Set *laser_beam_set, AColor &highlight_color, AColor &circle_color, AColor &inner_color);
-	bool Act(EPlatform_State &next_state, double x_pos);
-	void Draw_State(HDC hdc, double x_pos, RECT &platform_rect);
-	void Reset();
-	void Fire(bool fire_on);
-
-private:
-	void Draw_Laser_Wing(HDC hdc, double x_pos, bool is_left);
-	void Draw_Laser_Inner_Part(HDC hdc, double x);
-	void Draw_Laser_Leg(HDC hdc, double x_pos, bool is_left);
-	void Draw_Laser_Cabin(HDC hdc, double x);
-	void Draw_Expanding_Figure(HDC hdc, EFigure_Type figure_type, double start_x, double start_y, double start_width, double start_height, double ratio, double end_x, double end_y, double end_width, double end_height);
-	int Get_Expanding_Value(double start, double end, double ratio);
-	double Get_Gun_Pos(double platform_x_pos, bool is_left);
-
-	bool Enable_Laser_Firing;
-	int Laser_Transformation_Step;
-	int Last_Laser_Shot_Tick;
-	AsPlatform_State *Platform_State;
-	AColor *Circle_Color, *Inner_Color;  // Используем, но не владеем UNO
-	AColor *Gun_Color;
-
-	AsLaser_Beam_Set *Laser_Beam_Set; // UNO
-
-	static const int Max_Laser_Transformation_Step = 20;
-	static const int Laser_Shot_Timeout = AsConfig::FPS / 2;
-};
-//------------------------------------------------------------------------------------------------------------
+#include "Platform_Expanding.h"
+#include "Platform_Laser.h"
 
 
 //AsPlatform
@@ -103,7 +38,7 @@ public:
 	bool Hit_By(AFalling_Letter *falling_letter);
 	double Get_Middle_Pos();
 
-	double X_Pos;	
+	double X_Pos;
 
 private:
 	bool Set_Transformation_State(EPlatform_State new_state, EPlatform_Transformation &transformation_state);
