@@ -20,6 +20,24 @@ private:
 //------------------------------------------------------------------------------------------------------------
 
 
+//Iterfase
+//------------------------------------------------------------------------------------------------------------
+class AHit_Checker_List
+{
+public:
+	AHit_Checker_List();
+
+	bool Add_Hit_Checker(AHit_Checker *hit_checker);
+	bool Check_Hit(double x_pos, double y_pos, ABall *ball);
+	bool Check_Hit(double x_pos, double y_pos);
+
+private:
+	int Hit_Checkers_Count;
+	AHit_Checker *Hit_Checkers[3];
+};
+//------------------------------------------------------------------------------------------------------------
+
+
 //AMover
 //------------------------------------------------------------------------------------------------------------
 class AMover

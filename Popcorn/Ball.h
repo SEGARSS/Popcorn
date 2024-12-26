@@ -53,7 +53,7 @@ public:
 
 	int Release_Timer_Tick; //Значение счётчика времени, после которого надо отпустить приклеенный мячик
 
-	static void Add_Hit_Checker(AHit_Checker *hit_checker);
+	static AHit_Checker_List Hit_Checker_List;
 
 	static const double Radius;
 
@@ -64,7 +64,6 @@ private:
 	void Clear_Parachute(HDC hdc);
 
 	EBall_State Ball_State, Prev_Ball_State;
-	//double Rest_Distance;
 	double Ball_Direction, Prev_Ball_Direction;
 	double Ball_Speed, Prev_Ball_Speed;
 
@@ -79,8 +78,6 @@ private:
 
 	static const int Parachute_Size = 15;
 	static const int On_Platform_Timeout = 10 * AsConfig::FPS; // Время нахождения на платформе
-	static int Hit_Checkers_Count;
-	static AHit_Checker *Hit_Checkers[3];
 };
 //------------------------------------------------------------------------------------------------------------
 //Отлажен

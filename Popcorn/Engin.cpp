@@ -26,11 +26,11 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
 
    AFalling_Letter::Init();
 
-   ABall::Add_Hit_Checker(&Border);
-   ABall::Add_Hit_Checker(&Level);
-   ABall::Add_Hit_Checker(&Platform);
+   ABall::Hit_Checker_List.Add_Hit_Checker(&Border);
+   ABall::Hit_Checker_List.Add_Hit_Checker(&Level);
+   ABall::Hit_Checker_List.Add_Hit_Checker(&Platform);
 
-   ALaser_Beam::Add_Hit_Checker(&Level);
+   ALaser_Beam::Hit_Checker_List.Add_Hit_Checker(&Level);
 
    Level.Set_Current_Level(AsLevel::Level_01);
 

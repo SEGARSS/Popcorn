@@ -4,8 +4,7 @@
 //ABall
 //------------------------------------------------------------------------------------------------------------
 const double ABall::Radius = 2.0 - 0.5 / AsConfig::Global_Scale;
-int ABall::Hit_Checkers_Count = 0;
-AHit_Checker *ABall::Hit_Checkers[] = {};
+AHit_Checker_List ABall::Hit_Checker_List;
 //------------------------------------------------------------------------------------------------------------
 ABall::ABall()
 : Ball_State(EBS_Disabled), Prev_Ball_State(EBS_Disabled), Release_Timer_Tick(0), Center_X_Pos(0.0), Center_Y_Pos(0.0), 
@@ -58,8 +57,7 @@ void ABall::Advance(double max_speed) // Смещение шарика
 		next_y_pos = Center_Y_Pos - next_step * sin(Ball_Direction);
 
 		// Корректируем позицию при отражении:
-		for (int i = 0; i < Hit_Checkers_Count; i++)
-			got_hit |= Hit_Checkers[i]->Check_Hit(next_x_pos, next_y_pos, this);
+		got_hit = Hit_Checker_List.Check_Hit(next_x_pos, next_y_pos, this);
 
 		if (got_hit)
 		{
@@ -406,14 +404,6 @@ void ABall::Release()
 
 	Ball_Direction = Prev_Ball_Direction;
 	Release_Timer_Tick = 0;
-}
-//------------------------------------------------------------------------------------------------------------
-void ABall::Add_Hit_Checker(AHit_Checker *hit_checker)
-{
-	if (Hit_Checkers_Count >= sizeof(Hit_Checkers) / sizeof(Hit_Checkers[0]) )
-		return;
-
-	Hit_Checkers[Hit_Checkers_Count++] = hit_checker;
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Redraw_Ball()
