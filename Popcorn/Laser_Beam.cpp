@@ -5,7 +5,7 @@
 AHit_Checker_List ALaser_Beam::Hit_Checker_List;
 //------------------------------------------------------------------------------------------------------------
 ALaser_Beam::ALaser_Beam()
-	: Laser_Beam_State(ELaser_Beam_State::Disabled), X_Pos(0.0), Y_Pos(0.0), Speed(0.0), Beam_Rect{}
+: Laser_Beam_State(ELaser_Beam_State::Disabled), X_Pos(0.0), Y_Pos(0.0), Speed(0.0), Beam_Rect{}
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ void ALaser_Beam::Advance(double max_speed)
 	if (Y_Pos < AsConfig::Level_Y_Offset)
 		Disable();
 
-	if (Hit_Checker_List.Check_Hit(X_Pos, Y_Pos) );
+	if (Hit_Checker_List.Check_Hit(X_Pos, Y_Pos) )
 		Disable();
 }
 //------------------------------------------------------------------------------------------------------------

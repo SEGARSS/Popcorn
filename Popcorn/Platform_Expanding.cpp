@@ -81,9 +81,9 @@ void AsPlatform_Expanding::Draw_State(HDC hdc, double x)
 	const double d_scale = AsConfig::D_Global_Scale;
 	RECT inner_rect;
 
-	inner_rect.left = (int)( (x + (Expanding_Platform_Width - (double)AsConfig::Platform_Normal_Inner_Width) / 2.0) * d_scale);
+	inner_rect.left = (int)( (x + (Expanding_Platform_Width - (double)AsConfig::Platform_Expanding_Inner_Width) / 2.0) * d_scale);
 	inner_rect.top = (y + 1) * scale;
-	inner_rect.right = inner_rect.left + AsConfig::Platform_Normal_Inner_Width * scale;
+	inner_rect.right = inner_rect.left + AsConfig::Platform_Expanding_Inner_Width * scale;
 	inner_rect.bottom = (y + 1 + 5) * scale;
 
 	//1. Левая сторона
@@ -206,7 +206,7 @@ void AsPlatform_Expanding::Draw_Expanding_Truss(HDC hdc, RECT &inner_rect, bool 
 		truss_x += truss_x_offset;
 	else
 	{
-		truss_x += (AsConfig::Platform_Normal_Inner_Width + 8 - 1) * scale + 1;
+		truss_x += (AsConfig::Platform_Expanding_Inner_Width + 8 - 1) * scale + 1;
 		truss_x -= truss_x_offset;
 	}		
 

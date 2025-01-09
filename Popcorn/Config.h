@@ -55,7 +55,7 @@ public:
    static const int Platform_Circle_Size = 7;
    static const int Platform_Height = 7;
    static const int Platform_Normal_Inner_Width = Platform_Normal_Width - Platform_Circle_Size;
-   static const int Platfor_Expanding_Inner_Width = 12;
+   static const int Platform_Expanding_Inner_Width = 12;
 };
 //------------------------------------------------------------------------------------------------------------
 //Отлажен
