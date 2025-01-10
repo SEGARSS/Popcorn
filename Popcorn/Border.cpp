@@ -1,8 +1,71 @@
 ﻿#include "Border.h"
 
+//AGate
+//------------------------------------------------------------------------------------------------------------
+AGate::AGate(int x_pos, int y_pos)
+: X_Pos(x_pos), Y_Pos(y_pos)
+{
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Act()
+{
+	//!!! Надо сделать!
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Clear(HDC hdc, RECT& paint_area)
+{
+	//!!! Надо сделать!
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Draw(HDC hdc, RECT& paint_area)
+{
+	const int scale = AsConfig::Global_Scale;
+	const int half_scale = scale / 2;
+	HRGN region;
+	RECT rect;
+
+	//1. Получаша
+	rect.left = X_Pos * scale;
+	rect.top = (Y_Pos + 1) * scale;
+	rect.right = rect.left + 6 * scale;
+	rect.bottom = rect.top + 4 * scale;
+
+	//1.1 основа
+	AsConfig::Blue_Color.Select(hdc);
+	AsConfig::Round_Rect(hdc, rect, 3);
+
+	//1.2 блик
+	rect.right = rect.left + 3 * scale;
+
+	region = CreateRectRgnIndirect(&rect);
+	SelectClipRgn(hdc, region);
+
+	AsConfig::Letter_Color.Select(hdc);
+
+	rect.left = X_Pos * scale + half_scale;
+	rect.top = (Y_Pos + 1) * scale + half_scale;
+	rect.right = rect.left + 5 * scale + half_scale;
+	rect.bottom = rect.top + 5 * scale + half_scale;
+	
+	AsConfig::Round_Rect(hdc, rect, 3);
+
+	SelectClipRgn(hdc, 0);
+	DeleteObject(region);
+}
+//------------------------------------------------------------------------------------------------------------
+bool AGate::Is_Finished()
+{
+	return false;//!!! Надо сделать!
+}
+//------------------------------------------------------------------------------------------------------------
+
+
+
+
 //AsBorder
 //------------------------------------------------------------------------------------------------------------
 AsBorder::AsBorder()
+: Gate(AsConfig::Max_X_Pos, 178)
 {
 	Floor_Rect.left = AsConfig::Level_X_Offset * AsConfig::Global_Scale;
 	Floor_Rect.top = AsConfig::Floor_Y_Pos * AsConfig::Global_Scale;
@@ -82,8 +145,8 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рам
 		Draw_Element(hdc, paint_area, 2, 1 + i * 4, false);
 
    //2.Линия справа
-   for (int i = 0; i < 50; i++)
-		Draw_Element(hdc, paint_area, AsConfig::Max_X_Pos + 1, 1 + i * 4, false);
+  // for (int i = 0; i < 50; i++)
+		//Draw_Element(hdc, paint_area, AsConfig::Max_X_Pos + 1, 1 + i * 4, false);
 
    //3.Линия сверху
    for (int i = 0; i < 50; i++)
@@ -92,6 +155,9 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рам
 	//4.По (если есть)
 	if (AsConfig::Level_Has_Floor)
 		Draw_Floor(hdc, paint_area);
+
+	//5.Гейты
+	Gate.Draw(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsBorder::Is_Finished()
