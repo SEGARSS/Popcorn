@@ -17,16 +17,43 @@ void AGate::Clear(HDC hdc, RECT& paint_area)
 	//!!! Надо сделать!
 }
 //------------------------------------------------------------------------------------------------------------
-void AGate::Draw(HDC hdc, RECT& paint_area)
+void AGate::Draw(HDC hdc, RECT &paint_area)
 {
+	//Draw_Cup(hdc, true);
+	Draw_Cup(hdc, false);
+}
+//------------------------------------------------------------------------------------------------------------
+bool AGate::Is_Finished()
+{
+	return false;//!!! Надо сделать!
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Draw_Cup(HDC hdc, bool top_cup)
+{
+	int x = 0, y = 0;
 	const int scale = AsConfig::Global_Scale;
 	const int half_scale = scale / 2;
 	HRGN region;
 	RECT rect;
+	XFORM xform, old_xform;
 
-	//1. Получаша
-	rect.left = X_Pos * scale;
-	rect.top = (Y_Pos + 1) * scale;
+	xform.eM11 = 1.0f;
+	xform.eM12 = 0.0f;
+	xform.eM21 = 0.0f;
+	xform.eDx = (float)(X_Pos * scale);
+	xform.eDy = (float)(Y_Pos * scale);
+
+	if (top_cup)
+		xform.eM22 = 1.0f;
+	else
+		xform.eM22 = -1.0f;
+
+	GetWorldTransform(hdc, &old_xform);
+	SetWorldTransform(hdc, &xform);
+
+	//1. Полукруглая часть чаши
+	rect.left = x * scale;
+	rect.top = (y + 1) * scale;
 	rect.right = rect.left + 6 * scale;
 	rect.bottom = rect.top + 4 * scale;
 
@@ -34,16 +61,28 @@ void AGate::Draw(HDC hdc, RECT& paint_area)
 	AsConfig::Blue_Color.Select(hdc);
 	AsConfig::Round_Rect(hdc, rect, 3);
 
-	//1.2 блик
-	rect.right = rect.left + 3 * scale;
+	//1.2 блик слева
+	rect.left = X_Pos * scale;
+	rect.right = rect.left + 3 * scale;	
+
+	if (top_cup)
+	{
+		rect.top = (Y_Pos + 1) * scale;
+		rect.bottom = rect.top + 4 * scale;
+	}
+	else
+	{
+		rect.top = (Y_Pos - 1) * scale;
+		rect.bottom = rect.top - 4 * scale;
+	}
 
 	region = CreateRectRgnIndirect(&rect);
 	SelectClipRgn(hdc, region);
 
 	AsConfig::Letter_Color.Select(hdc);
 
-	rect.left = X_Pos * scale + half_scale;
-	rect.top = (Y_Pos + 1) * scale + half_scale;
+	rect.left = x * scale + half_scale;
+	rect.top = (y + 1) * scale + half_scale;
 	rect.right = rect.left + 5 * scale + half_scale;
 	rect.bottom = rect.top + 5 * scale + half_scale;
 	
@@ -51,11 +90,13 @@ void AGate::Draw(HDC hdc, RECT& paint_area)
 
 	SelectClipRgn(hdc, 0);
 	DeleteObject(region);
-}
-//------------------------------------------------------------------------------------------------------------
-bool AGate::Is_Finished()
-{
-	return false;//!!! Надо сделать!
+	
+	AsConfig::Rect(hdc, x, y + 4, 4, 1, AsConfig::White_Color); //Блик снизу	
+	AsConfig::Rect(hdc, x + 4, y + 3, 2, 2, AsConfig::Blue_Color); //Заплатка в правом нижнем углу	
+	AsConfig::Rect(hdc, x + 4, y + 3, 1, 1, AsConfig::BG_Color);//Фоновая перфорация
+	AsConfig::Rect(hdc, x + 2, y, 2, 1, AsConfig::Blue_Color);//Перемычка перед чашей
+
+	SetWorldTransform(hdc, &old_xform);
 }
 //------------------------------------------------------------------------------------------------------------
 

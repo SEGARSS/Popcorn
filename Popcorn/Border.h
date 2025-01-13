@@ -15,6 +15,7 @@ public:
 	virtual bool Is_Finished();
 
 private:
+	void Draw_Cup(HDC hdc, bool top_cup);
 	int X_Pos, Y_Pos;
 };
 //------------------------------------------------------------------------------------------------------------
