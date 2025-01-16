@@ -16,7 +16,11 @@ public:
 
 private:
 	void Draw_Cup(HDC hdc, bool top_cup);
+	void Draw_Edges(HDC hdc);
+	void Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge);
+
 	int X_Pos, Y_Pos;
+	int Edges_Count;
 };
 //------------------------------------------------------------------------------------------------------------
 
