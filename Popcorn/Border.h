@@ -21,6 +21,10 @@ private:
 
 	int X_Pos, Y_Pos;
 	int Edges_Count;
+	RECT Gate_Rect;
+
+	static const int Width = 6;
+	static const int Height = 19;
 };
 //------------------------------------------------------------------------------------------------------------
 
@@ -30,6 +34,7 @@ private:
 class AsBorder: public AHit_Checker, public AGraphics_Object
 {
 public:
+	~AsBorder();
 	AsBorder();
 
 	virtual bool Check_Hit(double next_x_pos, double next_y_pos, ABall *ball);
@@ -46,7 +51,7 @@ private:
 	void Draw_Floor(HDC hdc, RECT &paint_area);
 
 	RECT Floor_Rect;
-	AGate Gate;
+	AGate *Gates[AsConfig::Gates_Count];
 };
 //------------------------------------------------------------------------------------------------------------
 //Отлажен

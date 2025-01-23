@@ -5,6 +5,12 @@
 AGate::AGate(int x_pos, int y_pos)
 : X_Pos(x_pos), Y_Pos(y_pos), Edges_Count(5)
 {
+	int scale = AsConfig::Global_Scale;
+
+	Gate_Rect.left = X_Pos * scale;
+	Gate_Rect.top = Y_Pos * scale;
+	Gate_Rect.right = Gate_Rect.left + Width * scale;
+	Gate_Rect.bottom = Gate_Rect.top + Height * scale;
 }
 //------------------------------------------------------------------------------------------------------------
 void AGate::Act()
@@ -14,11 +20,23 @@ void AGate::Act()
 //------------------------------------------------------------------------------------------------------------
 void AGate::Clear(HDC hdc, RECT& paint_area)
 {
-	//!!! Надо сделать!
+	RECT intersection_rect;
+
+	if (!IntersectRect(&intersection_rect, &paint_area, &Gate_Rect))
+		return;
+
+	AsConfig::Rect(hdc, Gate_Rect, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void AGate::Draw(HDC hdc, RECT &paint_area)
 {
+	RECT intersection_rect;
+
+	if (!IntersectRect(&intersection_rect, &paint_area, &Gate_Rect) )
+		return;
+
+	Clear(hdc, paint_area);
+
 	Draw_Cup(hdc, true);
 	Draw_Cup(hdc, false);
 }
@@ -87,7 +105,7 @@ void AGate::Draw_Cup(HDC hdc, bool top_cup)
 	region = CreateRectRgnIndirect(&rect);
 	SelectClipRgn(hdc, region);
 
-	AsConfig::Letter_Color.Select(hdc);
+	AsConfig::Gate_Color.Select(hdc);
 
 	rect.left = x * scale + half_scale;
 	rect.top = (y + 1) * scale + half_scale;
@@ -104,9 +122,9 @@ void AGate::Draw_Cup(HDC hdc, bool top_cup)
 	AsConfig::Rect(hdc, x + 4, y + 3, 1, 1, AsConfig::BG_Color);//Фоновая перфорация
 	AsConfig::Rect(hdc, x + 2, y, 2, 1, AsConfig::Blue_Color);//Перемычка перед чашей
 
-	SetWorldTransform(hdc, &old_xform);
-
 	Draw_Edges(hdc);
+
+	SetWorldTransform(hdc, &old_xform);	
 }
 //------------------------------------------------------------------------------------------------------------
 void AGate::Draw_Edges(HDC hdc)
@@ -124,13 +142,13 @@ void AGate::Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge)
 {
 	if (long_edge)
 	{//Длинное ребро
-		AsConfig::Rect(hdc, X_Pos, Y_Pos + edge_y_offset, 4, 1, AsConfig::White_Color);
-		AsConfig::Rect(hdc, X_Pos + 4, Y_Pos + edge_y_offset, 2, 1, AsConfig::Blue_Color);
-	}
+		AsConfig::Rect(hdc, 0, edge_y_offset, 4, 1, AsConfig::White_Color);
+		AsConfig::Rect(hdc, 4, edge_y_offset, 2, 1, AsConfig::Blue_Color);
+	}								  
 	else
 	{//Короткое ребро
-		AsConfig::Rect(hdc, X_Pos + 1, Y_Pos + edge_y_offset, 2, 1, AsConfig::Blue_Color);
-		AsConfig::Rect(hdc, X_Pos + 4, Y_Pos + edge_y_offset, 1, 1, AsConfig::Blue_Color);
+		AsConfig::Rect(hdc, 1, edge_y_offset, 2, 1, AsConfig::Blue_Color);
+		AsConfig::Rect(hdc, 4, edge_y_offset, 1, 1, AsConfig::Blue_Color);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -140,13 +158,33 @@ void AGate::Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge)
 
 //AsBorder
 //------------------------------------------------------------------------------------------------------------
+AsBorder::~AsBorder()
+{
+	for (int i = 0; i < AsConfig::Gates_Count; i++)
+		delete Gates[i];
+}
+//------------------------------------------------------------------------------------------------------------
 AsBorder::AsBorder()
-: Gate(AsConfig::Max_X_Pos, 178)
+: Floor_Rect{}, Gates{0}
 {
 	Floor_Rect.left = AsConfig::Level_X_Offset * AsConfig::Global_Scale;
 	Floor_Rect.top = AsConfig::Floor_Y_Pos * AsConfig::Global_Scale;
 	Floor_Rect.right = (AsConfig::Max_X_Pos - 1) * AsConfig::Global_Scale;
 	Floor_Rect.bottom = AsConfig::Max_Y_Pos * AsConfig::Global_Scale;
+
+	//Гейты
+	Gates[0] = new AGate(1, 29);
+	Gates[1] = new AGate(AsConfig::Max_X_Pos, 29);
+		 
+	Gates[2] = new AGate(1, 77);
+	Gates[3] = new AGate(AsConfig::Max_X_Pos, 77);
+		 
+	Gates[4] = new AGate(1, 129);
+	Gates[5] = new AGate(AsConfig::Max_X_Pos, 129);
+		 
+	Gates[6] = new AGate(1, 178);
+	Gates[7] = new AGate(AsConfig::Max_X_Pos, 178);
+
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Redraw_Floor()
@@ -221,8 +259,8 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рам
 		Draw_Element(hdc, paint_area, 2, 1 + i * 4, false);
 
    //2.Линия справа
-  // for (int i = 0; i < 50; i++)
-		//Draw_Element(hdc, paint_area, AsConfig::Max_X_Pos + 1, 1 + i * 4, false);
+   for (int i = 0; i < 50; i++)
+		Draw_Element(hdc, paint_area, AsConfig::Max_X_Pos + 1, 1 + i * 4, false);
 
    //3.Линия сверху
    for (int i = 0; i < 50; i++)
@@ -233,7 +271,8 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рам
 		Draw_Floor(hdc, paint_area);
 
 	//5.Гейты
-	Gate.Draw(hdc, paint_area);
+	for (int i = 0; i < AsConfig::Gates_Count; i++)
+		Gates[i]-> Draw(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsBorder::Is_Finished()
