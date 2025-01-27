@@ -3,7 +3,7 @@
 //AGate
 //------------------------------------------------------------------------------------------------------------
 AGate::AGate(int x_pos, int y_pos)
-: X_Pos(x_pos), Y_Pos(y_pos), Edges_Count(5)
+: Gate_State(EGate_State::Closed), Gate_Transformation(EGate_Transformation::Unknown), X_Pos(x_pos), Y_Pos(y_pos), Edges_Count(5)
 {
 	int scale = AsConfig::Global_Scale;
 
@@ -44,6 +44,19 @@ void AGate::Draw(HDC hdc, RECT &paint_area)
 bool AGate::Is_Finished()
 {
 	return false;//!!! Надо сделать!
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Open_Gate(bool short_open)
+{
+	if (Gate_State != EGate_State::Closed)
+		return;
+
+	if (short_open)
+		Gate_State = EGate_State::Short_Open;
+	else
+		Gate_State = EGate_State::Long_Open;
+
+	Gate_Transformation = EGate_Transformation::Init;
 }
 //------------------------------------------------------------------------------------------------------------
 void AGate::Draw_Cup(HDC hdc, bool top_cup)

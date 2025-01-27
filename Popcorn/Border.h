@@ -4,6 +4,22 @@
 
 //AGate
 //------------------------------------------------------------------------------------------------------------
+enum class EGate_State : unsigned char
+{
+	Closed,
+	Short_Open,
+	Long_Open
+};
+//------------------------------------------------------------------------------------------------------------
+enum class EGate_Transformation : unsigned char
+{
+	Unknown,
+
+	Init,
+	Active,
+	Finalize
+};
+//------------------------------------------------------------------------------------------------------------
 class AGate: public AGraphics_Object
 {
 public:
@@ -14,11 +30,15 @@ public:
 	virtual void Draw(HDC hdc, RECT& paint_area);
 	virtual bool Is_Finished();
 
+	void Open_Gate(bool short_open);
+
 private:
 	void Draw_Cup(HDC hdc, bool top_cup);
 	void Draw_Edges(HDC hdc);
 	void Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge);
 
+	EGate_State Gate_State;
+	EGate_Transformation Gate_Transformation;
 	int X_Pos, Y_Pos;
 	int Edges_Count;
 	RECT Gate_Rect;
