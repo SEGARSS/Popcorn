@@ -33,6 +33,7 @@ public:
 	void Open_Gate(bool short_open);
 
 private:
+	bool Act_For_Short_Open();
 	void Draw_Cup(HDC hdc, bool top_cup);
 	void Draw_Edges(HDC hdc);
 	void Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge);
@@ -65,6 +66,7 @@ public:
 	virtual bool Is_Finished();
 
 	void Redraw_Floor();
+	void Open_Gate(int gate_index, bool short_open);
 
 private:
 	void Draw_Element(HDC hdc, RECT &paint_area, int x, int y, bool top_border);

@@ -15,7 +15,22 @@ AGate::AGate(int x_pos, int y_pos)
 //------------------------------------------------------------------------------------------------------------
 void AGate::Act()
 {
-	//!!! Надо сделать!
+	switch (Gate_State)
+	{
+	case EGate_State::Closed:
+		break;
+
+	case EGate_State::Short_Open:
+		Act_For_Short_Open();
+		break;
+
+	//case EGate_State::Long_Open:
+	//	Act_For_Long_Open();
+	//	break;
+
+	default:
+		AsConfig::Throw();
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void AGate::Clear(HDC hdc, RECT& paint_area)
@@ -57,6 +72,53 @@ void AGate::Open_Gate(bool short_open)
 		Gate_State = EGate_State::Long_Open;
 
 	Gate_Transformation = EGate_Transformation::Init;
+}
+//------------------------------------------------------------------------------------------------------------
+bool AGate::Act_For_Short_Open()
+{
+	//next_state = EPlatform_State::Unknown;
+	//correct_pos = false;
+
+	switch (Gate_Transformation)
+	{
+	case EGate_Transformation::Init:
+		if (Expanding_Platform_Width < Max_Expanding_Platform_Width)
+		{
+			Expanding_Platform_Width += Expanding_Platform_Width_Step;
+			x_pos -= Expanding_Platform_Width_Step / 2.0;
+			correct_pos = true;
+		}
+		else
+			Platform_State->Expanding = EGate_Transformation::Active;
+
+		return true;
+
+
+	case EGate_Transformation::Active:
+		break;
+
+
+	case EGate_Transformation::Finalize:
+		if (Expanding_Platform_Width > Min_Expanding_Platform_Width)
+		{
+			Expanding_Platform_Width -= Expanding_Platform_Width_Step;
+			x_pos += Expanding_Platform_Width_Step / 2.0;
+			correct_pos = true;
+		}
+		else
+		{
+			Platform_State->Expanding = EGate_Transformation::Unknown;
+			next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
+		}
+
+		return true;
+
+
+	default:
+		AsConfig::Throw();
+	}
+
+	return false;
 }
 //------------------------------------------------------------------------------------------------------------
 void AGate::Draw_Cup(HDC hdc, bool top_cup)
@@ -205,6 +267,17 @@ void AsBorder::Redraw_Floor()
 	AsConfig::Invalidate_Rect(Floor_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
+void AsBorder::Open_Gate(int gate_index, bool short_open)
+{
+	if (gate_index < 0 || gate_index >= AsConfig::Gates_Count)
+		AsConfig::Throw();
+
+	if (gate_index != AsConfig::Gates_Count - 1 && short_open)
+		AsConfig::Throw();
+
+	Gates[gate_index]->Open_Gate(short_open);
+}
+//------------------------------------------------------------------------------------------------------------
 bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 {// Корректируем позицию при отражении от рамки
 
@@ -247,13 +320,19 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Act()
 {
-	// Заглушка, т.к. метод не используеться.
+	for (int i = 0; i < AsConfig::Gates_Count; i++)
+		Gates[i]->Act();
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Clear(HDC hdc, RECT &paint_area)
 {
 	RECT intersection_rect;
 
+	// 1. Стираем гейты
+	for (int i = 0; i < AsConfig::Gates_Count; i++)
+		Gates[i]->Draw(hdc, paint_area);
+
+	// 2. Стираем пол (если надо)
 	if (! AsConfig::Level_Has_Floor)
 		return;
 
