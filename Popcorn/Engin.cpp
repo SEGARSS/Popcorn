@@ -210,6 +210,7 @@ void AsEngine::Act()
 
    Platform.Act();
    Level.Act();
+   Border.Act();
 
    if (! Platform.Has_State(EPlatform_Substate_Regular::Ready) )
       Ball_Set.Act();

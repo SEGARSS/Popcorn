@@ -37,13 +37,17 @@ private:
 	void Draw_Cup(HDC hdc, bool top_cup);
 	void Draw_Edges(HDC hdc);
 	void Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge);
+	void Redraw_Gate();
 
 	EGate_State Gate_State;
 	EGate_Transformation Gate_Transformation;
 	int X_Pos, Y_Pos;
 	int Edges_Count;
+	double Gap_Height;
 	RECT Gate_Rect;
 
+	static const double Max_Gap_Short_Height;
+	static const double Gap_Height_Short_Step;
 	static const int Width = 6;
 	static const int Height = 19;
 };

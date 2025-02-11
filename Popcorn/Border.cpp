@@ -1,9 +1,12 @@
 ﻿#include "Border.h"
 
 //AGate
+const double AGate::Max_Gap_Short_Height = 9.0;
+const double AGate::Gap_Height_Short_Step = Max_Gap_Short_Height / (double)AsConfig::FPS;// Для анимации за одну секунду
 //------------------------------------------------------------------------------------------------------------
 AGate::AGate(int x_pos, int y_pos)
-: Gate_State(EGate_State::Closed), Gate_Transformation(EGate_Transformation::Unknown), X_Pos(x_pos), Y_Pos(y_pos), Edges_Count(5)
+: Gate_State(EGate_State::Closed), Gate_Transformation(EGate_Transformation::Unknown), X_Pos(x_pos), Y_Pos(y_pos), 
+  Edges_Count(5), Gap_Height(0.0)
 {
 	int scale = AsConfig::Global_Scale;
 
@@ -21,7 +24,8 @@ void AGate::Act()
 		break;
 
 	case EGate_State::Short_Open:
-		Act_For_Short_Open();
+		if (Act_For_Short_Open() );
+			Redraw_Gate();
 		break;
 
 	//case EGate_State::Long_Open:
@@ -82,14 +86,14 @@ bool AGate::Act_For_Short_Open()
 	switch (Gate_Transformation)
 	{
 	case EGate_Transformation::Init:
-		if (Expanding_Platform_Width < Max_Expanding_Platform_Width)
+		if (Gap_Height < Max_Gap_Short_Height)
 		{
-			Expanding_Platform_Width += Expanding_Platform_Width_Step;
-			x_pos -= Expanding_Platform_Width_Step / 2.0;
-			correct_pos = true;
+			Gap_Height += Gap_Height_Short_Step;
+			//x_pos -= Expanding_Platform_Width_Step / 2.0;
+			//correct_pos = true;
 		}
 		else
-			Platform_State->Expanding = EGate_Transformation::Active;
+			Gate_Transformation = EGate_Transformation::Active;
 
 		return true;
 
@@ -99,16 +103,17 @@ bool AGate::Act_For_Short_Open()
 
 
 	case EGate_Transformation::Finalize:
-		if (Expanding_Platform_Width > Min_Expanding_Platform_Width)
+		if (Gap_Height > 0.0)
 		{
-			Expanding_Platform_Width -= Expanding_Platform_Width_Step;
-			x_pos += Expanding_Platform_Width_Step / 2.0;
-			correct_pos = true;
+			Gap_Height -= Gap_Height_Short_Step;
+			//x_pos += Expanding_Platform_Width_Step / 2.0;
+			//correct_pos = true;
 		}
 		else
 		{
-			Platform_State->Expanding = EGate_Transformation::Unknown;
-			next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
+			Gate_Transformation = EGate_Transformation::Unknown;
+			//next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
+			Gate_State = EGate_State::Closed;
 		}
 
 		return true;
@@ -192,10 +197,10 @@ void AGate::Draw_Cup(HDC hdc, bool top_cup)
 	SelectClipRgn(hdc, 0);
 	DeleteObject(region);
 	
-	AsConfig::Rect(hdc, x, y + 4, 4, 1, AsConfig::White_Color);		 //Блик снизу	
-	AsConfig::Rect(hdc, x + 4, y + 3, 2, 2, AsConfig::Blue_Color); //Заплатка в правом нижнем углу	
-	AsConfig::Rect(hdc, x + 4, y + 3, 1, 1, AsConfig::BG_Color);//Фоновая перфорация
-	AsConfig::Rect(hdc, x + 2, y, 2, 1, AsConfig::Blue_Color);//Перемычка перед чашей
+	AsConfig::Rect(hdc, x, y + 4, 4, 1, AsConfig::White_Color);	   //Блик снизу	
+	AsConfig::Rect(hdc, x + 4, y + 3, 2, 2, AsConfig::Blue_Color);//Заплатка в правом нижнем углу	
+	AsConfig::Rect(hdc, x + 4, y + 3, 1, 1, AsConfig::BG_Color); //Фоновая перфорация
+	AsConfig::Rect(hdc, x + 2, y, 2, 1, AsConfig::Blue_Color);  //Перемычка перед чашей
 
 	Draw_Edges(hdc);
 
@@ -204,9 +209,13 @@ void AGate::Draw_Cup(HDC hdc, bool top_cup)
 //------------------------------------------------------------------------------------------------------------
 void AGate::Draw_Edges(HDC hdc)
 {
+	int count;
+	double ratio = 1.0 - Gap_Height / Max_Gap_Short_Height;
 	bool is_long_edge = false;
 
-	for (int i = 0; i < Edges_Count; i++)
+	count = (int)( (double)Edges_Count * ratio);
+
+	for (int i = 0; i < count; i++)
 	{
 		Draw_One_Edge(hdc, 5 + i, is_long_edge);
 		is_long_edge = !is_long_edge;
@@ -225,6 +234,11 @@ void AGate::Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge)
 		AsConfig::Rect(hdc, 1, edge_y_offset, 2, 1, AsConfig::Blue_Color);
 		AsConfig::Rect(hdc, 4, edge_y_offset, 1, 1, AsConfig::Blue_Color);
 	}
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Redraw_Gate()
+{
+	AsConfig::Invalidate_Rect(Gate_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 
