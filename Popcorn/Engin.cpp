@@ -55,8 +55,6 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
    Modules[2] = &Platform;
    Modules[3] = &Ball_Set;
    Modules[4] = &Laser_Beam_Set;
-
-   Border.Open_Gate(7, true);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
@@ -114,11 +112,8 @@ int AsEngine::On_Timer() // Смещение по таймеру
 
 
    case EGS_Lost_Ball:
-      if (Platform.Has_State(EPlatform_Substate_Regular::Missing) )
-      {
-         Game_State = EGS_Restart_Level;
-         Platform.Set_State(EPlatform_State::Rolling); 
-      }
+       if (Platform.Has_State(EPlatform_Substate_Regular::Missing))
+           Restart_Level();
       break;
 
 
@@ -134,6 +129,13 @@ int AsEngine::On_Timer() // Смещение по таймеру
    Act();
 
    return 0;
+}
+//------------------------------------------------------------------------------------------------------------
+void AsEngine::Restart_Level()
+{
+    Game_State = EGS_Restart_Level;
+    Border.Open_Gate(7, true);
+    Border.Open_Gate(5, false);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Play_Level()
@@ -157,9 +159,7 @@ void AsEngine::Play_Level()
 void AsEngine::Advance_Movers()
 {
    double curr_speed;
-   double max_speed = 0.0;
-   //double ball_x, ball_y;
-   
+   double max_speed = 0.0;   
 
    //1. Получаем максимальную скорость.
 	for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
@@ -188,15 +188,6 @@ void AsEngine::Advance_Movers()
       Rest_Distance -= AsConfig::Moving_Step_Size;
    }
 
-  // for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
-  // {
-		//Ball_Set.Balls[i].Get_Center(ball_x, ball_y);
-
-		//if (ball_x >= Platform.X_Pos + 1 && ball_x <= Platform.X_Pos + Platform.Width - 1)
-		//	if (ball_y >= AsConfig::Platform_Y_Pos + 1 && ball_y <= AsConfig::Platform_Y_Pos + 5)
-		//		int yy = 0;
-  // }
-
    //3. Заканчивает все движения в кадре.
    for (int i = 0; i < AsConfig::Max_Movers_Count; i++)
       if (Movers[i] != 0)
@@ -208,13 +199,12 @@ void AsEngine::Act()
    int index = 0;
    AFalling_Letter *falling_letter;
 
-   Platform.Act();
-   Level.Act();
-   Border.Act();
+   // 1. Выполняем все действия
+   for (int i = 0; i < AsConfig::Max_Modules_Count; i++)
+       if (Modules[i] != 0)
+           Modules[i]->Act();
 
-   if (! Platform.Has_State(EPlatform_Substate_Regular::Ready) )
-      Ball_Set.Act();
-
+   // 2. Ловим падающие буквы
    while (Level.Get_Next_Falling_Letter(index, &falling_letter) )
    {
       if (Platform.Hit_By(falling_letter) )
@@ -222,6 +212,11 @@ void AsEngine::Act()
          On_Falling_Letter(falling_letter);
       }
    }
+
+   // 3. Рестарт уровня (если надо)
+   if (Game_State == EGS_Restart_Level)
+       if (Border.Is_Gate_Opened(AsConfig::Gates_Count - 1) )
+           Platform.Set_State(EPlatform_State::Rolling);   
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::On_Falling_Letter(AFalling_Letter *falling_letter)

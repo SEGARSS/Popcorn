@@ -2,11 +2,13 @@
 
 //AGate
 const double AGate::Max_Gap_Short_Height = 9.0;
-const double AGate::Gap_Height_Short_Step = Max_Gap_Short_Height / (double)AsConfig::FPS;// Для анимации за одну секунду
+const double AGate::Gap_Height_Short_Step = Max_Gap_Short_Height / ( (double)AsConfig::FPS / 2.0);// Для анимации за 1/2 секунду
+const double AGate::Max_Gap_Long_Height = 18.0;
+const double AGate::Gap_Height_Long_Step = Max_Gap_Long_Height / ((double)AsConfig::FPS * 3.0);// Для анимации за 1/2 секунду
 //------------------------------------------------------------------------------------------------------------
 AGate::AGate(int x_pos, int y_pos)
 : Gate_State(EGate_State::Closed), Gate_Transformation(EGate_Transformation::Unknown), X_Pos(x_pos), Y_Pos(y_pos), 
-  Edges_Count(5), Gap_Height(0.0)
+  Origin_Y_Pos(y_pos), Edges_Count(5), Gate_Close_Tick(0), Gap_Height(0.0)
 {
 	int scale = AsConfig::Global_Scale;
 
@@ -18,6 +20,7 @@ AGate::AGate(int x_pos, int y_pos)
 //------------------------------------------------------------------------------------------------------------
 void AGate::Act()
 {
+	bool correct_pos;
 	switch (Gate_State)
 	{
 	case EGate_State::Closed:
@@ -28,9 +31,21 @@ void AGate::Act()
 			Redraw_Gate();
 		break;
 
-	//case EGate_State::Long_Open:
-	//	Act_For_Long_Open();
-	//	break;
+	case EGate_State::Long_Open:
+		if (Act_For_Long_Open(correct_pos) )
+		{
+			if (correct_pos)
+			{
+				Y_Pos = Origin_Y_Pos - Gap_Height / 2.0;
+
+				Gate_Rect.top = (int)( (Y_Pos - Gap_Height / 2.0) * AsConfig::D_Global_Scale);
+				Gate_Rect.bottom = (int)( ( (double)(Origin_Y_Pos + Height) + Gap_Height / 2.0) * AsConfig::D_Global_Scale);
+			}
+
+			Redraw_Gate();
+		}
+			
+		break;
 
 	default:
 		AsConfig::Throw();
@@ -78,6 +93,17 @@ void AGate::Open_Gate(bool short_open)
 	Gate_Transformation = EGate_Transformation::Init;
 }
 //------------------------------------------------------------------------------------------------------------
+bool AGate::Is_Opened()
+{
+	if (Gate_State == EGate_State::Short_Open || Gate_State == EGate_State::Long_Open)
+	{
+		if (Gate_Transformation == EGate_Transformation::Active)
+			return true;
+	}
+
+	return false;
+}
+//------------------------------------------------------------------------------------------------------------
 bool AGate::Act_For_Short_Open()
 {
 	//next_state = EPlatform_State::Unknown;
@@ -93,12 +119,18 @@ bool AGate::Act_For_Short_Open()
 			//correct_pos = true;
 		}
 		else
+		{
+			Gate_Close_Tick = AsConfig::Current_Timer_Tick + Short_Opening_timeout;
 			Gate_Transformation = EGate_Transformation::Active;
+		}
 
 		return true;
 
 
 	case EGate_Transformation::Active:
+		if (AsConfig::Current_Timer_Tick >= Gate_Close_Tick)
+			Gate_Transformation = EGate_Transformation::Finalize;
+
 		break;
 
 
@@ -108,6 +140,58 @@ bool AGate::Act_For_Short_Open()
 			Gap_Height -= Gap_Height_Short_Step;
 			//x_pos += Expanding_Platform_Width_Step / 2.0;
 			//correct_pos = true;
+		}
+		else
+		{
+			Gate_Transformation = EGate_Transformation::Unknown;
+			//next_state = Platform_State->Set_State(EPlatform_Substate_Regular::Normal);
+			Gate_State = EGate_State::Closed;
+		}
+
+		return true;
+
+
+	default:
+		AsConfig::Throw();
+	}
+
+	return false;
+}
+//------------------------------------------------------------------------------------------------------------
+bool AGate::Act_For_Long_Open(bool &correct_pos)
+{
+	//next_state = EPlatform_State::Unknown;
+	correct_pos = false;
+
+	switch (Gate_Transformation)
+	{
+	case EGate_Transformation::Init:
+		if (Gap_Height < Max_Gap_Long_Height)
+		{
+			Gap_Height += Gap_Height_Long_Step;
+			correct_pos = true;
+		}
+		else
+		{
+			Gate_Close_Tick = AsConfig::Current_Timer_Tick + Short_Opening_timeout;
+			Gate_Transformation = EGate_Transformation::Active;
+		}
+
+		return true;
+
+
+	case EGate_Transformation::Active:
+		if (AsConfig::Current_Timer_Tick >= Gate_Close_Tick)
+			Gate_Transformation = EGate_Transformation::Finalize;
+
+		break;
+
+
+	case EGate_Transformation::Finalize:
+		if (Gap_Height > 0.0)
+		{
+			Gap_Height -= Gap_Height_Long_Step;
+			correct_pos = true;
 		}
 		else
 		{
@@ -149,7 +233,7 @@ void AGate::Draw_Cup(HDC hdc, bool top_cup)
 	else
 	{
 		xform.eM22 = -1.0f;
-		cup_y_offset = 19 * scale - 1;
+		cup_y_offset = (int)( ( (double)Height + Gap_Height) * AsConfig::D_Global_Scale - 1.0);
 	}
 
 	xform.eDy = (float)(Y_Pos * scale + cup_y_offset);
@@ -290,6 +374,14 @@ void AsBorder::Open_Gate(int gate_index, bool short_open)
 		AsConfig::Throw();
 
 	Gates[gate_index]->Open_Gate(short_open);
+}
+//------------------------------------------------------------------------------------------------------------
+bool AsBorder::Is_Gate_Opened(int gate_index)
+{
+	if (gate_index < 0 || gate_index >= AsConfig::Gates_Count)
+		AsConfig::Throw();
+
+	return Gates[gate_index]->Is_Opened();
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
