@@ -32,10 +32,10 @@ public:
 
 	void Open_Gate(bool short_open);
 	bool Is_Opened();
+	void Get_Y_Size(int &gate_top_y, int &gate_low_y);
 
 private:
-	bool Act_For_Short_Open();
-	bool Act_For_Long_Open(bool &correct_pos);
+	bool Act_For_Open(bool short_open, bool &correct_pos);
 	void Draw_Cup(HDC hdc, bool top_cup);
 	void Draw_Edges(HDC hdc);
 	void Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge);
@@ -55,6 +55,7 @@ private:
 	static const int Width = 6;
 	static const int Height = 19;
 	static const int Short_Opening_timeout = AsConfig::FPS; // 1 секунда
+	static const int Long_Opening_timeout = AsConfig::FPS * 3; // 3 секунды
 };
 //------------------------------------------------------------------------------------------------------------
 
