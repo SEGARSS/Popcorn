@@ -73,6 +73,10 @@ void AGate::Draw(HDC hdc, RECT &paint_area)
 
 	Draw_Cup(hdc, true);
 	Draw_Cup(hdc, false);
+
+	if (Gate_State == EGate_State::Long_Open
+		&& (Gate_Transformation == EGate_Transformation::Init || Gate_Transformation == EGate_Transformation::Finalize))
+		Draw_Charge(hdc); // рисуем разряд между чашами
 }
 //------------------------------------------------------------------------------------------------------------
 bool AGate::Is_Finished()
@@ -264,16 +268,61 @@ void AGate::Draw_Cup(HDC hdc, bool top_cup)
 //------------------------------------------------------------------------------------------------------------
 void AGate::Draw_Edges(HDC hdc)
 {
+	if (Gate_State == EGate_State::Long_Open)
+		Draw_Long_Opening_Edges(hdc);
+	else
+		Draw_Short_Opening_Edges(hdc);
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Draw_Short_Opening_Edges(HDC hdc)
+{
 	int count;
 	double ratio = 1.0 - Gap_Height / Max_Gap_Short_Height;
 	bool is_long_edge = false;
 
-	count = (int)( (double)Edges_Count * ratio);
+	count = (int)((double)Edges_Count * ratio);
 
 	for (int i = 0; i < count; i++)
 	{
 		Draw_One_Edge(hdc, 5 + i, is_long_edge);
 		is_long_edge = !is_long_edge;
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Draw_Long_Opening_Edges(HDC hdc)
+{
+	int i;
+	double ratio = Gap_Height / Max_Gap_Long_Height;
+	bool is_long_edge = false;
+
+	if (ratio < 0.3)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			Draw_One_Edge(hdc, 5 + i, is_long_edge);
+			is_long_edge = !is_long_edge;
+		}
+
+		if (ratio > 0.1)
+			Draw_Red_Edge(hdc, 9, false, false);
+	}
+	else if (ratio < 0.5)
+	{
+		Draw_One_Edge(hdc, 5, false);
+		Draw_One_Edge(hdc, 6, true);
+		Draw_One_Edge(hdc, 7, true);
+
+		Draw_Red_Edge(hdc, 8, true, true);
+		Draw_Red_Edge(hdc, 9, false, false);
+	}
+	else
+	{
+		for (int i = 0; i < 2; i++)
+			Draw_One_Edge(hdc, 5 + i, true);
+
+		Draw_Red_Edge(hdc, 7, true, false);
+		Draw_Red_Edge(hdc, 8, true, true);
+		Draw_Red_Edge(hdc, 9, false, false);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -288,6 +337,41 @@ void AGate::Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge)
 	{//Короткое ребро
 		AsConfig::Rect(hdc, 1, edge_y_offset, 2, 1, AsConfig::Blue_Color);
 		AsConfig::Rect(hdc, 4, edge_y_offset, 1, 1, AsConfig::Blue_Color);
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Draw_Red_Edge(HDC hdc, int edge_y_offset, bool long_edge, bool has_heghlight)
+{
+	if (long_edge)
+	{//Длинное ребро
+		AsConfig::Rect(hdc, 0, edge_y_offset, 6, 1, AsConfig::Red_Color);
+
+		if (has_heghlight)
+			AsConfig::Rect(hdc, 1, edge_y_offset, 1, 1, AsConfig::White_Color);
+	}
+	else
+	{//Короткое ребро
+		AsConfig::Rect(hdc, 1, edge_y_offset, 4, 1, AsConfig::Red_Color);
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void AGate::Draw_Charge(HDC hdc)
+{
+	int field_y;
+	int dot_x, dot_y;
+	double ratio = Gap_Height / Max_Gap_Long_Height;
+
+	if (ratio < 0.2 || ratio > 0.9)
+		return; // Не рисуем разряд в начале и в конце анимации
+
+	field_y = (int)(Origin_Y_Pos + (double)Height / 2.0 - Gap_Height / 2.0) + 1;
+
+	for (int i = 0; i < 4; i++)
+	{
+		dot_x = 1 + AsConfig::Rand(4);
+		dot_y = AsConfig::Rand( (int)Gap_Height - 1);
+
+		AsConfig::Rect(hdc, X_Pos + dot_x, field_y + dot_y, 1, 1, AsConfig::White_Color);
 	}
 }
 //------------------------------------------------------------------------------------------------------------

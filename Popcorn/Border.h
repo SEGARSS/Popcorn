@@ -38,7 +38,11 @@ private:
 	bool Act_For_Open(bool short_open, bool &correct_pos);
 	void Draw_Cup(HDC hdc, bool top_cup);
 	void Draw_Edges(HDC hdc);
+	void Draw_Short_Opening_Edges(HDC hdc);
+	void Draw_Long_Opening_Edges(HDC hdc);
 	void Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge);
+	void Draw_Red_Edge(HDC hdc, int edge_y_offset, bool long_edge, bool has_heghlight);
+	void Draw_Charge(HDC hdc);
 	void Redraw_Gate();
 
 	EGate_State Gate_State;
