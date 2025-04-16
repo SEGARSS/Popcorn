@@ -56,13 +56,13 @@ bool AsPlatform::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 	return false;
 
 _on_hit:
-	if (ball->Get_State() == EBS_On_Parachute)
-		ball->Set_State(EBS_Off_Parachute);
+	if (ball->Get_State() == EBall_State::On_Parachute)
+		ball->Set_State(EBall_State::Off_Parachute);
 
 	if (Platform_State == EPlatform_State::Glue && Platform_State.Glue == EPlatform_Transformation::Active)
 	{
 		ball->Get_Center(ball_x, ball_y);
-		ball->Set_State(EBS_On_Platform, ball_x, ball_y);
+		ball->Set_State(EBall_State::On_Platform, ball_x, ball_y);
 	}
 
 	return true;

@@ -162,7 +162,7 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    const AColor *front_color, *back_color;
 	XFORM xform, old_xform;
 
-   if (!(Brick_Type == EBT_Blue || Brick_Type == EBT_Red)) 
+   if (!(Brick_Type == EBrick_Type::Blue || Brick_Type == EBrick_Type::Red)) 
       return;  // Падающие буквы могут быть только от кирпичей такого типа
 
    // Корректируем шаг вращения и угол поворота
@@ -175,14 +175,14 @@ void AFalling_Letter::Draw_Brick_Letter(HDC hdc)
    
    if (Rotation_Step > 4 && Rotation_Step <= 12)
    {
-      if (Brick_Type == EBT_Blue)
+      if (Brick_Type == EBrick_Type::Blue)
          switch_color = true;
       else
          switch_color = false;
    }
    else
    {
-      if (Brick_Type == EBT_Red)
+      if (Brick_Type == EBrick_Type::Red)
          switch_color = true;
       else
          switch_color = false;
