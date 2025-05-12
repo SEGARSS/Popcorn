@@ -377,15 +377,15 @@ bool AsLevel::Add_Falling_Letter(int brick_x, int brick_y, EBrick_Type brick_typ
 			switch (AsConfig::Rand(3) )
 			{
 			case 0:
-				letter_type = ELT_L;
+				letter_type = ELetter_Type::L;
 				break;
 
 			case 1:
-				letter_type = ELT_K;
+				letter_type = ELetter_Type::K;
 				break;
 
 			case 2:
-				letter_type = ELT_W;
+				letter_type = ELetter_Type::G;
 				break;
 			}
 				

@@ -28,9 +28,6 @@
     <Filter Include="Config">
       <UniqueIdentifier>{cd1ae703-775a-431d-bb4d-8135cc9cf033}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Ball">
-      <UniqueIdentifier>{9916eead-1b3f-4102-bcbc-59d0d5be7324}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{289e066e-fa7c-45c7-b452-272f1cc1604d}</UniqueIdentifier>
     </Filter>
@@ -39,9 +36,6 @@
     </Filter>
     <Filter Include="Falling_Letter">
       <UniqueIdentifier>{f480999a-78a1-4617-ac48-66c3b15716e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Ball_Set">
-      <UniqueIdentifier>{78e62cd9-7750-4d95-9196-49823770b769}</UniqueIdentifier>
     </Filter>
     <Filter Include="Laser_Beam">
       <UniqueIdentifier>{c9291c42-190f-4c72-8f2f-e210a020e9e7}</UniqueIdentifier>
@@ -63,6 +57,15 @@
     </Filter>
     <Filter Include="Platform_Laser">
       <UniqueIdentifier>{917bb7dc-6da4-489b-90cc-de40df4d3297}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Ball">
+      <UniqueIdentifier>{90b5e152-a17d-4f04-b4dd-5c7897dbfa4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Ball\Ball">
+      <UniqueIdentifier>{9916eead-1b3f-4102-bcbc-59d0d5be7324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Ball\Ball_Set">
+      <UniqueIdentifier>{78e62cd9-7750-4d95-9196-49823770b769}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -91,7 +94,7 @@
       <Filter>Config</Filter>
     </ClInclude>
     <ClInclude Include="Ball.h">
-      <Filter>Ball</Filter>
+      <Filter>#Ball\Ball</Filter>
     </ClInclude>
     <ClInclude Include="Platform.h">
       <Filter>Platform</Filter>
@@ -103,7 +106,7 @@
       <Filter>Falling_Letter</Filter>
     </ClInclude>
     <ClInclude Include="Ball_Set.h">
-      <Filter>Ball_Set</Filter>
+      <Filter>#Ball\Ball_Set</Filter>
     </ClInclude>
     <ClInclude Include="Laser_Beam.h">
       <Filter>Laser_Beam</Filter>
@@ -157,7 +160,7 @@
       <Filter>Config</Filter>
     </ClCompile>
     <ClCompile Include="Ball.cpp">
-      <Filter>Ball</Filter>
+      <Filter>#Ball\Ball</Filter>
     </ClCompile>
     <ClCompile Include="Platform.cpp">
       <Filter>Platform</Filter>
@@ -169,7 +172,7 @@
       <Filter>Falling_Letter</Filter>
     </ClCompile>
     <ClCompile Include="Ball_Set.cpp">
-      <Filter>Ball_Set</Filter>
+      <Filter>#Ball\Ball_Set</Filter>
     </ClCompile>
     <ClCompile Include="Laser_Beam.cpp">
       <Filter>Laser_Beam</Filter>

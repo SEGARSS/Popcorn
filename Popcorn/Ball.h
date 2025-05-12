@@ -5,7 +5,7 @@
 //------------------------------------------------------------------------------------------------------------
 enum class EBall_State: unsigned char
 {
-	Disabled, // Отключён (не рисуеться, не перемещаеться и не взаимодействует)
+	Disabled,// Отключён (не рисуеться, не перемещаеться и не взаимодействует)
 
 	Normal,
 	Lost,
@@ -19,13 +19,13 @@ enum class EBall_State: unsigned char
 
 //ABall
 //------------------------------------------------------------------------------------------------------------
-class ABall: public AMover, public AGraphics_Object
+class ABall : public AMover, public AGraphics_Object
 {
 public:
 	ABall();
 
 	virtual void Begin_Movement();
-   virtual void Finish_Movement();
+	virtual void Finish_Movement();
 	virtual void Advance(double max_speed);
 	virtual double Get_Speed();
 
@@ -33,7 +33,7 @@ public:
 	virtual void Clear(HDC hdc, RECT &paint_area);
 	virtual void Draw(HDC hdc, RECT &paint_area);
 	virtual bool Is_Finished();
-	
+
 	void Set_Speed(double new_speed);
 	void Draw_Teleporting(HDC hdc, int step);
 	void Set_For_Test();
