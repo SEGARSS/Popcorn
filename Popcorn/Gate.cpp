@@ -59,7 +59,7 @@ void AGate::Clear(HDC hdc, RECT& paint_area)
 	if (!IntersectRect(&intersection_rect, &paint_area, &Gate_Rect))
 		return;
 
-	AsConfig::Rect(hdc, Gate_Rect, AsConfig::BG_Color);
+	AsTools::Rect(hdc, Gate_Rect, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void AGate::Draw(HDC hdc, RECT &paint_area)
@@ -224,7 +224,7 @@ void AGate::Draw_Cup(HDC hdc, bool top_cup)
 
 	//1.1 основа
 	AsConfig::Blue_Color.Select(hdc);
-	AsConfig::Round_Rect(hdc, rect, 3);
+	AsTools::Round_Rect(hdc, rect, 3);
 
 	//1.2 блик слева
 	rect.left = X_Pos * scale;
@@ -251,15 +251,15 @@ void AGate::Draw_Cup(HDC hdc, bool top_cup)
 	rect.right = rect.left + 5 * scale + half_scale;
 	rect.bottom = rect.top + 5 * scale + half_scale;
 
-	AsConfig::Round_Rect(hdc, rect, 3);
+	AsTools::Round_Rect(hdc, rect, 3);
 
 	SelectClipRgn(hdc, 0);
 	DeleteObject(region);
 
-	AsConfig::Rect(hdc, x, y + 4, 4, 1, AsConfig::White_Color);	   //Блик снизу	
-	AsConfig::Rect(hdc, x + 4, y + 3, 2, 2, AsConfig::Blue_Color);//Заплатка в правом нижнем углу	
-	AsConfig::Rect(hdc, x + 4, y + 3, 1, 1, AsConfig::BG_Color); //Фоновая перфорация
-	AsConfig::Rect(hdc, x + 2, y, 2, 1, AsConfig::Blue_Color);  //Перемычка перед чашей
+	AsTools::Rect(hdc, x, y + 4, 4, 1, AsConfig::White_Color);	   //Блик снизу	
+	AsTools::Rect(hdc, x + 4, y + 3, 2, 2, AsConfig::Blue_Color);//Заплатка в правом нижнем углу	
+	AsTools::Rect(hdc, x + 4, y + 3, 1, 1, AsConfig::BG_Color); //Фоновая перфорация
+	AsTools::Rect(hdc, x + 2, y, 2, 1, AsConfig::Blue_Color);  //Перемычка перед чашей
 
 	Draw_Edges(hdc);
 
@@ -330,13 +330,13 @@ void AGate::Draw_One_Edge(HDC hdc, int edge_y_offset, bool long_edge)
 {
 	if (long_edge)
 	{//Длинное ребро
-		AsConfig::Rect(hdc, 0, edge_y_offset, 4, 1, AsConfig::White_Color);
-		AsConfig::Rect(hdc, 4, edge_y_offset, 2, 1, AsConfig::Blue_Color);
+		AsTools::Rect(hdc, 0, edge_y_offset, 4, 1, AsConfig::White_Color);
+		AsTools::Rect(hdc, 4, edge_y_offset, 2, 1, AsConfig::Blue_Color);
 	}
 	else
 	{//Короткое ребро
-		AsConfig::Rect(hdc, 1, edge_y_offset, 2, 1, AsConfig::Blue_Color);
-		AsConfig::Rect(hdc, 4, edge_y_offset, 1, 1, AsConfig::Blue_Color);
+		AsTools::Rect(hdc, 1, edge_y_offset, 2, 1, AsConfig::Blue_Color);
+		AsTools::Rect(hdc, 4, edge_y_offset, 1, 1, AsConfig::Blue_Color);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -344,14 +344,14 @@ void AGate::Draw_Red_Edge(HDC hdc, int edge_y_offset, bool long_edge, bool has_h
 {
 	if (long_edge)
 	{//Длинное ребро
-		AsConfig::Rect(hdc, 0, edge_y_offset, 6, 1, AsConfig::Red_Color);
+		AsTools::Rect(hdc, 0, edge_y_offset, 6, 1, AsConfig::Red_Color);
 
 		if (has_heghlight)
-			AsConfig::Rect(hdc, 1, edge_y_offset, 1, 1, AsConfig::White_Color);
+			AsTools::Rect(hdc, 1, edge_y_offset, 1, 1, AsConfig::White_Color);
 	}
 	else
 	{//Короткое ребро
-		AsConfig::Rect(hdc, 1, edge_y_offset, 4, 1, AsConfig::Red_Color);
+		AsTools::Rect(hdc, 1, edge_y_offset, 4, 1, AsConfig::Red_Color);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -368,10 +368,10 @@ void AGate::Draw_Charge(HDC hdc)
 
 	for (int i = 0; i < 4; i++)
 	{
-		dot_x = 1 + AsConfig::Rand(4);
-		dot_y = AsConfig::Rand((int)Gap_Height - 1);
+		dot_x = 1 + AsTools::Rand(4);
+		dot_y = AsTools::Rand((int)Gap_Height - 1);
 
-		AsConfig::Rect(hdc, X_Pos + dot_x, field_y + dot_y, 1, 1, AsConfig::White_Color);
+		AsTools::Rect(hdc, X_Pos + dot_x, field_y + dot_y, 1, 1, AsConfig::White_Color);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -380,7 +380,7 @@ void AGate::Redraw_Gate()
 	--Gate_Rect.top;
 	++Gate_Rect.bottom;
 
-	AsConfig::Invalidate_Rect(Gate_Rect);
+	AsTools::Invalidate_Rect(Gate_Rect);
 
 	++Gate_Rect.top;
 	--Gate_Rect.bottom;

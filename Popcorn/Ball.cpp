@@ -413,14 +413,14 @@ void ABall::Redraw_Ball()
 	Ball_Rect.right = (int)((Center_X_Pos + Radius) * AsConfig::D_Global_Scale);
 	Ball_Rect.bottom = (int)((Center_Y_Pos + Radius) * AsConfig::D_Global_Scale);
 
-	AsConfig::Invalidate_Rect(Prev_Ball_Rect);
-	AsConfig::Invalidate_Rect(Ball_Rect);
+	AsTools::Invalidate_Rect(Prev_Ball_Rect);
+	AsTools::Invalidate_Rect(Ball_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Redraw_Parachute()
 {
-	AsConfig::Invalidate_Rect(Prev_Parachute_Rect);
-	AsConfig::Invalidate_Rect(Parachute_Rect);
+	AsTools::Invalidate_Rect(Prev_Parachute_Rect);
+	AsTools::Invalidate_Rect(Parachute_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
@@ -496,6 +496,6 @@ void ABall::Clear_Parachute(HDC hdc)
 {
 	// Стрием парашут
 	AsConfig::BG_Color.Select(hdc);
-   AsConfig::Round_Rect(hdc, Prev_Parachute_Rect);
+   AsTools::Round_Rect(hdc, Prev_Parachute_Rect);
 }
 //------------------------------------------------------------------------------------------------------------

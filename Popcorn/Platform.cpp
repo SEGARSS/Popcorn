@@ -351,8 +351,8 @@ void AsPlatform::Redraw_Platform()
 		Prev_Platform_Rect.bottom = (AsConfig::Max_Y_Pos + 1) * AsConfig::Global_Scale;
 
 
-	AsConfig::Invalidate_Rect(Prev_Platform_Rect);
-	AsConfig::Invalidate_Rect(Platform_Rect);
+	AsTools::Invalidate_Rect(Prev_Platform_Rect);
+	AsTools::Invalidate_Rect(Platform_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform::Move(bool to_left, bool key_down)
@@ -533,7 +533,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area)
 	inner_rect.right = (int)( (x + 4 + Inner_Width - 1) * d_scale);
 	inner_rect.bottom = (y + 1 + 5) * scale;
 
-	AsConfig::Round_Rect(hdc, inner_rect, 3);
+	AsTools::Round_Rect(hdc, inner_rect, 3);
 
 	if (Normal_Platform_Image == 0 && Has_State(EPlatform_Substate_Regular::Ready) )
 		Get_Normal_Platform_Image(hdc);
@@ -559,7 +559,7 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area)
 
 		++moved_columns_count;
 
-		y_offset = AsConfig::Rand(Meltdown_Speed) + 1;
+		y_offset = AsTools::Rand(Meltdown_Speed) + 1;
 		x = Platform_Rect.left + i;
 
 		j = 0;

@@ -71,7 +71,7 @@ void AActive_Brick_Red_Blue::Act()
 	if (Fade_Step < Max_Fade_Step - 1)
 	{
 		++Fade_Step;
-		AsConfig::Invalidate_Rect(Brick_Rect);
+		AsTools::Invalidate_Rect(Brick_Rect);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ void AActive_Brick_Red_Blue::Draw(HDC hdc, RECT &paint_area)
    if (color != 0)
       color->Select(hdc);
 
-   AsConfig::Round_Rect(hdc, Brick_Rect);
+   AsTools::Round_Rect(hdc, Brick_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AActive_Brick_Red_Blue::Is_Finished()
@@ -144,7 +144,7 @@ void AActive_Brick_Red_Blue::Draw_In_Level(HDC hdc, RECT &brick_rect, EBrick_Typ
    if(color != 0)
       color->Select(hdc);
 
-   AsConfig::Round_Rect(hdc, brick_rect);
+   AsTools::Round_Rect(hdc, brick_rect);
 }
 //------------------------------------------------------------------------------------------------------------
 unsigned char AActive_Brick_Red_Blue::Get_Fading_Channel(unsigned char color, unsigned char bg_color, int step)
@@ -185,7 +185,7 @@ void AActive_Brick_Unbreakable::Act()
 	if (Animation_Step <= Max_Animation_Step)
 	{
 		++Animation_Step;
-		AsConfig::Invalidate_Rect(Brick_Rect);
+		AsTools::Invalidate_Rect(Brick_Rect);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ void AActive_Brick_Unbreakable::Draw_In_Level(HDC hdc, RECT &brick_rect)
 {// Вывод неактивного кирпича на уровне
 
    AsConfig::White_Color.Select(hdc);
-   AsConfig::Round_Rect(hdc, brick_rect);
+   AsTools::Round_Rect(hdc, brick_rect);
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -246,7 +246,7 @@ void AActive_Brick_Multihit::Act()
 	if (Rotation_Step <= Max_Rotation_Step)
 	{
 		++Rotation_Step;
-		AsConfig::Invalidate_Rect(Brick_Rect);
+		AsTools::Invalidate_Rect(Brick_Rect);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -260,7 +260,7 @@ void AActive_Brick_Multihit::Draw(HDC hdc, RECT &paint_area)
 
    // 1. Очищаем фон
    AsConfig::BG_Color.Select(hdc);
-   AsConfig::Round_Rect(hdc, Brick_Rect);
+   AsTools::Round_Rect(hdc, Brick_Rect);
 
    // 2. Настраиваем матрицу поворота буквы
    step = Rotation_Step % Steps_Per_Turn;
@@ -286,11 +286,11 @@ void AActive_Brick_Multihit::Draw(HDC hdc, RECT &paint_area)
    zero_rect.top = 0 + 1 * scale;
    zero_rect.right = zero_rect.left + 3 * scale + 1;
    zero_rect.bottom = zero_rect.top + 5 * scale ;
-   AsConfig::Round_Rect(hdc, zero_rect);
+   AsTools::Round_Rect(hdc, zero_rect);
 
    zero_rect.left += 5 * scale;
    zero_rect.right += 5 * scale;
-   AsConfig::Round_Rect(hdc, zero_rect);
+   AsTools::Round_Rect(hdc, zero_rect);
 
    SetWorldTransform(hdc, &old_xform);
 }
@@ -310,7 +310,7 @@ void AActive_Brick_Multihit::Draw_In_Level(HDC hdc, RECT &brick_rect, EBrick_Typ
 
    // 1. Рисуем фон
    AsConfig::White_Color.Select(hdc);
-   AsConfig::Round_Rect(hdc, brick_rect);
+   AsTools::Round_Rect(hdc, brick_rect);
 
    AsConfig::Red_Color.Select(hdc);
    Rectangle(hdc, brick_rect.left + 1 * scale, brick_rect.top + 1 * scale, brick_rect.right - 1 * scale - 1, brick_rect.bottom - 1 * scale - 1);
@@ -360,8 +360,7 @@ void AActive_Brick_Multihit::Draw_Stage(HDC hdc, RECT &brick_rect, int x, int wi
    AsConfig::BG_Color.Select(hdc);
    Rectangle(hdc, stage_rect.left + scale, stage_rect.top + scale, stage_rect.right + scale - 1, stage_rect.bottom + scale - 1);
 
-   AsConfig::Blue_Color.Select(hdc);
-   Rectangle(hdc, stage_rect.left, stage_rect.top, stage_rect.right - 1, stage_rect.bottom - 1);
+   AsTools::Rect(hdc, stage_rect, AsConfig::Blue_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 
@@ -391,7 +390,7 @@ void AActive_Brick_Teleport::Act()
 	if (Animation_Step <= Max_Animation_Step)
 	{
 		++Animation_Step;
-		AsConfig::Invalidate_Rect(Brick_Rect);
+		AsTools::Invalidate_Rect(Brick_Rect);
 	}
    else
    {
@@ -446,7 +445,7 @@ void AActive_Brick_Teleport::Act()
             Ball->Set_Direction(direction);
 
             Ball = 0;
-            AsConfig::Invalidate_Rect(Brick_Rect);
+            AsTools::Invalidate_Rect(Brick_Rect);
          }
          break;
       }
@@ -494,7 +493,7 @@ void AActive_Brick_Teleport::Draw_In_Level(HDC hdc, RECT &brick_rect, int step)
 
    // Фон
    AsConfig::Red_Color.Select(hdc);
-   AsConfig::Round_Rect(hdc, brick_rect);
+   AsTools::Round_Rect(hdc, brick_rect);
 
    // Портал
    AsConfig::AsConfig::Teleport_Portal_Color.Select(hdc);
@@ -581,7 +580,7 @@ void AAdvertisement::Act()
             rect.right = rect.left + cell_widht;
             rect.bottom = rect.top + cell_height;
 
-            AsConfig::Invalidate_Rect(rect);
+            AsTools::Invalidate_Rect(rect);
          }
    //2. Смещаем шарик.
    Falling_Speed += Acceleration_Step;
@@ -636,7 +635,7 @@ void AAdvertisement::Draw(HDC hdc, RECT &paint_area)
    // 1.1. Тонкая синяя рамка со скруглёнными краями
    AsConfig::BG_Color.Select(hdc);
    AsConfig::Blue_Color.Select_Pen(hdc);
-   AsConfig::Round_Rect(hdc, Ad_Rect);
+   AsTools::Round_Rect(hdc, Ad_Rect);
 
    // 2. Стол
    // 2.1. Белая поверхность
@@ -760,7 +759,7 @@ AActive_Brick_Ad::AActive_Brick_Ad(int level_x, int level_y, AAdvertisement *adv
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Ad::Act()
 {
-	AsConfig::Invalidate_Rect(Brick_Rect);
+	AsTools::Invalidate_Rect(Brick_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 void AActive_Brick_Ad::Draw(HDC hdc, RECT &paint_area)

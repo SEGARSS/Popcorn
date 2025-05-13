@@ -34,7 +34,7 @@ AsBorder::AsBorder()
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Redraw_Floor()
 {
-	AsConfig::Invalidate_Rect(Floor_Rect);
+	AsTools::Invalidate_Rect(Floor_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Open_Gate(int gate_index, bool short_open)
@@ -120,9 +120,7 @@ void AsBorder::Clear(HDC hdc, RECT &paint_area)
 	if (! IntersectRect(&intersection_rect, &paint_area, &Floor_Rect) )
 		return;
 
-	AsConfig::BG_Color.Select(hdc);
-
-	Rectangle(hdc, Floor_Rect.left, Floor_Rect.top, Floor_Rect.right - 1, Floor_Rect.bottom - 1);
+	AsTools::Rect(hdc, Floor_Rect, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рамку
@@ -176,28 +174,22 @@ void AsBorder::Draw_Element(HDC hdc, RECT &paint_area, int x, int y, bool top_bo
 		return;
 
 	// Основная линия
-	AsConfig::Blue_Color.Select(hdc);
-
 	if (top_border)
-		Rectangle(hdc, x * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x, y + 1, 4, 3, AsConfig::Blue_Color);
 	else
-		Rectangle(hdc, (x + 1) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x + 1, y, 3, 4, AsConfig::Blue_Color);
 
 	// Белая кайма
-	AsConfig::White_Color.Select(hdc);
-
 	if (top_border)
-		Rectangle(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 1) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x, y, 4, 1, AsConfig::White_Color);
 	else
-		Rectangle(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 1) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x, y, 1, 4, AsConfig::White_Color);
 
 	// Перфорация
-	AsConfig::BG_Color.Select(hdc);
-
 	if (top_border)
-		Rectangle(hdc, (x + 2) * AsConfig::Global_Scale, (y + 2) * AsConfig::Global_Scale, (x + 3) * AsConfig::Global_Scale - 1, (y + 3) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x + 2, y + 2, 1, 1, AsConfig::BG_Color);
 	else
-		Rectangle(hdc, (x + 2) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 3) * AsConfig::Global_Scale - 1, (y + 2) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x + 2, y + 1, 1, 1, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Draw_Floor(HDC hdc, RECT &paint_area)

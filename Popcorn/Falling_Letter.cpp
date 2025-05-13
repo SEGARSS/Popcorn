@@ -42,8 +42,8 @@ void AFalling_Letter::Act()
       Next_Rotation_Tick += Tick_Per_Step;
    }
 
-   AsConfig::Invalidate_Rect(Prev_Letter_Cell);
-   AsConfig::Invalidate_Rect(Letter_Cell);
+   AsTools::Invalidate_Rect(Prev_Letter_Cell);
+   AsTools::Invalidate_Rect(Letter_Cell);
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Clear(HDC hdc, RECT &paint_area)
@@ -95,8 +95,8 @@ void AFalling_Letter::Get_Letter_Cell(RECT &rect)
 void AFalling_Letter::Finalize()
 {
    Falling_Letter_State = EFalling_Letter_State::Finalizing;
-   AsConfig::Invalidate_Rect(Prev_Letter_Cell);
-   AsConfig::Invalidate_Rect(Letter_Cell);
+   AsTools::Invalidate_Rect(Prev_Letter_Cell);
+   AsTools::Invalidate_Rect(Letter_Cell);
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Test_Draw_All_Steps(HDC hdc)
@@ -125,7 +125,7 @@ void AFalling_Letter::Init()
 ELetter_Type AFalling_Letter::Get_Random_Letter_Type()
 {
    int letters_popularity;
-   letters_popularity = AsConfig::Rand(All_Letters_Popularity);
+   letters_popularity = AsTools::Rand(All_Letters_Popularity);
 
    for (int i = 0; i < (int)ELetter_Type::MAX; i++)
    {
