@@ -67,9 +67,6 @@
     <Filter Include="#Tools">
       <UniqueIdentifier>{386cf600-4804-47db-88a2-2fc9365704f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="#Tools\Tools">
-      <UniqueIdentifier>{2d00b812-dfbf-4b16-942c-2381e7f8d22e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="#Tools\Config">
       <UniqueIdentifier>{cd1ae703-775a-431d-bb4d-8135cc9cf033}</UniqueIdentifier>
     </Filter>
@@ -81,6 +78,9 @@
     </Filter>
     <Filter Include="#Border\Gate">
       <UniqueIdentifier>{b0be0669-fee7-40ba-9596-2aa78e231d09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Tools\Common">
+      <UniqueIdentifier>{2d00b812-dfbf-4b16-942c-2381e7f8d22e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +127,7 @@
       <Filter>#Laser_Beam\Laser_Beam</Filter>
     </ClInclude>
     <ClInclude Include="Common.h">
-      <Filter>#Tools\Tools</Filter>
+      <Filter>#Tools\Common</Filter>
     </ClInclude>
     <ClInclude Include="Laser_Beam_Set.h">
       <Filter>#Laser_Beam\Laser_Beam_Set</Filter>
@@ -196,7 +196,7 @@
       <Filter>#Laser_Beam\Laser_Beam</Filter>
     </ClCompile>
     <ClCompile Include="Common.cpp">
-      <Filter>#Tools\Tools</Filter>
+      <Filter>#Tools\Common</Filter>
     </ClCompile>
     <ClCompile Include="Laser_Beam_Set.cpp">
       <Filter>#Laser_Beam\Laser_Beam_Set</Filter>
