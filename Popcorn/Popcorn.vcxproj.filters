@@ -19,9 +19,6 @@
     <Filter Include="Engin">
       <UniqueIdentifier>{de68f40e-c801-40be-bf45-89552e0f7d0f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Border">
-      <UniqueIdentifier>{823c2be4-d1de-4c72-b09c-bb685f94f4f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Level">
       <UniqueIdentifier>{73d237f1-35d2-4d7b-9e22-691328da6720}</UniqueIdentifier>
     </Filter>
@@ -76,6 +73,15 @@
     <Filter Include="#Tools\Config">
       <UniqueIdentifier>{cd1ae703-775a-431d-bb4d-8135cc9cf033}</UniqueIdentifier>
     </Filter>
+    <Filter Include="#Border">
+      <UniqueIdentifier>{8c750ed2-cd63-4a9d-a057-ec959a2efac3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Border\Border">
+      <UniqueIdentifier>{823c2be4-d1de-4c72-b09c-bb685f94f4f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="#Border\Gate">
+      <UniqueIdentifier>{b0be0669-fee7-40ba-9596-2aa78e231d09}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -94,7 +100,7 @@
       <Filter>Engin</Filter>
     </ClInclude>
     <ClInclude Include="Border.h">
-      <Filter>Border</Filter>
+      <Filter>#Border\Border</Filter>
     </ClInclude>
     <ClInclude Include="Level.h">
       <Filter>Level</Filter>
@@ -138,6 +144,9 @@
     <ClInclude Include="Platform_Laser.h">
       <Filter>#Platform\Platform_Laser</Filter>
     </ClInclude>
+    <ClInclude Include="Gate.h">
+      <Filter>#Border\Gate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Popcorn.rc">
@@ -160,7 +169,7 @@
       <Filter>Engin</Filter>
     </ClCompile>
     <ClCompile Include="Border.cpp">
-      <Filter>Border</Filter>
+      <Filter>#Border\Border</Filter>
     </ClCompile>
     <ClCompile Include="Level.cpp">
       <Filter>Level</Filter>
@@ -203,6 +212,9 @@
     </ClCompile>
     <ClCompile Include="Platform_Laser.cpp">
       <Filter>#Platform\Platform_Laser</Filter>
+    </ClCompile>
+    <ClCompile Include="Gate.cpp">
+      <Filter>#Border\Gate</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
