@@ -126,7 +126,7 @@
     <ClInclude Include="Laser_Beam.h">
       <Filter>#Laser_Beam\Laser_Beam</Filter>
     </ClInclude>
-    <ClInclude Include="Tools.h">
+    <ClInclude Include="Common.h">
       <Filter>#Tools\Tools</Filter>
     </ClInclude>
     <ClInclude Include="Laser_Beam_Set.h">
@@ -195,7 +195,7 @@
     <ClCompile Include="Laser_Beam.cpp">
       <Filter>#Laser_Beam\Laser_Beam</Filter>
     </ClCompile>
-    <ClCompile Include="Tools.cpp">
+    <ClCompile Include="Common.cpp">
       <Filter>#Tools\Tools</Filter>
     </ClCompile>
     <ClCompile Include="Laser_Beam_Set.cpp">
