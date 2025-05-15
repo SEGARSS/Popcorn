@@ -67,6 +67,7 @@ public:
 	static void Round_Rect(HDC hdc, RECT& rect, int corner_radius = 2);
 	static void Rect(HDC hdc, RECT& rect, const AColor& color);
 	static void Rect(HDC hdc, int x, int y, int width, int height, const AColor& color);
+	static void Ellipse(HDC hdc, RECT& rect, const AColor &color);
 	static void Invalidate_Rect(RECT& rect);
 };
 //------------------------------------------------------------------------------------------------------------

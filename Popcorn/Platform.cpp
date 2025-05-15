@@ -185,8 +185,7 @@ void AsPlatform::Clear(HDC hdc, RECT &paint_area)
 	case EPlatform_State::Expanding:
 	case EPlatform_State::Laser:
 		// Очищаем фоном прежнее место
-		AsConfig::BG_Color.Select(hdc);
-		Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
+		AsTools::Rect(hdc, Prev_Platform_Rect, AsConfig::BG_Color);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -506,21 +505,17 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area)
 	RECT inner_rect, rect;
 
 	// 1. Рисуем боковые шарики
-	Platform_Circle_Color.Select(hdc);
-
 	rect.left = (int)(x * d_scale);
 	rect.top = y * scale;
 	rect.right = (int)( (x + (double)AsConfig::Platform_Circle_Size) * d_scale);
 	rect.bottom = (y + AsConfig::Platform_Circle_Size) * scale;
 
-	Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+	AsTools::Ellipse(hdc, rect, Platform_Circle_Color);
 
-	rect.left = (int)( (x + Inner_Width) * d_scale);
-	rect.top = y * scale;
+	rect.left = (int)( (x + Inner_Width) * d_scale);rect.top = y * scale;
 	rect.right = (int)( (x + (double)AsConfig::Platform_Circle_Size + Inner_Width) * d_scale);
-	rect.bottom = (y + AsConfig::Platform_Circle_Size) * scale;
 
-	Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+	AsTools::Ellipse(hdc, rect, Platform_Circle_Color);
 
 	// 2. Рисуем блик
 	Platform_Expanding.Draw_Circle_Highlight(hdc, (int)(x * d_scale), y * scale);

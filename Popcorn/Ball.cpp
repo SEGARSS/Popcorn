@@ -106,10 +106,7 @@ void ABall::Clear(HDC hdc, RECT &paint_area)
 
 	// Очищаем фон
 	if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect) )
-	{
-		AsConfig::BG_Color.Select(hdc);
-		Ellipse(hdc, Prev_Ball_Rect.left, Prev_Ball_Rect.top, Prev_Ball_Rect.right - 1, Prev_Ball_Rect.bottom - 1);
-	}
+		AsTools::Ellipse(hdc, Prev_Ball_Rect, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Draw(HDC hdc, RECT &paint_area)
@@ -144,10 +141,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
 
 	// Рисуем шарик
 	if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect) )
-	{
-		AsConfig::White_Color.Select(hdc);
-		Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
-	}
+		AsTools::Ellipse(hdc, Ball_Rect, AsConfig::White_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 bool ABall::Is_Finished()
@@ -454,7 +448,7 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 	sub_arc.right = sub_arc.left + 3 * scale;
 	sub_arc.bottom = sub_arc.top + 4 * scale;
 
-	Ellipse(hdc, sub_arc.left, sub_arc.top, sub_arc.right - 1, sub_arc.bottom - 1);
+	AsTools::Ellipse(hdc, sub_arc, AsConfig::BG_Color);
 
 	// 2.2 Средняя
 	other_arc = sub_arc;
@@ -462,7 +456,7 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 	other_arc.left = arc_x + 3 * scale + 1;
 	other_arc.right = arc_x + 11 * scale;
 
-	Ellipse(hdc, other_arc.left, other_arc.top, other_arc.right - 1, other_arc.bottom - 1);
+	AsTools::Ellipse(hdc, other_arc, AsConfig::BG_Color);
 
 	// 2.3 Правая
 	other_arc = sub_arc;
@@ -470,7 +464,7 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 	other_arc.left = arc_x + 11 * scale + 1;
 	other_arc.right = arc_x + 14 * scale + 1;
 
-	Ellipse(hdc, other_arc.left, other_arc.top, other_arc.right - 1, other_arc.bottom - 1);
+	AsTools::Ellipse(hdc, other_arc, AsConfig::BG_Color);
 
 	// 3. Стропы
 	line_y = Parachute_Rect.top + dome_height;
@@ -496,6 +490,6 @@ void ABall::Clear_Parachute(HDC hdc)
 {
 	// Стрием парашут
 	AsConfig::BG_Color.Select(hdc);
-   AsTools::Round_Rect(hdc, Prev_Parachute_Rect);
+	AsTools::Round_Rect(hdc, Prev_Parachute_Rect);
 }
 //------------------------------------------------------------------------------------------------------------

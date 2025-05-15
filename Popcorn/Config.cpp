@@ -57,12 +57,19 @@ void AsTools::Rect(HDC hdc, RECT& rect, const AColor &color)
 	Rectangle(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
 }
 //------------------------------------------------------------------------------------------------------------
+
 void AsTools::Rect(HDC hdc, int x, int y, int width, int height, const AColor& color)
 {
 	const int scale = AsConfig::Global_Scale;
 
 	color.Select(hdc);
 	Rectangle(hdc, x * scale, y * scale, (x + width) * scale - 1, (y + height) * scale - 1);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsTools::Ellipse(HDC hdc, RECT& rect, const AColor &color)
+{
+	color.Select(hdc);
+	::Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsTools::Invalidate_Rect(RECT &rect)
