@@ -48,13 +48,13 @@ void AFalling_Letter::Act()
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Clear(HDC hdc, RECT &paint_area)
 {
-   RECT intersectRect;
+	RECT intersection_rect;
 
-   //1. Стираем предыдущее изображение.
-   if (! IntersectRect(&intersectRect, &paint_area, &Prev_Letter_Cell) )
-      return;
+	// Стираем предыдущее изображение
+	if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Letter_Cell))
+		return;
 
-   AsTools::Rect(hdc, Prev_Letter_Cell, AsConfig::BG_Color);
+	AsTools::Rect(hdc, Prev_Letter_Cell, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void AFalling_Letter::Draw(HDC hdc, RECT &paint_area)

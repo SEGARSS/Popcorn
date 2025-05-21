@@ -101,11 +101,11 @@ void ABall::Clear(HDC hdc, RECT &paint_area)
 	if (Ball_State == EBall_State::Disabled)
 		return;
 
-	if ( (Ball_State == EBall_State::Teleporting || Ball_State == EBall_State::Lost) && Ball_State == Prev_Ball_State)
+	if ((Ball_State == EBall_State::Teleporting || Ball_State == EBall_State::Lost) && Ball_State == Prev_Ball_State)
 		return;
 
-	// Очищаем фон
-	if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect) )
+	// 1. Очищаем фон
+	if (IntersectRect(&intersection_rect, &paint_area, &Prev_Ball_Rect))
 		AsTools::Ellipse(hdc, Prev_Ball_Rect, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
 	if (Ball_State == EBall_State::Disabled)
 		return;
 
-	if ( (Ball_State == EBall_State::Teleporting || Ball_State == EBall_State::Lost) && Ball_State == Prev_Ball_State)
+	if ((Ball_State == EBall_State::Teleporting || Ball_State == EBall_State::Lost) && Ball_State == Prev_Ball_State)
 		return;
 
 	switch (Ball_State)
@@ -131,7 +131,7 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
 		break;
 
 	case EBall_State::Lost:
-		if(Prev_Ball_State == EBall_State::On_Parachute)
+		if (Prev_Ball_State == EBall_State::On_Parachute)
 			Clear_Parachute(hdc);
 		return;
 
@@ -139,8 +139,8 @@ void ABall::Draw(HDC hdc, RECT &paint_area)
 		return;
 	}
 
-	// Рисуем шарик
-	if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect) )
+	// 2. Рисуем шарик
+	if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect))
 		AsTools::Ellipse(hdc, Ball_Rect, AsConfig::White_Color);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -417,32 +417,31 @@ void ABall::Redraw_Parachute()
 	AsTools::Invalidate_Rect(Parachute_Rect);
 }
 //------------------------------------------------------------------------------------------------------------
-void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
+void ABall::Draw_Parachute(HDC hdc, RECT &paint_area)
 {
 	const int scale = AsConfig::Global_Scale;
-   int dome_height = (Parachute_Rect.bottom - Parachute_Rect.top) / 2;
+	int dome_height = (Parachute_Rect.bottom - Parachute_Rect.top) / 2;
 	int arc_height = 4 * scale;
-	int arc_x; 
+	int arc_x;
 	int line_y;
 	int ball_center_x, ball_center_y;
-   RECT intersection_rect, sub_arc, other_arc;
+	RECT intersection_rect, sub_arc, other_arc;
 
-   if (! IntersectRect(&intersection_rect, &pain_area, &Parachute_Rect))
-      return;
+	if (!IntersectRect(&intersection_rect, &paint_area, &Parachute_Rect))
+		return;
 
-	// 0. Очищаем фон
 	Clear_Parachute(hdc);
 
-   // 1. Купол
-   AsConfig::Blue_Color.Select(hdc);
-   Chord(hdc, Parachute_Rect.left, Parachute_Rect.top, Parachute_Rect.right - 1, Parachute_Rect.bottom - 1, 
-            Parachute_Rect.right, Parachute_Rect.top + dome_height - 1, Parachute_Rect.left, Parachute_Rect.top + dome_height - 1);
+	// 1. Купол
+	AsConfig::Blue_Color.Select(hdc);
+	Chord(hdc, Parachute_Rect.left, Parachute_Rect.top, Parachute_Rect.right - 1, Parachute_Rect.bottom - 1,
+		Parachute_Rect.right, Parachute_Rect.top + dome_height - 1, Parachute_Rect.left, Parachute_Rect.top + dome_height - 1);
 
 	// 2. Арки
 	AsConfig::BG_Color.Select(hdc);
 	arc_x = Parachute_Rect.left + 1;
 
-	// 2.1 Левая
+	// 2.1. Левая
 	sub_arc.left = arc_x;
 	sub_arc.top = Parachute_Rect.top + dome_height - arc_height / 2;
 	sub_arc.right = sub_arc.left + 3 * scale;
@@ -450,7 +449,7 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 
 	AsTools::Ellipse(hdc, sub_arc, AsConfig::BG_Color);
 
-	// 2.2 Средняя
+	// 2.2. Средняя
 	other_arc = sub_arc;
 
 	other_arc.left = arc_x + 3 * scale + 1;
@@ -458,7 +457,7 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 
 	AsTools::Ellipse(hdc, other_arc, AsConfig::BG_Color);
 
-	// 2.3 Правая
+	// 2.3. Правая
 	other_arc = sub_arc;
 
 	other_arc.left = arc_x + 11 * scale + 1;
@@ -470,7 +469,7 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 	line_y = Parachute_Rect.top + dome_height;
 	ball_center_x = (Parachute_Rect.left + Parachute_Rect.right) / 2;
 	ball_center_y = Parachute_Rect.bottom - 2 * scale;
-	
+
 	AsConfig::White_Color.Select(hdc);
 
 	MoveToEx(hdc, Parachute_Rect.left, line_y, 0);
@@ -487,8 +486,8 @@ void ABall::Draw_Parachute(HDC hdc, RECT &pain_area)
 }
 //------------------------------------------------------------------------------------------------------------
 void ABall::Clear_Parachute(HDC hdc)
-{
-	// Стрием парашут
+{// Очищаем фон
+
 	AsConfig::BG_Color.Select(hdc);
 	AsTools::Round_Rect(hdc, Prev_Parachute_Rect);
 }

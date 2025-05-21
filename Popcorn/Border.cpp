@@ -114,10 +114,10 @@ void AsBorder::Clear(HDC hdc, RECT &paint_area)
 		Gates[i]->Draw(hdc, paint_area);
 
 	// 2. Стираем пол (если надо)
-	if (! AsConfig::Level_Has_Floor)
+	if (!AsConfig::Level_Has_Floor)
 		return;
 
-	if (! IntersectRect(&intersection_rect, &paint_area, &Floor_Rect) )
+	if (!IntersectRect(&intersection_rect, &paint_area, &Floor_Rect))
 		return;
 
 	AsTools::Rect(hdc, Floor_Rect, AsConfig::BG_Color);

@@ -52,7 +52,7 @@ void AGate::Act()
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void AGate::Clear(HDC hdc, RECT& paint_area)
+void AGate::Clear(HDC hdc, RECT &paint_area)
 {
 	RECT intersection_rect;
 
@@ -76,7 +76,7 @@ void AGate::Draw(HDC hdc, RECT &paint_area)
 
 	if (Gate_State == EGate_State::Long_Open
 		&& (Gate_Transformation == EGate_Transformation::Init || Gate_Transformation == EGate_Transformation::Finalize))
-		Draw_Charge(hdc); // рисуем разряд между чашами
+		Draw_Charge(hdc);  // Рисуем "разряд" между чашами
 }
 //------------------------------------------------------------------------------------------------------------
 bool AGate::Is_Finished()

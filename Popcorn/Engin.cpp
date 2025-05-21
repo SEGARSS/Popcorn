@@ -58,18 +58,17 @@ void AsEngine::Init_Engine(HWND hwnd)//Настройка игры при ста
 }
 //------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area)
-{//отрисовка экрана игры
+{// Отрисовка экрана игры
 
-   SetGraphicsMode(hdc, GM_ADVANCED);
-
-   for (int i = 0; i < AsConfig::Max_Modules_Count; i++)
-      if (Modules[i] != 0)
-	      Modules[i]->Clear(hdc, paint_area);
+	SetGraphicsMode(hdc, GM_ADVANCED);
 
 	for (int i = 0; i < AsConfig::Max_Modules_Count; i++)
-      if (Modules[i] != 0)
-	      Modules[i]->Draw(hdc, paint_area);
-	
+		if (Modules[i] != 0)
+			Modules[i]->Clear(hdc, paint_area);
+
+	for (int i = 0; i < AsConfig::Max_Modules_Count; i++)
+		if (Modules[i] != 0)
+			Modules[i]->Draw(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
 int AsEngine::On_Key(EKey_Type key_type, bool key_down)

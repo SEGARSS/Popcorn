@@ -168,7 +168,7 @@ void AsPlatform::Clear(HDC hdc, RECT &paint_area)
 {
 	RECT intersection_rect;
 
-	if (! IntersectRect(&intersection_rect, &paint_area, &Prev_Platform_Rect) )
+	if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Platform_Rect))
 		return;
 
 	switch (Platform_State)

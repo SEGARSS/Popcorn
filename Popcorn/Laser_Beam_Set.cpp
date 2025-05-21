@@ -48,19 +48,15 @@ void AsLaser_Beam_Set::Act()
 	// Заглушка. Не используется, т.к. лучи сами ничего не делают (не анимируется)
 }
 //------------------------------------------------------------------------------------------------------------
-void AsLaser_Beam_Set::Clear(HDC hdc, RECT& paint_area)
+void AsLaser_Beam_Set::Clear(HDC hdc, RECT &paint_area)
 {
-	int i;
-
-	for (i = 0; i < AsConfig::Max_Balls_Count; i++)
+	for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
 		Laser_Beams[i].Clear(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsLaser_Beam_Set::Draw(HDC hdc, RECT& paint_area)
 {
-	int i;
-
-	for (i = 0; i < AsConfig::Max_Balls_Count; i++)
+	for (int i = 0; i < AsConfig::Max_Balls_Count; i++)
 		Laser_Beams[i].Draw(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -71,10 +67,9 @@ bool AsLaser_Beam_Set::Is_Finished()
 //------------------------------------------------------------------------------------------------------------
 void AsLaser_Beam_Set::Fire(double left_gun_x_pos, double right_gun_x_pos)
 {
-	int i;
 	ALaser_Beam* left_beam = 0, * right_beam = 0;
 
-	for (i = 0; i < Max_Laser_Beam_Count; i++)
+	for (int i = 0; i < Max_Laser_Beam_Count; i++)
 	{
 		if (Laser_Beams[i].Is_Active())
 			continue;

@@ -27,8 +27,8 @@ public:
 	virtual double Get_Speed();
 
 	virtual void Act();
-	virtual void Clear(HDC hdc, RECT& paint_area);
-	virtual void Draw(HDC hdc, RECT& paint_area);
+	virtual void Clear(HDC hdc, RECT &paint_area);
+	virtual void Draw(HDC hdc, RECT &paint_area);
 	virtual bool Is_Finished();
 
 	void Set_At(double x_pos, double y_pos);

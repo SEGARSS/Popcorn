@@ -121,7 +121,7 @@ void AsPlatform_Expanding::Reset()
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool is_left)
-{// –исуем боковой шарик дл€ расшир€ющейс€ платформы
+{// –исуем боковой шарик расшир€ющейс€ платформы
 
 	int y = AsConfig::Platform_Y_Pos;
 	int arc_mid_x;
@@ -130,11 +130,11 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 	const double d_scale = AsConfig::D_Global_Scale;
 	RECT rect, arc_rect;
 
-	// 1.1 шарик
-	if (is_left)	
+	// 1.1. Ўарик
+	if (is_left)
 		rect.left = (int)(x * d_scale);
 	else
-		rect.left = (int)( (x + Expanding_Platform_Width - (double)AsConfig::Platform_Circle_Size) * d_scale);
+		rect.left = (int)((x + Expanding_Platform_Width - (double)AsConfig::Platform_Circle_Size) * d_scale);
 
 	rect.top = y * scale;
 	rect.right = rect.left + AsConfig::Platform_Circle_Size * scale;
@@ -143,7 +143,7 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 	AsTools::Ellipse(hdc, rect, *Circle_Color);
 
 	// 1.2. ѕереходник на ферму
-	if(is_left)
+	if (is_left)
 		Rectangle(hdc, rect.left + 4 * scale, rect.top, rect.right - scale + 1, rect.bottom - 1);
 	else
 		Rectangle(hdc, rect.left + 1, rect.top, rect.left + 3 * scale, rect.bottom - 1);
@@ -153,13 +153,13 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 
 	// 1.4. ƒуга фермы на шарике
 	arc_rect.left = rect.left + 4 * scale + 2;
-	arc_rect.top =  rect.top + scale + 1;
+	arc_rect.top = rect.top + scale + 1;
 	arc_rect.right = rect.left + (4 + 3) * scale + 2;
 	arc_rect.bottom = rect.bottom - scale - 1;
 
 	arc_mid_x = arc_rect.left + (arc_rect.right - arc_rect.left) / 2;
 
-	if(is_left)
+	if (is_left)
 	{
 		arc_start_y = arc_rect.top;
 		arc_end_y = arc_rect.bottom;
@@ -169,7 +169,7 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 		arc_start_y = arc_rect.bottom;
 		arc_end_y = arc_rect.top;
 
-		arc_right_offset = (AsConfig::Platform_Circle_Size - 2) * scale + 1; 
+		arc_right_offset = (AsConfig::Platform_Circle_Size - 2) * scale + 1;
 
 		arc_rect.left -= arc_right_offset;
 		arc_rect.right -= arc_right_offset;
@@ -177,9 +177,9 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 	}
 
 	// 1.4.1. ƒырка в шарике под дугой
-	AsTools::Ellipse(hdc, arc_rect, *Circle_Color);
+	AsTools::Ellipse(hdc, arc_rect, AsConfig::BG_Color);
 
-	//1.4.2. —ама дуга
+	// 1.4.2. —ама дуга
 	Truss_Color->Select(hdc);
 	Arc(hdc, arc_rect.left, arc_rect.top, arc_rect.right - 1, arc_rect.bottom - 1, arc_mid_x, arc_start_y, arc_mid_x, arc_end_y);
 }

@@ -48,7 +48,7 @@ void ALaser_Beam::Act()
 	// Заглушка, т.к. метод не используеться.
 }
 //------------------------------------------------------------------------------------------------------------
-void ALaser_Beam::Clear(HDC hdc, RECT& paint_area)
+void ALaser_Beam::Clear(HDC hdc, RECT &paint_area)
 {
 	RECT intersection_rect;
 
