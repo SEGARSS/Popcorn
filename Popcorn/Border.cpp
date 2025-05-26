@@ -1,18 +1,62 @@
 ﻿#include "Border.h"
 
+
 //AsBorder
 //------------------------------------------------------------------------------------------------------------
+AsBorder::~AsBorder()
+{
+	for (int i = 0; i < AsConfig::Gates_Count; i++)
+		delete Gates[i];
+}
+//------------------------------------------------------------------------------------------------------------
 AsBorder::AsBorder()
+: Floor_Rect{}, Gates{0}
 {
 	Floor_Rect.left = AsConfig::Level_X_Offset * AsConfig::Global_Scale;
 	Floor_Rect.top = AsConfig::Floor_Y_Pos * AsConfig::Global_Scale;
 	Floor_Rect.right = (AsConfig::Max_X_Pos - 1) * AsConfig::Global_Scale;
 	Floor_Rect.bottom = AsConfig::Max_Y_Pos * AsConfig::Global_Scale;
+
+	//Гейты
+	Gates[0] = new AGate(1, 29);
+	Gates[1] = new AGate(AsConfig::Max_X_Pos, 29);
+		 
+	Gates[2] = new AGate(1, 77);
+	Gates[3] = new AGate(AsConfig::Max_X_Pos, 77);
+		 
+	Gates[4] = new AGate(1, 129);
+	Gates[5] = new AGate(AsConfig::Max_X_Pos, 129);
+		 
+	Gates[6] = new AGate(1, 178);
+	Gates[7] = new AGate(AsConfig::Max_X_Pos, 178);
+
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Redraw_Floor()
 {
-	AsConfig::Invalidate_Rect(Floor_Rect);
+	AsTools::Invalidate_Rect(Floor_Rect);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsBorder::Open_Gate(int gate_index, bool short_open)
+{
+	if (gate_index != AsConfig::Gates_Count - 1 && short_open)
+		AsConfig::Throw();
+
+	if (gate_index >= 0 && gate_index < AsConfig::Gates_Count)
+		Gates[gate_index]->Open_Gate(short_open);
+	else
+		AsConfig::Throw();
+}
+//------------------------------------------------------------------------------------------------------------
+bool AsBorder::Is_Gate_Opened(int gate_index)
+{
+	if (gate_index >= 0 && gate_index < AsConfig::Gates_Count)
+		return Gates[gate_index]->Is_Opened();
+	else
+	{
+		AsConfig::Throw();
+		return false;
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
@@ -50,29 +94,33 @@ bool AsBorder::Check_Hit(double next_x_pos, double next_y_pos, ABall *ball)
 	
 	// Чтобы шарик смог улететь ниже пола, проверяем его max_y_pos ниже видимой границы
 	if (next_y_pos + ball->Radius > (double)AsConfig::Max_Y_Pos + ball->Radius * 4.0)
-		ball->Set_State(EBS_Lost);
+		ball->Set_State(EBall_State::Lost);
 
 	return got_hit;
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Act()
 {
-	// Заглушка, т.к. метод не используеться.
+	for (int i = 0; i < AsConfig::Gates_Count; i++)
+		Gates[i]->Act();
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Clear(HDC hdc, RECT &paint_area)
 {
 	RECT intersection_rect;
 
-	if (! AsConfig::Level_Has_Floor)
+	// 1. Стираем гейты
+	for (int i = 0; i < AsConfig::Gates_Count; i++)
+		Gates[i]->Draw(hdc, paint_area);
+
+	// 2. Стираем пол (если надо)
+	if (!AsConfig::Level_Has_Floor)
 		return;
 
-	if (! IntersectRect(&intersection_rect, &paint_area, &Floor_Rect) )
+	if (!IntersectRect(&intersection_rect, &paint_area, &Floor_Rect))
 		return;
 
-	AsConfig::BG_Color.Select(hdc);
-
-	Rectangle(hdc, Floor_Rect.left, Floor_Rect.top, Floor_Rect.right - 1, Floor_Rect.bottom - 1);
+	AsTools::Rect(hdc, Floor_Rect, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рамку
@@ -92,6 +140,10 @@ void AsBorder::Draw(HDC hdc, RECT &paint_area)//Рисуем полную рам
 	//4.По (если есть)
 	if (AsConfig::Level_Has_Floor)
 		Draw_Floor(hdc, paint_area);
+
+	//5.Гейты
+	for (int i = 0; i < AsConfig::Gates_Count; i++)
+		Gates[i]-> Draw(hdc, paint_area);
 }
 //------------------------------------------------------------------------------------------------------------
 bool AsBorder::Is_Finished()
@@ -101,6 +153,7 @@ bool AsBorder::Is_Finished()
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Draw_Element(HDC hdc, RECT &paint_area, int x, int y, bool top_border)// Рисует элемент рамки уровня
 {
+	int gate_top_y, gate_low_y;
 	RECT intersection_rect, rect;
 
 	rect.left = x * AsConfig::Global_Scale;
@@ -108,32 +161,35 @@ void AsBorder::Draw_Element(HDC hdc, RECT &paint_area, int x, int y, bool top_bo
 	rect.right = (x + 4) * AsConfig::Global_Scale;
 	rect.bottom = (y + 4) * AsConfig::Global_Scale;
 
+	if (! top_border)
+	{
+		for (int i = 0; i < AsConfig::Gates_Count; i++)
+			Gates[i]->Get_Y_Size(gate_top_y, gate_low_y);
+
+		if (rect.top >= gate_top_y && rect.bottom <= gate_low_y)
+			return; // Гейт целиком перекроет элемент рамки
+	}
+
 	if (! IntersectRect(&intersection_rect, &paint_area, &rect) )
 		return;
 
 	// Основная линия
-	AsConfig::Blue_Color.Select(hdc);
-
 	if (top_border)
-		Rectangle(hdc, x * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x, y + 1, 4, 3, AsConfig::Blue_Color);
 	else
-		Rectangle(hdc, (x + 1) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x + 1, y, 3, 4, AsConfig::Blue_Color);
 
 	// Белая кайма
-	AsConfig::White_Color.Select(hdc);
-
 	if (top_border)
-		Rectangle(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 4) * AsConfig::Global_Scale - 1, (y + 1) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x, y, 4, 1, AsConfig::White_Color);
 	else
-		Rectangle(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + 1) * AsConfig::Global_Scale - 1, (y + 4) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x, y, 1, 4, AsConfig::White_Color);
 
 	// Перфорация
-	AsConfig::BG_Color.Select(hdc);
-
 	if (top_border)
-		Rectangle(hdc, (x + 2) * AsConfig::Global_Scale, (y + 2) * AsConfig::Global_Scale, (x + 3) * AsConfig::Global_Scale - 1, (y + 3) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x + 2, y + 2, 1, 1, AsConfig::BG_Color);
 	else
-		Rectangle(hdc, (x + 2) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 3) * AsConfig::Global_Scale - 1, (y + 2) * AsConfig::Global_Scale - 1);
+		AsTools::Rect(hdc, x + 2, y + 1, 1, 1, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsBorder::Draw_Floor(HDC hdc, RECT &paint_area)

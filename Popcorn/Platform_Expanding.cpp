@@ -81,9 +81,9 @@ void AsPlatform_Expanding::Draw_State(HDC hdc, double x)
 	const double d_scale = AsConfig::D_Global_Scale;
 	RECT inner_rect;
 
-	inner_rect.left = (int)( (x + (Expanding_Platform_Width - (double)AsConfig::Platform_Normal_Inner_Width) / 2.0) * d_scale);
+	inner_rect.left = (int)( (x + (Expanding_Platform_Width - (double)AsConfig::Platform_Expanding_Inner_Width) / 2.0) * d_scale);
 	inner_rect.top = (y + 1) * scale;
-	inner_rect.right = inner_rect.left + AsConfig::Platform_Normal_Inner_Width * scale;
+	inner_rect.right = inner_rect.left + AsConfig::Platform_Expanding_Inner_Width * scale;
 	inner_rect.bottom = (y + 1 + 5) * scale;
 
 	//1. Ћева€ сторона
@@ -101,9 +101,7 @@ void AsPlatform_Expanding::Draw_State(HDC hdc, double x)
 	Draw_Expanding_Truss(hdc, inner_rect, false);
 
 	// 3. –исуем среднюю часть
-	Inner_Color->Select(hdc);
-
-	Rectangle(hdc, inner_rect.left, inner_rect.top, inner_rect.right - 1, inner_rect.bottom - 1);
+	AsTools::Rect(hdc, inner_rect, *Inner_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform_Expanding::Draw_Circle_Highlight(HDC hdc, int x, int y)
@@ -123,7 +121,7 @@ void AsPlatform_Expanding::Reset()
 }
 //------------------------------------------------------------------------------------------------------------
 void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool is_left)
-{// –исуем боковой шарик дл€ расшир€ющейс€ платформы
+{// –исуем боковой шарик расшир€ющейс€ платформы
 
 	int y = AsConfig::Platform_Y_Pos;
 	int arc_mid_x;
@@ -132,21 +130,20 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 	const double d_scale = AsConfig::D_Global_Scale;
 	RECT rect, arc_rect;
 
-	// 1.1 шарик
-	if (is_left)	
+	// 1.1. Ўарик
+	if (is_left)
 		rect.left = (int)(x * d_scale);
 	else
-		rect.left = (int)( (x + Expanding_Platform_Width - (double)AsConfig::Platform_Circle_Size) * d_scale);
+		rect.left = (int)((x + Expanding_Platform_Width - (double)AsConfig::Platform_Circle_Size) * d_scale);
 
 	rect.top = y * scale;
 	rect.right = rect.left + AsConfig::Platform_Circle_Size * scale;
 	rect.bottom = (y + AsConfig::Platform_Circle_Size) * scale;
 
-	Circle_Color->Select(hdc);
-	Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+	AsTools::Ellipse(hdc, rect, *Circle_Color);
 
 	// 1.2. ѕереходник на ферму
-	if(is_left)
+	if (is_left)
 		Rectangle(hdc, rect.left + 4 * scale, rect.top, rect.right - scale + 1, rect.bottom - 1);
 	else
 		Rectangle(hdc, rect.left + 1, rect.top, rect.left + 3 * scale, rect.bottom - 1);
@@ -156,13 +153,13 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 
 	// 1.4. ƒуга фермы на шарике
 	arc_rect.left = rect.left + 4 * scale + 2;
-	arc_rect.top =  rect.top + scale + 1;
+	arc_rect.top = rect.top + scale + 1;
 	arc_rect.right = rect.left + (4 + 3) * scale + 2;
 	arc_rect.bottom = rect.bottom - scale - 1;
 
 	arc_mid_x = arc_rect.left + (arc_rect.right - arc_rect.left) / 2;
 
-	if(is_left)
+	if (is_left)
 	{
 		arc_start_y = arc_rect.top;
 		arc_end_y = arc_rect.bottom;
@@ -172,7 +169,7 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 		arc_start_y = arc_rect.bottom;
 		arc_end_y = arc_rect.top;
 
-		arc_right_offset = (AsConfig::Platform_Circle_Size - 2) * scale + 1; 
+		arc_right_offset = (AsConfig::Platform_Circle_Size - 2) * scale + 1;
 
 		arc_rect.left -= arc_right_offset;
 		arc_rect.right -= arc_right_offset;
@@ -180,10 +177,9 @@ void AsPlatform_Expanding::Draw_Expanding_Platform_Ball(HDC hdc, double x, bool 
 	}
 
 	// 1.4.1. ƒырка в шарике под дугой
-	AsConfig::BG_Color.Select(hdc);
-	Ellipse(hdc, arc_rect.left, arc_rect.top, arc_rect.right - 1, arc_rect.bottom - 1);
+	AsTools::Ellipse(hdc, arc_rect, AsConfig::BG_Color);
 
-	//1.4.2. —ама дуга
+	// 1.4.2. —ама дуга
 	Truss_Color->Select(hdc);
 	Arc(hdc, arc_rect.left, arc_rect.top, arc_rect.right - 1, arc_rect.bottom - 1, arc_mid_x, arc_start_y, arc_mid_x, arc_end_y);
 }
@@ -206,7 +202,7 @@ void AsPlatform_Expanding::Draw_Expanding_Truss(HDC hdc, RECT &inner_rect, bool 
 		truss_x += truss_x_offset;
 	else
 	{
-		truss_x += (AsConfig::Platform_Normal_Inner_Width + 8 - 1) * scale + 1;
+		truss_x += (AsConfig::Platform_Expanding_Inner_Width + 8 - 1) * scale + 1;
 		truss_x -= truss_x_offset;
 	}		
 

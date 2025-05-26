@@ -5,7 +5,7 @@
 AHit_Checker_List ALaser_Beam::Hit_Checker_List;
 //------------------------------------------------------------------------------------------------------------
 ALaser_Beam::ALaser_Beam()
-	: Laser_Beam_State(ELaser_Beam_State::Disabled), X_Pos(0.0), Y_Pos(0.0), Speed(0.0), Beam_Rect{}
+: Laser_Beam_State(ELaser_Beam_State::Disabled), X_Pos(0.0), Y_Pos(0.0), Speed(0.0), Beam_Rect{}
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ void ALaser_Beam::Advance(double max_speed)
 	if (Y_Pos < AsConfig::Level_Y_Offset)
 		Disable();
 
-	if (Hit_Checker_List.Check_Hit(X_Pos, Y_Pos) );
+	if (Hit_Checker_List.Check_Hit(X_Pos, Y_Pos) )
 		Disable();
 }
 //------------------------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ void ALaser_Beam::Act()
 	// Заглушка, т.к. метод не используеться.
 }
 //------------------------------------------------------------------------------------------------------------
-void ALaser_Beam::Clear(HDC hdc, RECT& paint_area)
+void ALaser_Beam::Clear(HDC hdc, RECT &paint_area)
 {
 	RECT intersection_rect;
 
@@ -61,9 +61,7 @@ void ALaser_Beam::Clear(HDC hdc, RECT& paint_area)
 	if (!IntersectRect(&intersection_rect, &paint_area, &Prev_Beam_Rect))
 		return;
 
-	AsConfig::BG_Color.Select(hdc);
-
-	Rectangle(hdc, Prev_Beam_Rect.left, Prev_Beam_Rect.top, Prev_Beam_Rect.right - 1, Prev_Beam_Rect.bottom);
+	AsTools::Rect(hdc, Prev_Beam_Rect, AsConfig::BG_Color);
 }
 //------------------------------------------------------------------------------------------------------------
 void ALaser_Beam::Draw(HDC hdc, RECT& paint_area)
@@ -128,7 +126,7 @@ void ALaser_Beam::Redraw_Beam()
 	Beam_Rect.right = Beam_Rect.left + Width * AsConfig::Global_Scale;
 	Beam_Rect.bottom = Beam_Rect.top + Height * AsConfig::Global_Scale;
 
-	AsConfig::Invalidate_Rect(Beam_Rect);
-	AsConfig::Invalidate_Rect(Prev_Beam_Rect);
+	AsTools::Invalidate_Rect(Beam_Rect);
+	AsTools::Invalidate_Rect(Prev_Beam_Rect);
 }
 //------------------------------------------------------------------------------------------------------------

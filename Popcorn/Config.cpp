@@ -12,6 +12,7 @@ const AColor AsConfig::Blue_Color(85, 255, 255);
 const AColor AsConfig::White_Color(255, 255, 255);
 const AColor AsConfig::Letter_Color(AsConfig::White_Color, AsConfig::Global_Scale);
 const AColor AsConfig::Laser_Color(AsConfig::White_Color, AsConfig::Global_Scale);
+const AColor AsConfig::Gate_Color(AsConfig::White_Color, AsConfig::Global_Scale);
 const AColor AsConfig::Unbreakable_Blue_Highlight(AsConfig::Blue_Color, AsConfig::Global_Scale);
 const AColor AsConfig::Unbreakable_Red_Highlight(AsConfig::Red_Color, 3 * AsConfig::Global_Scale);
 const AColor AsConfig::Teleport_Portal_Color(AsConfig::Blue_Color, AsConfig::BG_Color, AsConfig::Global_Scale);
@@ -26,25 +27,53 @@ const double AsConfig::Start_Ball_Y_Pos = 184.0;
 const double AsConfig::Ball_Accelerate = 1.001;
 const double AsConfig::Normal_Ball_Speed = 3.0;
 const double AsConfig::Min_Ball_Angle = M_PI / 8.0;
+
 //------------------------------------------------------------------------------------------------------------
-int AsConfig::Rand(int range)//Вычисляет псевдо случайные числа [0, .. range - 1]
+void AsConfig::Throw()
 {
-   return rand() * range / RAND_MAX;
+	throw 13;
 }
 //------------------------------------------------------------------------------------------------------------
-void AsConfig::Round_Rect(HDC hdc, RECT &rect, int corner_radius)
+
+
+
+
+//AsTools
+//------------------------------------------------------------------------------------------------------------
+int AsTools::Rand(int range)//Вычисляет псевдо случайные числа [0, .. range - 1]
+{
+	return rand() * range / RAND_MAX;
+}
+//------------------------------------------------------------------------------------------------------------
+void AsTools::Round_Rect(HDC hdc, RECT &rect, int corner_radius)
 {
 	int radius = corner_radius * AsConfig::Global_Scale;
 	RoundRect(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1, radius, radius);
 }
 //------------------------------------------------------------------------------------------------------------
-void AsConfig::Invalidate_Rect(RECT &rect)
+void AsTools::Rect(HDC hdc, RECT& rect, const AColor &color)
 {
-	InvalidateRect(Hwnd, &rect, FALSE);
+	color.Select(hdc);
+	Rectangle(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
 }
 //------------------------------------------------------------------------------------------------------------
-void AsConfig::Throw()
+
+void AsTools::Rect(HDC hdc, int x, int y, int width, int height, const AColor& color)
 {
-	throw 13;
+	const int scale = AsConfig::Global_Scale;
+
+	color.Select(hdc);
+	Rectangle(hdc, x * scale, y * scale, (x + width) * scale - 1, (y + height) * scale - 1);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsTools::Ellipse(HDC hdc, RECT& rect, const AColor &color)
+{
+	color.Select(hdc);
+	::Ellipse(hdc, rect.left, rect.top, rect.right - 1, rect.bottom - 1);
+}
+//------------------------------------------------------------------------------------------------------------
+void AsTools::Invalidate_Rect(RECT &rect)
+{
+	InvalidateRect(AsConfig::Hwnd, &rect, FALSE);
 }
 //------------------------------------------------------------------------------------------------------------

@@ -4,29 +4,29 @@
 
 
 //------------------------------------------------------------------------------------------------------------
-enum EBrick_Type
+enum class EBrick_Type: unsigned char
 {
-	EBT_None,
+	None,
 
-	EBT_Red,
-	EBT_Blue,
-	EBT_Unbreakable,
-	EBT_Multihit_1,
-	EBT_Multihit_2,
-	EBT_Multihit_3,
-	EBT_Multihit_4,
-	EBT_Parachute,
-	EBT_Teleport,
-	EBT_Ad,
-	EBT_Invisible
+	Red,
+	Blue,
+	Unbreakable,
+	Multihit_1,
+	Multihit_2,
+	Multihit_3,
+	Multihit_4,
+	Parachute,
+	Teleport,
+	Ad,
+	Invisible
 };
 //------------------------------------------------------------------------------------------------------------
-enum EDirection_Type
+enum class EDirection_Type: unsigned char
 {
-	EDT_Left,
-	EDT_Up,
-	EDT_Right,
-	EDT_Down
+	Left,
+	Up,
+	Right,
+	Down
 };
 //------------------------------------------------------------------------------------------------------------
 
@@ -142,11 +142,11 @@ private:
 
 
 //------------------------------------------------------------------------------------------------------------
-enum ETeleport_State
+enum class ETeleport_State: unsigned char
 {
-	ETS_Starting,
-	ETS_Finishing,
-	ETS_Done
+	Starting,
+	Finishing,
+	Done
 };
 //------------------------------------------------------------------------------------------------------------
 

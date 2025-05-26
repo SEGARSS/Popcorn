@@ -10,20 +10,20 @@
 
 //AsEngine
 //------------------------------------------------------------------------------------------------------------
-enum EKey_Type
+enum class EKey_Type: unsigned char
 {
-	EKT_Left,
-	EKT_Right,
-	EKT_Space
+	Left,
+	Right,
+	Space
 };
 //------------------------------------------------------------------------------------------------------------
-enum EGame_State
+enum class EGame_State: unsigned char
 {
-	EGS_Test_Ball,
+	Test_Ball,
 
-	EGS_Play_Level,
-	EGS_Lost_Ball,
-	EGS_Restart_Level
+	Play_Level,
+	Lost_Ball,
+	Restart_Level
 };
 //------------------------------------------------------------------------------------------------------------
 const int Timer_ID = WM_USER + 1;
@@ -39,6 +39,7 @@ public:
 	int On_Timer();
 
 private:
+	void Restart_Level();
 	void Play_Level();
 	void Advance_Movers();
 	void Act();
