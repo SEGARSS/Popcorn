@@ -95,7 +95,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   hInst = hInstance; // Сохранить маркер экземпляра в глобальной переменной
+   hInst = hInstance; //  Сохранить маркер экземпляра в глобальной переменной
 
    RECT window_rect;
    
