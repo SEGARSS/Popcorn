@@ -1,6 +1,6 @@
 ﻿#include "Engine.h"
 
-HPEN Brick_Red_Pen, Brick_Blue_Pen, Platform_Circle_Pen, Platform_Inner_Pen;
+HPEN Highlight_Pen, Brick_Red_Pen, Brick_Blue_Pen, Platform_Circle_Pen, Platform_Inner_Pen;
 HBRUSH Brick_Red_Brush, Brick_Blue_Brush, Platform_Circle_Brush, Platform_Inner_Brush;
 
 const int Gloval_Scale = 3;
@@ -53,21 +53,21 @@ char Level_01[14][12]
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
-
 //----------------------------------------------------------------------------------------------------------------
-void Init() // Настройка игры
+void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN &pen, HBRUSH &brush)
 {
-    Brick_Red_Pen = CreatePen(PS_SOLID, 0, RGB(255, 85, 85));
-    Brick_Red_Brush = CreateSolidBrush(RGB(255, 85, 85));
+    pen = CreatePen(PS_SOLID, 0, RGB(r, g, b));
+    brush = CreateSolidBrush(RGB(r, g, b));
+}
+//----------------------------------------------------------------------------------------------------------------
+void Init() // Настройка цвета
+{
+    Highlight_Pen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
 
-    Brick_Blue_Pen = CreatePen(PS_SOLID, 0, RGB(85, 255, 255));
-    Brick_Blue_Brush = CreateSolidBrush(RGB(85, 255, 255));
-
-    Platform_Circle_Pen = CreatePen(PS_SOLID, 0, RGB(151, 0, 0));
-    Platform_Circle_Brush = CreateSolidBrush(RGB(151, 0, 0)); 
-
-    Platform_Inner_Pen = CreatePen(PS_SOLID, 0, RGB(0, 128, 192));
-    Platform_Inner_Brush = CreateSolidBrush(RGB(0, 128, 192)); 
+    Create_Pen_Brush(255, 85, 85, Brick_Red_Pen, Brick_Red_Brush);
+    Create_Pen_Brush(85, 255, 255, Brick_Blue_Pen, Brick_Blue_Brush);
+    Create_Pen_Brush(151, 0, 0, Platform_Circle_Pen, Platform_Circle_Brush);
+    Create_Pen_Brush(0, 128, 192, Platform_Inner_Pen, Platform_Inner_Brush);
 }
 //----------------------------------------------------------------------------------------------------------------
 void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type) // Вывод кирпича
@@ -110,14 +110,22 @@ void Draw_Level(HDC hdc)// Отрисовка кирпичей
             Draw_Brick(hdc, Level_X_Offset + j * Cell_Width, Level_Y_Offset + i * Cell_Height, (EBrick_Type)Level_01[i][j]);
 }
 //----------------------------------------------------------------------------------------------------------------
-void Draw_Platform(HDC hdc, int x, int y) // Отрисовка экрана игры
+void Draw_Platform(HDC hdc, int x, int y) //рисуем платформу
 {
+    // 1. Рисуем боковые шарики.
     SelectObject(hdc, Platform_Circle_Pen);
     SelectObject(hdc, Platform_Circle_Brush);
 
     Ellipse(hdc, x * Gloval_Scale, y * Gloval_Scale, (x + Citcle_Size) * Gloval_Scale, (y + Citcle_Size) * Gloval_Scale);
     Ellipse(hdc, (x + Inner_Width) * Gloval_Scale, y * Gloval_Scale, (x + Citcle_Size + Inner_Width) * Gloval_Scale, (y + Citcle_Size) * Gloval_Scale);
 
+    // 2. Рисуем блики на боковом шарике платформы.
+    SelectObject(hdc, Highlight_Pen);
+
+    Arc(hdc, (x + 1) * Gloval_Scale, (y + 1) * Gloval_Scale, (x + Citcle_Size - 1) * Gloval_Scale, (y + Citcle_Size - 1) * Gloval_Scale,
+             (x + 1 + 1) * Gloval_Scale, (y + 1) * Gloval_Scale, (x + 1) * Gloval_Scale, (y + 1 + 2) * Gloval_Scale);
+
+    // 3. Рисуем саму платформу.
     SelectObject(hdc, Platform_Inner_Pen);
     SelectObject(hdc, Platform_Inner_Brush);
 
