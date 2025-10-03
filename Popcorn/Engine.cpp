@@ -125,7 +125,7 @@ void Draw_Platform(HDC hdc, int x, int y) //рисуем платформу
     Arc(hdc, (x + 1) * Gloval_Scale, (y + 1) * Gloval_Scale, (x + Citcle_Size - 1) * Gloval_Scale, (y + Citcle_Size - 1) * Gloval_Scale,
              (x + 1 + 1) * Gloval_Scale, (y + 1) * Gloval_Scale, (x + 1) * Gloval_Scale, (y + 1 + 2) * Gloval_Scale);
 
-    // 3. Рисуем саму платформу.
+    // 3. Рисуем среднюю часть платформы.
     SelectObject(hdc, Platform_Inner_Pen);
     SelectObject(hdc, Platform_Inner_Brush);
 
