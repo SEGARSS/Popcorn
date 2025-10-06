@@ -1,18 +1,7 @@
 ﻿#include "Engine.h"
 
-HPEN Highlight_Pen, Brick_Red_Pen, Brick_Blue_Pen, Platform_Circle_Pen, Platform_Inner_Pen;
-HBRUSH Brick_Red_Brush, Brick_Blue_Brush, Platform_Circle_Brush, Platform_Inner_Brush;
-
-const int Gloval_Scale = 3;
-const int Brick_Width = 15;
-const int Brick_Height = 7;
-const int Cell_Width = 16;
-const int Cell_Height = 8;
-const int Level_X_Offset = 8;
-const int Level_Y_Offset = 6;
-const int Citcle_Size = 7;
-
-int Inner_Width = 21;
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 /// <summary>
 /// enum - начинается номерация значений автоматически с нуля.
@@ -35,6 +24,20 @@ enum EBrick_Type
     EBT_Red,
     EBT_Blue
 };
+
+HPEN Highlight_Pen, Brick_Red_Pen, Brick_Blue_Pen, Platform_Circle_Pen, Platform_Inner_Pen;
+HBRUSH Brick_Red_Brush, Brick_Blue_Brush, Platform_Circle_Brush, Platform_Inner_Brush;
+
+const int Gloval_Scale = 3;
+const int Brick_Width = 15;
+const int Brick_Height = 7;
+const int Cell_Width = 16;
+const int Cell_Height = 8;
+const int Level_X_Offset = 8;
+const int Level_Y_Offset = 6;
+const int Citcle_Size = 7;
+
+int Inner_Width = 21;
 
 char Level_01[14][12]
 {
@@ -103,6 +106,31 @@ void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type) // Вывод к�
     RoundRect(hdc, x * Gloval_Scale, y * Gloval_Scale, (x + Brick_Width) * Gloval_Scale, (y + Brick_Height) * Gloval_Scale, 2 * Gloval_Scale, 2 * Gloval_Scale);
 }
 //----------------------------------------------------------------------------------------------------------------
+void Draw_Brick_Letter(HDC hdc, int rotation_step)
+{
+    double rotation_angle = 2.0 * M_PI / 16.0 * (double)rotation_step;//Преобразование шага в угол поворота
+
+    XFORM xform, old_xform;
+
+    SetGraphicsMode(hdc, GM_ADVANCED);
+
+    xform.eM11 = (float)cos(rotation_angle);
+    xform.eM12 = (float)sin(rotation_angle);
+    xform.eM21 = -(float)sin(rotation_angle);
+    xform.eM22 = (float)cos(rotation_angle);
+    xform.eDx  = (FLOAT)100.0;
+    xform.eDy  = (FLOAT)100.0;
+    GetWorldTransform(hdc, &old_xform);
+    SetWorldTransform(hdc, &xform);
+
+    SelectObject(hdc, Brick_Blue_Pen);
+    SelectObject(hdc, Brick_Blue_Brush);
+
+    Rectangle(hdc, 0, 0, 15 * Gloval_Scale, 7 * Gloval_Scale);
+
+    SetWorldTransform(hdc, &xform);
+}
+//----------------------------------------------------------------------------------------------------------------
 void Draw_Level(HDC hdc)// Отрисовка кирпичей
 {
     for (int i = 0; i < 14; i++)
@@ -134,7 +162,12 @@ void Draw_Platform(HDC hdc, int x, int y) //рисуем платформу
 //----------------------------------------------------------------------------------------------------------------
 void Draw_Frame(HDC hdc) // Отрисовка экрана игры
 {
-	Draw_Level(hdc);
-    Draw_Platform(hdc, 50, 100);   
+	//Draw_Level(hdc);
+    //Draw_Platform(hdc, 50, 100);   
+
+    for (int i = 0; i < 16; i++)
+    {
+        Draw_Brick_Letter(hdc, i);
+    }    
 }
 //----------------------------------------------------------------------------------------------------------------
