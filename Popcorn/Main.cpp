@@ -166,6 +166,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
 
+    case WM_KEYDOWN:
+        switch (wParam)
+        {
+        case VK_LEFT:
+            return On_Key_Down(EKT_Left);
+
+        case VK_RIGHT:
+            return On_Key_Down(EKT_Right);
+
+        case VK_SPACE:
+            return On_Key_Down(EKT_Space);
+        }
+        break;
+
+
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

@@ -43,8 +43,11 @@ const int Cell_Height = 8;
 const int Level_X_Offset = 8;
 const int Level_Y_Offset = 6;
 const int Citcle_Size = 7;
+const int Platform_Y_Pos = 185;
 
 int Inner_Width = 21;
+int Platform_X_Pos = 0;
+int Platform_X_Step = Global_Scale;
 
 char Level_01[14][12]
 {
@@ -259,12 +262,38 @@ void Draw_Platform(HDC hdc, int x, int y) //рисуем платформу
 void Draw_Frame(HDC hdc) // Отрисовка экрана игры
 {
 	//Draw_Level(hdc);
-    //Draw_Platform(hdc, 50, 100);   
+    Draw_Platform(hdc, Platform_X_Pos, Platform_Y_Pos);   
 
-    for (int i = 0; i < 16; i++)
+    //for (int i = 0; i < 16; i++)
+    //{
+    //    Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 100, EBT_Blue, ElT_O, i);
+    //    Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Red, ElT_O, i);
+    //}    
+}
+//----------------------------------------------------------------------------------------------------------------
+int Redraw_Platform()
+{
+    InvalidateRect();
+}
+//----------------------------------------------------------------------------------------------------------------
+int On_Key_Down(EKey_Type key_type)
+{
+    switch (key_type)
     {
-        Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 100, EBT_Blue, ElT_O, i);
-        Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Red, ElT_O, i);
-    }    
+    case EKT_Left:
+        Platform_X_Pos -= Platform_X_Step;
+        Redraw_Platform();
+        break;
+
+    case EKT_Right:
+        Platform_X_Pos += Platform_X_Step;
+        Redraw_Platform();
+        break;
+
+    case EKT_Space:
+        break;
+    }
+
+    return 0;
 }
 //----------------------------------------------------------------------------------------------------------------
