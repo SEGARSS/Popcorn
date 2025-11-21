@@ -33,8 +33,8 @@ enum EBrick_Type
 };
 
 HWND Hwnd;
-HPEN Highlight_Pen, Letter_Pen, BG_Pen, Brick_Red_Pen, Brick_Blue_Pen, Platform_Circle_Pen, Platform_Inner_Pen, Ball_Pen;
-HBRUSH BG_Brush, Brick_Red_Brush, Brick_Blue_Brush, Platform_Circle_Brush, Platform_Inner_Brush, Ball_Brush;
+HPEN Highlight_Pen, Letter_Pen, BG_Pen, Brick_Red_Pen, Brick_Blue_Pen, Platform_Circle_Pen, Platform_Inner_Pen, Ball_Pen, Border_Blue_Pen, Border_White_Pen;
+HBRUSH BG_Brush, Brick_Red_Brush, Brick_Blue_Brush, Platform_Circle_Brush, Platform_Inner_Brush, Ball_Brush, Border_Blue_Brush, Border_White_Brush;
 
 const int Global_Scale = 3;
 const int Brick_Width = 15;
@@ -43,14 +43,16 @@ const int Cell_Width = 16;
 const int Cell_Height = 8;
 const int Level_X_Offset = 8;
 const int Level_Y_Offset = 6;
-const int Level_Width = 14;
-const int Level_Height = 12;
+const int Level_Width = 12;
+const int Level_Height = 14;
 const int Citcle_Size = 7;
 const int Platform_Y_Pos = 185;
 const int Platform_Height = 7;
 const int Ball_Size = 4;
-const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width - Ball_Size;
+const int Max_X_Pos = Level_X_Offset + Cell_Width * Level_Width;
 const int Max_Y_Pos = 199 - Ball_Size;
+const int Border_X_Offsets = 6;
+const int Border_Y_Offsets = 4;
 
 int Inner_Width = 21;
 int Platform_X_Pos = 0;
@@ -65,7 +67,7 @@ RECT Level_Rect;
 RECT Ball_Rect, Prev_Ball_Rect;
 
 //----------------------------------------------------------------------------------------------------------------
-char Level_01[Level_Width][Level_Height]
+char Level_01[Level_Height][Level_Width]
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -93,7 +95,7 @@ void Redraw_Platform()
 {
     Prev_Platform_Rect = Platform_Rect;
 
-    Platform_Rect.left = (Level_X_Offset + Platform_X_Pos) * Global_Scale;
+    Platform_Rect.left = Platform_X_Pos * Global_Scale;
     Platform_Rect.top = Platform_Y_Pos * Global_Scale;
     Platform_Rect.right = Platform_Rect.left + Platform_Width * Global_Scale;
     Platform_Rect.bottom = Platform_Rect.top + Platform_Height * Global_Scale;
@@ -115,6 +117,8 @@ void Init_Engine(HWND hwnd) // Настройка цвета
     Create_Pen_Brush(151, 0, 0, Platform_Circle_Pen, Platform_Circle_Brush);
     Create_Pen_Brush(0, 128, 192, Platform_Inner_Pen, Platform_Inner_Brush);
     Create_Pen_Brush(255, 255, 255, Ball_Pen, Ball_Brush);
+    Create_Pen_Brush(85, 255, 255, Border_Blue_Pen, Border_Blue_Brush);
+    Create_Pen_Brush(255, 255, 255, Border_White_Pen, Border_White_Brush);
 
     Level_Rect.left = Level_X_Offset * Global_Scale;
     Level_Rect.top = Level_Y_Offset * Global_Scale;
@@ -274,8 +278,8 @@ void Draw_Brick_Letter(HDC hdc, int x, int y, EBrick_Type brick_type, ELetter_Ty
 //----------------------------------------------------------------------------------------------------------------
 void Draw_Level(HDC hdc)// Отрисовка кирпичей
 {
-    for (int i = 0; i < 14; i++)
-        for (int j = 0; j < 12; j++)
+    for (int i = 0; i < Level_Height; i++)
+        for (int j = 0; j < Level_Width; j++)
             Draw_Brick(hdc, Level_X_Offset + j * Cell_Width, Level_Y_Offset + i * Cell_Height, (EBrick_Type)Level_01[i][j]);
 }
 //----------------------------------------------------------------------------------------------------------------
@@ -321,15 +325,60 @@ void Draw_Ball(HDC hdc, RECT &paint_area) // Отрисовка экрана и�
     Ellipse(hdc, Ball_Rect.left, Ball_Rect.top, Ball_Rect.right - 1, Ball_Rect.bottom - 1);
 }
 //----------------------------------------------------------------------------------------------------------------
+void Draw_Border(HDC hdc, int x, int y, bool top_boder) // Задаём элементы рамки
+{
+    // Основная линия
+    SelectObject(hdc, Border_Blue_Pen);
+    SelectObject(hdc, Border_Blue_Brush);
+
+    if(top_boder)
+        Rectangle(hdc, x * Global_Scale, (y + 1) * Global_Scale, (x + 4) * Global_Scale, (y + 4) * Global_Scale);
+    else
+        Rectangle(hdc, (x + 1) * Global_Scale, y * Global_Scale, (x + 4) * Global_Scale, (y + 4) * Global_Scale);
+
+    // Белая кайма
+    SelectObject(hdc, Border_White_Pen);
+    SelectObject(hdc, Border_White_Brush);
+
+    if(top_boder)
+        Rectangle(hdc, x * Global_Scale, y * Global_Scale, (x + 4) * Global_Scale, (y + 1) * Global_Scale);
+    else
+        Rectangle(hdc, x * Global_Scale, y * Global_Scale, (x + 1) * Global_Scale, (y + 4) * Global_Scale);
+
+    // Перфорация
+    SelectObject(hdc, BG_Pen);
+    SelectObject(hdc, BG_Brush);
+
+    if(top_boder)
+        Rectangle(hdc, (x + 2) * Global_Scale, (y + 2) * Global_Scale, (x + 3) * Global_Scale, (y + 3) * Global_Scale);
+    else
+        Rectangle(hdc, (x + 2) * Global_Scale, (y + 1) * Global_Scale, (x + 3) * Global_Scale, (y + 2) * Global_Scale);
+}
+//----------------------------------------------------------------------------------------------------------------
+void Draw_Bounds(HDC hdc, RECT &paint_area) // Рисование рамки
+{
+    //1. Левая линия
+    for (int i = 0; i < 50; i++)
+        Draw_Border(hdc, 2, 1 + i * 4, false);
+
+    //2. Правая линия
+    for (int i = 0; i < 50; i++)
+        Draw_Border(hdc, 201, 1 + i * 4, false);
+
+    //3. Верхняя линия
+    for (int i = 0; i < 50; i++)
+        Draw_Border(hdc, 3 + i * 4, 0, true);
+}
+//----------------------------------------------------------------------------------------------------------------
 void Draw_Frame(HDC hdc, RECT &paint_area) // Отрисовка экрана игры
 {
 	RECT intersection_rect;
 
 	if (IntersectRect(&intersection_rect, &paint_area, &Level_Rect));
-	Draw_Level(hdc);
+	    Draw_Level(hdc);
 
 	if (IntersectRect(&intersection_rect, &paint_area, &Platform_Rect));
-	Draw_Platform(hdc, Level_X_Offset + Platform_X_Pos, Platform_Y_Pos);
+	    Draw_Platform(hdc, Platform_X_Pos, Platform_Y_Pos);
 
 	//for (int i = 0; i < 16; i++)
 	//{
@@ -337,8 +386,12 @@ void Draw_Frame(HDC hdc, RECT &paint_area) // Отрисовка экрана и
 	//    Draw_Brick_Letter(hdc, 20 + i * Cell_Width * Global_Scale, 130, EBT_Red, ElT_O, i);
 	//}
 
-    if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect) );
+	if (IntersectRect(&intersection_rect, &paint_area, &Ball_Rect));
+    {
         Draw_Ball(hdc, paint_area);
+    }
+
+    Draw_Bounds(hdc, paint_area);
 }
 //----------------------------------------------------------------------------------------------------------------
 int On_Key_Down(EKey_Type key_type)
@@ -347,11 +400,19 @@ int On_Key_Down(EKey_Type key_type)
     {
     case EKT_Left:
         Platform_X_Pos -= Platform_X_Step;
+
+		if (Platform_X_Pos <= Border_X_Offsets)
+			Platform_X_Pos = Border_X_Offsets;
+
         Redraw_Platform();
         break;
 
     case EKT_Right:
         Platform_X_Pos += Platform_X_Step;
+
+        if (Platform_X_Pos >= Max_X_Pos - Platform_Width + 1)
+            Platform_X_Pos = Max_X_Pos - Platform_Width + 1;
+
         Redraw_Platform();
         break;
 
