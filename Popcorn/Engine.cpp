@@ -104,7 +104,7 @@ void Redraw_Platform()
     InvalidateRect(Hwnd, &Platform_Rect, FALSE);
 }
 //----------------------------------------------------------------------------------------------------------------
-void Init_Engine(HWND hwnd) // Настройка цвета
+void Init_Engine(HWND hwnd) // Настройка цвета.
 {
     Hwnd = hwnd;
 
