@@ -30,7 +30,7 @@ void AsPlatform::Redraw_Platform(HWND hwnd)
     InvalidateRect(hwnd, &Platform_Rect, FALSE);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-void AsPlatform::Draw(HDC hdc, HPEN bg_pen, HBRUSH bg_brush, RECT& paint_area) //рисуем платформу
+void AsPlatform::Draw(HDC hdc, HPEN bg_pen, HBRUSH bg_brush, RECT &paint_area) //рисуем платформу
 {
     int x = X_Pos;
     int y = AsConfig::Platform_Y_Pos;

@@ -13,7 +13,7 @@ void ABall::Init()
     AsConfig::Create_Pen_Brush(255, 255, 255, Ball_Pen, Ball_Brush);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-void ABall::Draw(HDC hdc, RECT& paint_area, HPEN bg_pen, HBRUSH bg_brush) // Отрисовка экрана игры
+void ABall::Draw(HDC hdc, RECT &paint_area, HPEN bg_pen, HBRUSH bg_brush) // Отрисовка экрана игры
 {
     RECT intersection_rect;
 

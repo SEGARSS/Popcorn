@@ -27,7 +27,7 @@ char ALevel::Level_01[AsConfig::Level_Height][AsConfig::Level_Width]
 //ALevel
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 ALevel::ALevel()
-: Brick_Red_Pen(0), Brick_Blue_Pen(0), Letter_Pen(0), Brick_Red_Brush(0), Brick_Blue_Brush(), Level_Rect{}
+: Active_Brick(EBT_Blue), Brick_Red_Pen(0), Brick_Blue_Pen(0), Letter_Pen(0), Brick_Red_Brush(0), Brick_Blue_Brush(), Level_Rect{}
 {
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -35,8 +35,8 @@ void ALevel::Init()
 {
     Letter_Pen = CreatePen(PS_SOLID, AsConfig::Global_Scale, RGB(255, 255, 255));
 
-    AsConfig::Create_Pen_Brush(255, 85, 85, Brick_Red_Pen, Brick_Red_Brush);
-    AsConfig::Create_Pen_Brush(85, 255, 255, Brick_Blue_Pen, Brick_Blue_Brush);
+    AsConfig::Create_Pen_Brush(AsConfig::Red_Brick_Color, Brick_Red_Pen, Brick_Red_Brush);
+    AsConfig::Create_Pen_Brush(AsConfig::Blue_Brick_Color, Brick_Blue_Pen, Brick_Blue_Brush);
 
     Level_Rect.left = AsConfig::Level_X_Offset * AsConfig::Global_Scale;
     Level_Rect.top = AsConfig::Level_Y_Offset * AsConfig::Global_Scale;
@@ -44,7 +44,7 @@ void ALevel::Init()
     Level_Rect.bottom = Level_Rect.top + AsConfig::Cell_Height * AsConfig::Level_Height * AsConfig::Global_Scale;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-void ALevel::Check_Level_Brick_Hit(int& next_y_pos, double& ball_direction)
+void ALevel::Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction)
 {
     // Корректируем позицию отражения от кирпичей
     int brick_y_pos = AsConfig::Level_Y_Offset + AsConfig::Level_Height * AsConfig::Cell_Height;
@@ -114,7 +114,7 @@ void ALevel::Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type) // Выв
     RoundRect(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + AsConfig::Brick_Width) * AsConfig::Global_Scale, (y + AsConfig::Brick_Height) * AsConfig::Global_Scale, 2 * AsConfig::Global_Scale, 2 * AsConfig::Global_Scale);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-void ALevel::Set_Brick_Letter_Colors(bool is_switch_color, HPEN& front_pen, HBRUSH& front_brush, HPEN& back_pen, HBRUSH& back_brush)
+void ALevel::Set_Brick_Letter_Colors(bool is_switch_color, HPEN &front_pen, HBRUSH &front_brush, HPEN &back_pen, HBRUSH &back_brush)
 {
     if (is_switch_color)
     {

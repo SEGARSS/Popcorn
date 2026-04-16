@@ -12,7 +12,9 @@ void AsEngine::Init_Engine(HWND hwnd) // Настройка цвета.
 {
     Hwnd = hwnd;       
 
-    AsConfig::Create_Pen_Brush(15, 63, 31, BG_Pen, BG_Brush);
+    AsConfig::Create_Pen_Brush(AsConfig::BG_Color, BG_Pen, BG_Brush);
+
+    AActive_Brick::Setup_Colors();
 
     Ball.Init();
     Level.Init();

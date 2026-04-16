@@ -5,12 +5,27 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+//AColor
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+class AColor
+{
+public:
+	AColor(unsigned char r, unsigned char g, unsigned char b);
+
+	unsigned char R, G, B;//13
+};
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
 //AsConfig
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 class AsConfig
 {
 public:
-	static void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN& pen, HBRUSH& brush);
+	static void Create_Pen_Brush(const AColor &color, HPEN &pen, HBRUSH &brush);
+	static void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN &pen, HBRUSH &brush);
+
+	static const AColor BG_Color, Red_Brick_Color, Blue_Brick_Color;
 
 	static const int Level_Width = 12;   // Ширина уровня ячейки
 	static const int Level_Height = 14; // Высота уровня ячейки
