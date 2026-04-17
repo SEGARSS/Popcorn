@@ -22,10 +22,13 @@ public:
 class AsConfig
 {
 public:
+	static void Setup_Colors();
 	static void Create_Pen_Brush(const AColor &color, HPEN &pen, HBRUSH &brush);
 	static void Create_Pen_Brush(unsigned char r, unsigned char g, unsigned char b, HPEN &pen, HBRUSH &brush);
 
 	static const AColor BG_Color, Red_Brick_Color, Blue_Brick_Color;
+	static HPEN BG_Pen;
+	static HBRUSH BG_Brush;	
 
 	static const int Level_Width = 12;   // Ширина уровня ячейки
 	static const int Level_Height = 14; // Высота уровня ячейки

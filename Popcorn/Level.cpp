@@ -27,7 +27,7 @@ char ALevel::Level_01[AsConfig::Level_Height][AsConfig::Level_Width]
 //ALevel
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 ALevel::ALevel()
-: Active_Brick(EBT_Blue), Brick_Red_Pen(0), Brick_Blue_Pen(0), Letter_Pen(0), Brick_Red_Brush(0), Brick_Blue_Brush(), Level_Rect{}
+: Active_Brick(EBT_Red), Brick_Red_Pen(0), Brick_Blue_Pen(0), Letter_Pen(0), Brick_Red_Brush(0), Brick_Blue_Brush(), Level_Rect{}
 {
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------

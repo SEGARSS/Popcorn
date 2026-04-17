@@ -32,9 +32,7 @@ public:
 	int On_Timer();	
 
 private:
-	HWND Hwnd;
-	HPEN BG_Pen;
-	HBRUSH BG_Brush;		
+	HWND Hwnd;		
 
 	ABall Ball;
 	ALevel Level;
