@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
 : X_Pos(AsConfig::Border_X_Offsets), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Inner_Width(21), 
-  Width(Normal_Width), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Circle_Pen(0), 
+  Rollin_Step(0), Width(Normal_Width), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Circle_Pen(0), 
   Platform_Inner_Pen(0), Platform_Circle_Brush(0), Platform_Inner_Brush(0)  
 {
     X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
@@ -21,32 +21,55 @@ void AsPlatform::Init()
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Act(HWND hwnd)
 {
+    if (Platform_State == EPS_Meltdown || Platform_State == EPS_Roll_In)
+        Redraw_Platform(hwnd);
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+void AsPlatform::Set_State(EPlatform_State new_state)
+{
     int len;
 
-    if (Platform_State != EPS_Meltdown)
-    {
-        Platform_State = EPS_Meltdown;
+    if (Platform_State == new_state)
+        return;
 
-        len = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
+	switch (new_state)
+	{
+    case EPS_Meltdown:
+		len = sizeof(Meltdown_Platform_Y_Pos) / sizeof(Meltdown_Platform_Y_Pos[0]);
 
-        for (int i = 0; i < len; i++)
-        {
-            Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
-        }
-    }    
+		for (int i = 0; i < len; i++)
+			Meltdown_Platform_Y_Pos[i] = Platform_Rect.bottom;
 
-    if (Platform_State == EPS_Meltdown)
-        Redraw_Platform(hwnd);
+        break;
+
+
+    case EPS_Roll_In:
+        X_Pos = AsConfig::Max_X_Pos;
+        break;
+	}
+	
+	Platform_State = new_state;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Redraw_Platform(HWND hwnd)
 {
     Prev_Platform_Rect = Platform_Rect;
 
-    Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
-    Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-    Platform_Rect.right = Platform_Rect.left + Width * AsConfig::Global_Scale;
-    Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;
+	if (Platform_State == EPS_Normal || Platform_State == EPS_Meltdown)
+	{
+		Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
+		Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+		Platform_Rect.right = Platform_Rect.left + Width * AsConfig::Global_Scale;
+		Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;
+	}
+
+    if (Platform_State == EPS_Roll_In)
+	{
+		Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
+		Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+		Platform_Rect.right = Platform_Rect.left + Citcle_Size * AsConfig::Global_Scale;
+		Platform_Rect.bottom = Platform_Rect.top + Citcle_Size * AsConfig::Global_Scale;
+	}
 
     if (Platform_State == EPS_Meltdown)
         Prev_Platform_Rect.bottom = (AsConfig::Max_Y_Pos + 1) * AsConfig::Global_Scale;
@@ -66,10 +89,30 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area) //рисуем платформ
     case EPS_Meltdown:
         Draw_Meltdown_State(hdc, paint_area);
         break;
+        
+    case EPS_Roll_In:
+        Draw_Roll_In_State(hdc, paint_area);
+        break;
 
     default:
         break;
     }    
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+void AsPlatform::Clear_BG(HDC hdc) //Очистка фона
+{
+    SelectObject(hdc, AsConfig::BG_Pen);
+    SelectObject(hdc, AsConfig::BG_Brush);
+
+    Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Circle_Highlight(HDC hdc, int x, int y) //рисуем блик на шарике
+{
+    SelectObject(hdc, Highlight_Pen);
+
+    Arc(hdc, x + AsConfig::Global_Scale, y + AsConfig::Global_Scale, x + (Citcle_Size - 1) * AsConfig::Global_Scale, y + (Citcle_Size - 1) * AsConfig::Global_Scale,
+        x + 2 * AsConfig::Global_Scale, y + AsConfig::Global_Scale, x + AsConfig::Global_Scale, y + 3 * AsConfig::Global_Scale);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //рисуем платформу в нормальном состоянии
@@ -82,10 +125,8 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //рисуем п�
     if (!IntersectRect(&intersection_rect, &Platform_Rect, &paint_area) )
         return;
 
-    SelectObject(hdc, AsConfig::BG_Pen);
-    SelectObject(hdc, AsConfig::BG_Brush);
-
-    Rectangle(hdc, Prev_Platform_Rect.left, Prev_Platform_Rect.top, Prev_Platform_Rect.right, Prev_Platform_Rect.bottom);
+    //Очищаем фон
+    Clear_BG(hdc);
 
     // 1. Рисуем боковые шарики.
     SelectObject(hdc, Platform_Circle_Pen);
@@ -95,10 +136,7 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //рисуем п�
     Ellipse(hdc, (x + Inner_Width) * AsConfig::Global_Scale, y * AsConfig::Global_Scale, (x + Citcle_Size + Inner_Width) * AsConfig::Global_Scale, (y + Citcle_Size) * AsConfig::Global_Scale);
 
     // 2. Рисуем блики на боковом шарике платформы.
-    SelectObject(hdc, Highlight_Pen);
-
-    Arc(hdc, (x + 1) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + Citcle_Size - 1) * AsConfig::Global_Scale, (y + Citcle_Size - 1) * AsConfig::Global_Scale,
-        (x + 1 + 1) * AsConfig::Global_Scale, (y + 1) * AsConfig::Global_Scale, (x + 1) * AsConfig::Global_Scale, (y + 1 + 2) * AsConfig::Global_Scale);
+    Draw_Circle_Highlight(hdc, x * AsConfig::Global_Scale, y * AsConfig::Global_Scale);
 
     // 3. Рисуем среднюю часть платформы.
     SelectObject(hdc, Platform_Inner_Pen);
@@ -143,5 +181,53 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area) //рисуем �
 
         Meltdown_Platform_Y_Pos[i] += y_offset;
     }    
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area) // Выкатывающаяся платформа
+{
+    int x = X_Pos * AsConfig::Global_Scale;
+    int y = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+    int roller_size = Citcle_Size * AsConfig::Global_Scale;
+    double alpha;
+    XFORM xform, old_xform;
+
+    Clear_BG(hdc);
+
+    //1.Шарик
+    SelectObject(hdc, Platform_Circle_Pen);
+    SelectObject(hdc, Platform_Circle_Brush);
+
+    Ellipse(hdc, x, y, x + roller_size, y + roller_size);
+
+    //2.Разделительная линия
+    SetGraphicsMode(hdc, GM_ADVANCED);
+
+    alpha = -2.0 * M_PI / (double)Max_Rollin_Step * (double)Rollin_Step;
+
+    xform.eM11 = (float) cos(alpha);
+    xform.eM12 = (float) sin(alpha);
+    xform.eM21 = (float) -sin(alpha);
+    xform.eM22 = (float) cos(alpha);
+    xform.eDx = (float) (x + roller_size / 2);
+    xform.eDy = (float) (y + roller_size / 2);
+    GetWorldTransform(hdc, &old_xform);
+    SetWorldTransform(hdc, &xform);
+
+    SelectObject(hdc, AsConfig::BG_Pen);
+    SelectObject(hdc, AsConfig::BG_Brush);
+
+    Rectangle(hdc, - AsConfig::Global_Scale / 2, -roller_size / 2, AsConfig::Global_Scale / 2, roller_size / 2);
+
+    SetWorldTransform(hdc, &old_xform);
+
+    //3.Блик
+    Draw_Circle_Highlight(hdc, x, y);
+
+    ++Rollin_Step;
+
+    if (Rollin_Step >= Max_Rollin_Step)
+        Rollin_Step -= Max_Rollin_Step;
+
+    X_Pos -= AsConfig::Global_Scale;    
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
