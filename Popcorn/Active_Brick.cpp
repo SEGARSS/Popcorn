@@ -21,7 +21,7 @@ void AActive_Brick::Act(HWND hwnd)
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-void AActive_Brick::Draw(HDC hdc, RECT& paint_area)
+void AActive_Brick::Draw(HDC hdc, RECT& paint_area)//
 {
 	HPEN pen = 0;
 	HBRUSH brush = 0;

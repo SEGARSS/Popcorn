@@ -44,7 +44,7 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
 
     case EPS_Roll_In:
-        X_Pos = AsConfig::Max_X_Pos;
+        X_Pos = AsConfig::Max_X_Pos;//
         break;
 	}
 	
