@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
 : X_Pos(AsConfig::Border_X_Offsets), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Inner_Width(21), 
-  Rollin_Step(0), Width(Normal_Width), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Circle_Pen(0), 
+  Rolling_Step(0), Width(Normal_Width), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Circle_Pen(0), 
   Platform_Inner_Pen(0), Platform_Circle_Brush(0), Platform_Inner_Brush(0)  
 {
     X_Pos = (AsConfig::Max_X_Pos - Width) / 2;
@@ -44,7 +44,8 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 
 
     case EPS_Roll_In:
-        X_Pos = AsConfig::Max_X_Pos;//
+        X_Pos = AsConfig::Max_X_Pos - 1;
+        Rolling_Step = Max_Rolling_Step - 1;
         break;
 	}
 	
@@ -80,6 +81,11 @@ void AsPlatform::Redraw_Platform(HWND hwnd)
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw(HDC hdc, RECT &paint_area) //рисуем платформу
 {
+    RECT intersection_rect;
+
+    if (!IntersectRect(&intersection_rect, &Platform_Rect, &paint_area) )
+        return;
+
     switch (Platform_State)
     {
     case EPS_Normal:
@@ -92,6 +98,10 @@ void AsPlatform::Draw(HDC hdc, RECT &paint_area) //рисуем платформ
         
     case EPS_Roll_In:
         Draw_Roll_In_State(hdc, paint_area);
+        break;
+
+    case EPS_Expand_Roll_In:
+        Draw_Expanding_Roll_In_State(hdc, paint_area);
         break;
 
     default:
@@ -120,11 +130,6 @@ void AsPlatform::Draw_Normal_State(HDC hdc, RECT &paint_area) //рисуем п�
     int x = X_Pos;
     int y = AsConfig::Platform_Y_Pos;
 
-    RECT intersection_rect;
-
-    if (!IntersectRect(&intersection_rect, &Platform_Rect, &paint_area) )
-        return;
-
     //Очищаем фон
     Clear_BG(hdc);
 
@@ -152,10 +157,6 @@ void AsPlatform::Draw_Meltdown_State(HDC hdc, RECT &paint_area) //рисуем �
     int area_width, area_height;
     COLORREF pixel;
     COLORREF bg_pixel = RGB(AsConfig::BG_Color.R, AsConfig::BG_Color.G, AsConfig::BG_Color.B);
-    RECT intersection_rect;
-    
-    if (!IntersectRect(&intersection_rect, &Platform_Rect, &paint_area) )
-        return;
 
     area_width = Width * AsConfig::Global_Scale;
     area_height = Height * AsConfig::Global_Scale + 1;
@@ -202,7 +203,7 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area) // Выкатыв
     //2.Разделительная линия
     SetGraphicsMode(hdc, GM_ADVANCED);
 
-    alpha = -2.0 * M_PI / (double)Max_Rollin_Step * (double)Rollin_Step;
+    alpha = -2.0 * M_PI / (double)Max_Rolling_Step * (double)Rolling_Step;
 
     xform.eM11 = (float) cos(alpha);
     xform.eM12 = (float) sin(alpha);
@@ -223,11 +224,19 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area) // Выкатыв
     //3.Блик
     Draw_Circle_Highlight(hdc, x, y);
 
-    ++Rollin_Step;
+    ++Rolling_Step;
 
-    if (Rollin_Step >= Max_Rollin_Step)
-        Rollin_Step -= Max_Rollin_Step;
+	if (Rolling_Step >= Max_Rolling_Step)
+		Rolling_Step -= Max_Rolling_Step;
 
-    X_Pos -= AsConfig::Global_Scale;    
+    X_Pos -= Rolling_Platform_Speed;   
+
+    if (X_Pos <= Roll_In_Platform_End_X_Pos)
+        Platform_State = EPS_Expand_Roll_In;
+}
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+void AsPlatform::Draw_Expanding_Roll_In_State(HDC hdc, RECT &paint_area) //Рисыем расширение платформы после выкатывания
+{
+
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------

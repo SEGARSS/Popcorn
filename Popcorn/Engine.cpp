@@ -28,9 +28,7 @@ void AsEngine::Init_Engine(HWND hwnd) // Настройка цвета.
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area) // Отрисовка экрана игры
 {
-    Level.Draw(Hwnd, hdc, paint_area);
-
-    Platform.Draw(hdc, paint_area);
+    Level.Draw(Hwnd, hdc, paint_area);    
 
     //for (int i = 0; i < 16; i++)
     //{
@@ -39,8 +37,8 @@ void AsEngine::Draw_Frame(HDC hdc, RECT &paint_area) // Отрисовка эк�
     //}
     
     Ball.Draw(hdc, paint_area);
-
     Border.Draw(hdc, paint_area); 
+    Platform.Draw(hdc, paint_area);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 int AsEngine::On_Key_Down(EKey_Type key_type)
@@ -80,7 +78,8 @@ int AsEngine::On_Timer()
 
     Level.Active_Brick.Act(Hwnd);
 
-    Platform.Act(Hwnd);
+	if (AsConfig::Current_Timer_Tick % 10 == 0)
+		Platform.Act(Hwnd);
 
     return 0;
 }

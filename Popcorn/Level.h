@@ -24,7 +24,7 @@ public:
 	void Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction);
 	void Draw(HWND hwnd, HDC hdc, RECT &paint_area);
 
-	AActive_Brick Active_Brick; 	
+	AActive_Brick Active_Brick;
 
 private:
 	void Draw_Brick(HDC hdc, int x, int y, EBrick_Type brick_type);
