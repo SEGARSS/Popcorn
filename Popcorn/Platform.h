@@ -20,9 +20,9 @@ public:
 	AsPlatform();
 
 	void Init();
-	void Act(HWND hwnd);
+	void Act();
 	void Set_State(EPlatform_State new_state);
-	void Redraw_Platform(HWND hwnd);
+	void Redraw_Platform();
 	void Draw(HDC hdc, RECT &paint_area);	
 
 	int X_Pos;
@@ -52,6 +52,7 @@ private:
 
 	static const int Height = 7;
 	static const int Citcle_Size = 7;
+	static const int Normal_Platform_Inner_Width = Normal_Width - Citcle_Size;
 	static const int Meltdown_Speed = 3;
 	static const int Max_Rolling_Step = 8;
 	static const int Roll_In_Platform_End_X_Pos = 99;

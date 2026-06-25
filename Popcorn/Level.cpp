@@ -67,7 +67,7 @@ void ALevel::Check_Level_Brick_Hit(int &next_y_pos, double &ball_direction)
     }
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-void ALevel::Draw(HWND hwnd, HDC hdc, RECT &paint_area)// Отрисовка кирпичей
+void ALevel::Draw(HDC hdc, RECT &paint_area)// Отрисовка кирпичей
 {
     RECT intersection_rect;    
 

@@ -4,7 +4,7 @@
 //AsPlatform
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 AsPlatform::AsPlatform()
-: X_Pos(AsConfig::Border_X_Offsets), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Inner_Width(21), 
+: X_Pos(AsConfig::Border_X_Offsets), X_Step(AsConfig::Global_Scale * 2), Platform_State(EPS_Normal), Inner_Width(Normal_Platform_Inner_Width), 
   Rolling_Step(0), Width(Normal_Width), Platform_Rect{}, Prev_Platform_Rect{}, Highlight_Pen(0), Platform_Circle_Pen(0), 
   Platform_Inner_Pen(0), Platform_Circle_Brush(0), Platform_Inner_Brush(0)  
 {
@@ -19,10 +19,15 @@ void AsPlatform::Init()
     AsConfig::Create_Pen_Brush(0, 128, 192, Platform_Inner_Pen, Platform_Inner_Brush);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-void AsPlatform::Act(HWND hwnd)
+void AsPlatform::Act()
 {
-    if (Platform_State == EPS_Meltdown || Platform_State == EPS_Roll_In)
-        Redraw_Platform(hwnd);
+    switch (Platform_State)
+    {
+    case EPS_Meltdown:
+    case EPS_Roll_In:
+    case EPS_Expand_Roll_In:
+        Redraw_Platform();
+    }        
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Set_State(EPlatform_State new_state)
@@ -52,31 +57,27 @@ void AsPlatform::Set_State(EPlatform_State new_state)
 	Platform_State = new_state;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
-void AsPlatform::Redraw_Platform(HWND hwnd)
+void AsPlatform::Redraw_Platform()
 {
+    int platform_with;
+
     Prev_Platform_Rect = Platform_Rect;
 
-	if (Platform_State == EPS_Normal || Platform_State == EPS_Meltdown)
-	{
-		Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
-		Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-		Platform_Rect.right = Platform_Rect.left + Width * AsConfig::Global_Scale;
-		Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;
-	}
-
     if (Platform_State == EPS_Roll_In)
-	{
-		Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
-		Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
-		Platform_Rect.right = Platform_Rect.left + Citcle_Size * AsConfig::Global_Scale;
-		Platform_Rect.bottom = Platform_Rect.top + Citcle_Size * AsConfig::Global_Scale;
-	}
+        platform_with = Citcle_Size;
+    else
+        platform_with = Width;   
+   
+    Platform_Rect.left = X_Pos * AsConfig::Global_Scale;
+    Platform_Rect.top = AsConfig::Platform_Y_Pos * AsConfig::Global_Scale;
+    Platform_Rect.right = Platform_Rect.left + platform_with * AsConfig::Global_Scale;
+    Platform_Rect.bottom = Platform_Rect.top + Height * AsConfig::Global_Scale;    
 
     if (Platform_State == EPS_Meltdown)
         Prev_Platform_Rect.bottom = (AsConfig::Max_Y_Pos + 1) * AsConfig::Global_Scale;
 
-    InvalidateRect(hwnd, &Prev_Platform_Rect, FALSE);
-    InvalidateRect(hwnd, &Platform_Rect, FALSE);
+    InvalidateRect(AsConfig::Hwnd, &Prev_Platform_Rect, FALSE);
+    InvalidateRect(AsConfig::Hwnd, &Platform_Rect, FALSE);
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw(HDC hdc, RECT &paint_area) //рисуем платформу
@@ -232,11 +233,25 @@ void AsPlatform::Draw_Roll_In_State(HDC hdc, RECT &paint_area) // Выкатыв
     X_Pos -= Rolling_Platform_Speed;   
 
     if (X_Pos <= Roll_In_Platform_End_X_Pos)
+    {
+        X_Pos += Rolling_Platform_Speed;
         Platform_State = EPS_Expand_Roll_In;
+        Inner_Width = 1;
+    }        
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------
 void AsPlatform::Draw_Expanding_Roll_In_State(HDC hdc, RECT &paint_area) //Рисыем расширение платформы после выкатывания
 {
+    Draw_Normal_State(hdc, paint_area);
 
+    --X_Pos;
+    Inner_Width += 2;
+
+    if (Inner_Width >= Normal_Platform_Inner_Width)
+    {
+        Inner_Width = Normal_Platform_Inner_Width;
+        Platform_State = EPS_Normal;
+        Redraw_Platform();
+    }
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------

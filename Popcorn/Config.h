@@ -31,6 +31,7 @@ public:
 	static const AColor BG_Color, Red_Brick_Color, Blue_Brick_Color;
 	static HPEN BG_Pen;
 	static HBRUSH BG_Brush;	
+	static HWND Hwnd;	
 
 	static const int Level_Width = 12;   // Ширина уровня ячейки
 	static const int Level_Height = 14; // Высота уровня ячейки
